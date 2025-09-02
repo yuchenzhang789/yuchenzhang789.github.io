@@ -68,6 +68,12 @@
             flex-wrap: wrap;
             gap: 1.5rem;
         }
+
+        /* New style for smaller photos in section 2 */
+        .photo-group img {
+            max-width: 250px;
+        }
+
         .back-link {
             display: inline-block;
             margin-top: 2rem;
@@ -114,20 +120,16 @@
         <div class="section">
             <h2>Part 2: Architectural Perspective Compression</h2>
             <div class="photo-gallery">
-                <!-- Group 1 -->
-                <div class="photo-group">
-                    <!-- Replace "images/part2_group1_photo1.jpg" with your actual filename. -->
-                    <img src="images/part2_group1_photo1.jpg" alt="Street view in Santa Clara (Far & Zoom in)">
-                    <!-- Replace "images/part2_group1_photo2.jpg" with your actual filename. -->
-                    <img src="images/part2_group1_photo2.jpg" alt="Street view in Santa Clara (Close & No Zoom in)">
-                </div>
-                <!-- Group 2 -->
-                <div class="photo-group">
-                    <!-- Replace "images/part2_group2_photo1.jpg" with your actual filename. -->
-                    <img src="images/part2_group2_photo1.jpg" alt="Street view in Sunnyvale (Far & Zoom in)">
-                    <!-- Replace "images/part2_group2_photo2.jpg" with your actual filename. -->
-                    <img src="images/part2_group2_photo2.jpg" alt="Street view in Sunnyvale (Close & No Zoom in)">
-                </div>
+                <!-- Replace "images/part2_group1_photo1.jpg" with your actual filename. -->
+                <img src="images/part2_group1_photo1.jpg" alt="Street view in Santa Clara (Far & Zoom in)">
+                <!-- Replace "images/part2_group1_photo2.jpg" with your actual filename. -->
+                <img src="images/part2_group1_photo2.jpg" alt="Street view in Santa Clara (Close)">
+            </div>
+            <div class="photo-gallery">
+                <!-- Replace "images/part2_group2_photo1.jpg" with your actual filename. -->
+                <img src="images/part2_group2_photo1.jpg" alt="Street view in Sunnyvale (Far & Zoom in)">
+                <!-- Replace "images/part2_group2_photo2.jpg" with your actual filename. -->
+                <img src="images/part2_group2_photo2.jpg" alt="Street view in Sunnyvale (Close)">
             </div>
         </div>
 
