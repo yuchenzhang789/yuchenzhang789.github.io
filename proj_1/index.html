@@ -17,6 +17,26 @@
         .container-section {
             @apply max-w-7xl mx-auto p-4 md:p-8 my-8 bg-white rounded-xl shadow-lg;
         }
+        
+        /* CSS for the hover effect on gallery items */
+        .gallery-item {
+            /* Adds a smooth transition for the transform effect */
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            /* Scales the card to 1.05 times its original size on hover */
+            transform: scale(1.05);
+            /* Adds a slight shadow to enhance the "lift" effect */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Styles for the full-screen modal */
+        #photo-modal {
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -40,7 +60,7 @@
         <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">About the Project</h2>
         <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
             <p>
-                The primary objective for Project 1is to implement algorithms to process and align image plates from RGB channels to produce colorful photos. These images were originally taken by Prokudin-Gorskii on red, green, and blue glass plates, and I aligned these three-color channels to obtain the final colored image. A pyramid algorithm is implemented to help process image with higher resolutions, which reduced the computation time and space.  
+                The primary objective for Project 1is to implement algorithms to process and align image plates from RGB channels to produce colorful photos. These images were originally taken by Prokudin-Gorskii on red, green, and blue glass plates, and I aligned these three-color channels to obtain the final colored image. A pyramid algorithm is implemented to help process image with higher resolutions, which reduced the computation time and space.  
             <p>
                 In addition, 4 extra features, including Automatic cropping, Automatic contrasting, Automatic white balance, color remapping, and more precise alignment features, are also implemented to improve image quality.
             </p>
@@ -52,96 +72,89 @@
         <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Image Gallery</h2>
         <!-- Grid container for 17 photos -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-
-            <!--
-                Important:
-                The src attribute for each image is currently a placeholder.
-                Once you upload your photos to a folder named 'images' in your GitHub repository,
-                update the src attribute to point to your image file, e.g., src="images/photo1.jpg".
-            -->
             
             <!-- Photo Slot 1 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_emir.jpg" alt="Emir" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Emir (G shift (49, 23), R shift (107, 40))</p>
             </div>
             <!-- Photo Slot 2 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_italil.jpg" alt="Italil" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Italil (G shift (38, 22), R shift (77, 36))</p>
             </div>
             <!-- Photo Slot 3 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_monastery.jpg" alt="Monastery" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Monastery (G shift (-3, 2), R shift (3, 2))</p>
             </div>
             <!-- Photo Slot 4 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_church.jpg" alt="Church" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Church (G shift (25, 4), R shift (58, -4))</p>
             </div>
             <!-- Photo Slot 5 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_three_generations.jpg" alt="Three Generations" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Three Generations (G shift (56, 12), R shift (111, 8))</p>
             </div>
             <!-- Photo Slot 6 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_lugano.jpg" alt="Lugano" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Lugano (G shift (41, -15), R shift (93, -29))</p>
             </div>
             <!-- Photo Slot 7 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_melons.jpg" alt="Melons" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Melons (G shift (80, 10), R shift (176, 14))</p>
             </div>
             <!-- Photo Slot 8 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_non_remap_lastochikino.jpg" alt="Lastochikino" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Lastochikino (G shift (-3, -1), R shift (75, -8))</p>
             </div>
             <!-- Photo Slot 9 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_tobolsk.jpg" alt="Tobolsk" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Tobolsk (G shift (3, 3), R shift (6, 3))</p>
             </div>
             <!-- Photo Slot 10 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_icon.jpg" alt="Icon" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Icon (G shift (39, 16), R shift (88, 22))</p>
             </div>
             <!-- Photo Slot 11 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_cathedral.jpg" alt="Cathedral" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Cathedral (G shift (5, 2), R shift (12, 3))</p>
             </div>
             <!-- Photo Slot 12 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_siren.jpg" alt="Siren" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Siren (G shift (48, -8), R shift (96, -24))</p>
             </div>
             <!-- Photo Slot 13 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_self_portrait.jpg" alt="Self Portrait" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Self Portrait (G shift (77, 29), R shift (175, 37))</p>
             </div>
             <!-- Photo Slot 14 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_harvesters.jpg" alt="Harvesters" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Harvesters (G shift (60, 17), R shift (123, 14))</p>
             </div>
             <!-- Photo Slot 15 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://placehold.co/600x400/E5E7EB/4B5563?text=Photo+15" alt="Placeholder photo 15" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Caption for Photo 15</p>
             </div>
             <!-- Photo Slot 16 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://placehold.co/600x400/D1D5DB/4B5563?text=Photo+16" alt="Placeholder photo 16" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Caption for Photo 16</p>
             </div>
             <!-- Photo Slot 17 -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://placehold.co/600x400/E5E7EB/4B5563?text=Photo+17" alt="Placeholder photo 17" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Caption for Photo 17</p>
             </div>
@@ -153,27 +166,87 @@
         <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Extra Features Showcase</h2>
         <div class="flex flex-col md:flex-row justify-center items-center gap-8">
             <!-- Raw Photo Slot -->
-            <div class="w-full md:w-1/2 bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="w-full md:w-1/2 bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_raw_emir.jpg" alt="Raw photo" class="w-full h-auto object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Raw Emir Image</p>
             </div>
             <!-- Processed Photo Slot -->
-            <div class="w-full md:w-1/2 bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="w-full md:w-1/2 bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_emir.jpg" alt="Processed photo" class="w-full h-auto object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Emir image with bells & whistles </p>
             </div>
             <!-- Raw Photo Slot -->
-            <div class="w-full md:w-1/2 bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="w-full md:w-1/2 bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_raw_icon.jpg" alt="Raw photo" class="w-full h-auto object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Raw Icon Image</p>
             </div>
             <!-- Processed Photo Slot -->
-            <div class="w-full md:w-1/2 bg-gray-50 rounded-lg shadow-md overflow-hidden">
+            <div class="w-full md:w-1/2 bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                 <img src="https://yuchenzhang789.github.io/proj_1/output/processed_icon.jpg" alt="Processed photo" class="w-full h-auto object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Icon image with bells & whistles</p>
             </div>
         </div>
     </section>
 
+    <!-- Full-screen Photo Modal -->
+    <div id="photo-modal" class="fixed inset-0 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-5xl max-h-[90vh] overflow-hidden flex flex-col relative">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-white text-3xl font-bold bg-gray-800 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-700 transition-colors z-50">
+                &times;
+            </button>
+            <img id="modal-image" src="" alt="" class="w-full h-full object-contain rounded-lg">
+            <p id="modal-caption" class="p-4 text-center font-semibold text-lg text-gray-800"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const modal = document.getElementById('photo-modal');
+            const modalImage = document.getElementById('modal-image');
+            const modalCaption = document.getElementById('modal-caption');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            function showModal(imageSrc, imageAlt, captionText) {
+                modalImage.src = imageSrc;
+                modalImage.alt = imageAlt;
+                modalCaption.textContent = captionText;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden'; // Prevents scrolling
+            }
+
+            function closeModal() {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = ''; // Restores scrolling
+            }
+
+            galleryItems.forEach(item => {
+                item.addEventListener('click', (event) => {
+                    const img = item.querySelector('img');
+                    const caption = item.querySelector('p');
+                    showModal(img.src, img.alt, caption.textContent);
+                });
+            });
+
+            // Close the modal when the button is clicked
+            closeModalBtn.addEventListener('click', closeModal);
+
+            // Close the modal if the user clicks the background
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Close the modal with the Escape key
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
