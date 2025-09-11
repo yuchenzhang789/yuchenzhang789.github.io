@@ -60,7 +60,7 @@
         <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">About the Project</h2>
         <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
             <p>
-                The primary objective for Project 1is to implement algorithms to process and align image plates from RGB channels to produce colorful photos. These images were originally taken by Prokudin-Gorskii on red, green, and blue glass plates, and I aligned these three-color channels to obtain the final colored image. A pyramid algorithm is implemented to help process image with higher resolutions, which reduced the computation time and space.  
+                The primary objective for Project 1is to implement algorithms to process and align image plates from RGB channels to produce colorful photos. These images were originally taken by Prokudin-Gorskii on red, green, and blue glass plates, and I aligned these three-color channels to obtain the final colored image. A pyramid algorithm is implemented to help process image with higher resolutions, which reduced the computation time and space.  
             <p>
                 In addition, 4 extra features, including Automatic cropping, Automatic contrasting, Automatic white balance, color remapping, and more precise alignment features, are also implemented to improve image quality.
             </p>
@@ -199,7 +199,10 @@
             <button id="close-modal-btn" class="absolute top-4 right-4 text-white text-3xl font-bold bg-gray-800 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-700 transition-colors z-50">
                 &times;
             </button>
-            <img id="modal-image" src="" alt="" class="w-full h-full object-contain rounded-lg">
+            <!-- Wrapper div for flexible image sizing -->
+            <div class="flex-grow flex items-center justify-center overflow-hidden">
+                <img id="modal-image" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg">
+            </div>
             <p id="modal-caption" class="p-4 text-center font-semibold text-lg text-gray-800"></p>
         </div>
     </div>
