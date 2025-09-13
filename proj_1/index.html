@@ -49,18 +49,40 @@
         </div>
     </header>
 
+    <!-- Updated Introduction Section -->
     <section class="container-section mb-12">
-        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">About the Project</h2>
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Introduction</h2>
         <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
-            <p>
-                The primary objective for Project 1is to implement algorithms to process and align image plates from RGB channels to produce colorful photos. These images were originally taken by Prokudin-Gorskii on red, green, and blue glass plates, and I aligned these three-color channels to obtain the final colored image. A pyramid algorithm is implemented to help process image with higher resolutions, which reduced the computation time and space.  
-            <p>
-            <p>
-                In addition, 4 extra features, including Automatic cropping, Automatic contrasting, Automatic white balance, color remapping, and more precise alignment features, are also implemented to improve image quality.
+            <p class="mb-4">
+                The primary objective of this project is to implement algorithms to process and align the RGB plates originally captured by **Sergey Prokudin-Gorskii** using red, green, and blue glass filters. By aligning these three color channels, it is possible to reconstruct full-color images from historical black-and-white photographs.
             </p>
+            <p>
+                In addition to alignment, a **pyramid algorithm** is introduced to efficiently handle high-resolution images by reducing computation time and memory usage. Several **post-processing enhancements** are also developed, including:
+            </p>
+            <ul class="list-disc list-inside mt-4 pl-4 space-y-2">
+                <li>Automatic cropping</li>
+                <li>Automatic contrast adjustment</li>
+                <li>Automatic white balance</li>
+                <li>Color remapping via LUTs</li>
+                <li>Improved alignment metrics</li>
+            </ul>
         </div>
     </section>
 
+    <!-- Image Alignment Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Image Alignment</h2>
+        <div class="space-y-8">
+            <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Metric-Based Alignment</h3>
+                <p>
+                    A `Metric` class was implemented to compute similarity scores between channel pairs. Two primary metrics were explored: **L2 Norm** and **Normalized Cross-Correlation (NCC)**. For low-resolution images (`.jpg`), a single-scale search was sufficient. Displacements were evaluated in a window of approximately `(-15, 15)` pixels, which reliably produced accurate alignment. Among the tested metrics, **NCC consistently outperformed L2 norm**.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Single-scale Implementation on JPG Images gallery section -->
     <section class="container-section">
         <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Single-scale Implementation on JPG Images</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -79,6 +101,22 @@
         </div>
     </section>
 
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Multiscale Pyramid on RGB Image</h2>
+        <div class="space-y-8">
+            <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Pyramid (Multi-Scale) Alignment</h3>
+                <p>
+                    For high-resolution images (`.tif`), an **image pyramid** was employed to reduce computational cost: The image is recursively downsampled by a factor of 2 until it reaches the approximate scale of low-resolution inputs. A local displacement is computed on the downsampled image. This displacement is doubled and refined within a smaller search window (≈ `(-6, 6)` pixels) at the next resolution level. The process continues until the full resolution is restored. This approach significantly accelerates alignment while maintaining accuracy.
+                </p>
+                <p class="mt-4">
+                    However, the high-res images were still a few pixels away from perfect alignment, which I believe was due to the black borders affecting the metric calculation. To fix this, I added a **10% cropping** from each border of the images before calculating the displacement, and align the uncropped image after acquiring the displacement using the pyramid design. This worked really well since the black borders are removed before calculations. Therefore, I was able to achieve perfect alignment using NCC and raw RGB values for all images except for the Emir image.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Multiscale Pyramid on RGB Image gallery section -->
     <section class="container-section">
         <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Multiscale Pyramid on RGB Image</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -108,7 +146,7 @@
                 <p class="p-4 font-semibold text-center text-gray-700">Melons (G shift (80, 10), R shift (176, 14))</p>
             </div>
             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                <img src="https://yuchenzhang789.github.io/proj_1/rgb_output/rgb_non_remap_lastochikino.jpg" alt="Lastochikino" class="w-full h-48 object-cover">
+                <img src="https://yuchenzhang789.github.io/proj_1/rgb_output/rgb_lastochikino.jpg" alt="Lastochikino" class="w-full h-48 object-cover">
                 <p class="p-4 font-semibold text-center text-gray-700">Lastochikino (G shift (-3, -1), R shift (75, -8))</p>
             </div>
 
@@ -147,6 +185,44 @@
         </div>
     </section>
 
+    <!-- Bells and Whistles Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Bells & Whistles</h2>
+        <div class="space-y-8">
+            <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Alternative Metrics</h3>
+                <p>
+                    To improve robustness, additional metrics were implemented: **Gradients** (computed using `cv2.Sobel`) and **Edges** (extracted using `cv2.Canny` with Gaussian blurring). Both metrics were integrated into the `Metric` class, enabling alignment based on gradient or edge similarity. The **edge + NCC** combination produced near-perfect alignment results on high-resolution images.
+                </p>
+            </div>
+            <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Automatic Cropping</h3>
+                <p>
+                    Auto-cropping was developed using gradients and edges, exploiting the observation that borders exhibit low activity. Initial attempts left residual black borders due to timestamps or thin colored lines. A fixed **2% margin** was removed from each side prior to border detection, eliminating most artifacts.
+                </p>
+            </div>
+            <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Automatic Contrast Adjustment</h3>
+                <p>
+                    Two approaches were tested for contrast normalization: **Min–max scaling**, which is sensitive to outlier pixels, and **Percentile-based scaling**, which is more robust as it discards extreme outliers. Percentile scaling was adopted as the default. Non-linear methods, such as **histogram equalization**, were also tested but performed poorly on this dataset.
+                </p>
+            </div>
+            <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Automatic White Balance</h3>
+                <p>
+                    Two classical methods were explored: **Gray World** (rescaling based on average channel values) and **White World** (rescaling based on maximum channel values). The **White World method** yielded superior results in most cases.
+                </p>
+            </div>
+            <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-600">Color Mapping with LUTs</h3>
+                <p>
+                    Color remapping was implemented using the **pylut** library. More than 20 LUTs were tested, but many produced unrealistic colorizations. A few high-quality LUTs produced natural-looking results and in some cases **replaced the need for white balancing**.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bells & Whistles Sections gallery -->
     <main class="container-section">
         <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Bells & Whistles Sections</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
