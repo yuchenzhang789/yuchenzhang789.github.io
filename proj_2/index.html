@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS280A Project 2</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Custom font import and application */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569; /* Slate 600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* Slate 500 */
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'background': '#0f172a', // Slate 900
+                        'primary': '#334155',    // Slate 700
+                        'accent': '#3b82f6',     // Blue 500
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-slate-300 min-h-screen">
+
+    <header class="bg-primary shadow-lg p-6 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <!-- START: Button and Title Group -->
+            <div class="flex items-center space-x-4">
+                <a href="https://yuchenzhang789.github.io/index.html" class="px-3 py-1 bg-accent hover:bg-blue-600 text-white text-sm font-semibold rounded-lg transition duration-150 shadow-md">
+                    ← Back to Main Webpage
+                </a>
+                <h1 class="text-3xl font-extrabold text-white">Image Analysis Project</h1>
+            </div>
+            <!-- END: Button and Title Group -->
+            <p class="text-sm text-slate-400">Computer Vision Deliverables Showcase</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+
+        <!-- ==================================================================== -->
+        <!-- SECTION 1: Part 1: Filters and Edges -->
+        <!-- ==================================================================== -->
+        <section class="bg-primary/50 p-8 rounded-xl shadow-2xl border-t-4 border-accent" id="part1">
+            <h2 class="text-4xl font-bold mb-8 text-accent">Part 1: Filters and Edges</h2>
+
+            <!-- 1.1 Convolution Implementation -->
+            <div class="mb-12 border-b border-slate-700 pb-8" id="part1-1">
+                <h3 class="text-2xl font-semibold mb-4 text-white">1.1. Convolution Implementation (Numpy vs. Scipy)</h3>
+                <p class="mb-4">We implemented the 2D convolution operation using pure NumPy and compared its performance and behavior against the optimized <code>scipy.signal.convolve2d</code>.</p>
+                
+                <!-- START: 1.1 Image Slots (3 Images) -->
+                <div class="grid md:grid-cols-3 gap-4 mb-8">
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=Original+Image" alt="Original image used for convolution" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Original Input Image</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=Result+Numpy" alt="Convolution result using Numpy" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Numpy Convolution Result</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=Result+Scipy" alt="Convolution result using Scipy" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Scipy Convolution Result</figcaption>
+                    </figure>
+                </div>
+                <!-- END: 1.1 Image Slots -->
+
+                <div class="bg-slate-800 p-4 rounded-lg">
+                    <h4 class="text-xl font-medium text-slate-200 mb-2">Comparison Summary</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-4 text-sm">
+                        <li><strong>Runtime:</strong> The NumPy-only implementation demonstrated $O(H \cdot W \cdot K^2)$ complexity, showing significantly slower runtime compared to Scipy's optimized Fast Fourier Transform (FFT) based convolution, especially for large images or large kernels.</li>
+                        <li><strong>Boundary Handling:</strong> My NumPy implementation uses zero-padding (explicitly adding zero rows/columns), while Scipy's default mode ('full') handles boundaries by implicitly extending the input with the specified boundary condition. This difference in padding must be accounted for to ensure output size consistency.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 1.2 Partial Derivatives and Edges -->
+            <div class="mb-12 border-b border-slate-700 pb-8" id="part1-2">
+                <h3 class="text-2xl font-semibold mb-4 text-white">1.2. Partial Derivatives, Gradient, and Edges</h3>
+                <p class="mb-6">Using finite difference filters (e.g., $ [-1, 0, 1] $), we computed the image gradient, magnitude, and binarized edges.</p>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=I(x)+Derivative" alt="Partial derivative in X direction" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Partial Derivative $\frac{\partial I}{\partial x}$</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=I(y)+Derivative" alt="Partial derivative in Y direction" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Partial Derivative $\frac{\partial I}{\partial y}$</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=Gradient+Magnitude" alt="Gradient Magnitude Image" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Gradient Magnitude $ \sqrt{I_x^2 + I_y^2} $</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=Binarized+Edges" alt="Binarized Edge Image" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Binarized Edge Image (Thresholded)</figcaption>
+                    </figure>
+                </div>
+
+                <div class="mt-6 p-4 bg-slate-800 rounded-lg">
+                    <h4 class="text-xl font-medium text-slate-200 mb-2">Edge Threshold Justification</h4>
+                    <p class="text-sm">We chose a threshold of $0.1$ for binarization. This value represents a minor tradeoff: it effectively removes low-magnitude noise edges (reducing false positives) while still retaining faint but important structural details (avoiding false negatives) in the cameraman's jacket texture.</p>
+                </div>
+            </div>
+
+            <!-- 1.3 Gaussian and DoG Filters -->
+            <div class="mb-12 border-b border-slate-700 pb-8" id="part1-3">
+                <h3 class="text-2xl font-semibold mb-4 text-white">1.3. Gaussian and Difference of Gaussian (DoG) Filters</h3>
+                <p class="mb-6">We constructed Gaussian filters using <code>cv2.getGaussianKernel</code> and built DoG filters by subtracting two Gaussians with different $\sigma$ values.</p>
+
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Filter Visualizations and Applications ($\sigma=3$ for Gaussian, $\sigma_1=1, \sigma_2=5$ for DoG)</h4>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Visualized+Gaussian+Filter" alt="Visualization of the Gaussian Filter" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Gaussian Filter Visualization</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Visualized+DoG+Filter" alt="Visualization of the DoG Filter" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">DoG Filter Visualization</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Cameraman+Smoothed+(Gaussian)" alt="Cameraman smoothed with Gaussian" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Cameraman Smoothed (Gaussian)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Cameraman+Edges+(DoG)" alt="Cameraman edges detected with DoG" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Cameraman Edges (DoG)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Cameraman+Edges+(Finite+Diff)" alt="Cameraman edges detected with Finite Difference" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Cameraman Edges (Finite Difference)</figcaption>
+                    </figure>
+                </div>
+                <div class="mt-6 p-4 bg-slate-800 rounded-lg">
+                    <h4 class="text-xl font-medium text-slate-200 mb-2">Comparison of Edge Detection</h4>
+                    <p class="text-sm">The Finite Difference method is highly sensitive to noise, producing thick, noisy edges. The DoG filter, due to its band-pass nature, inherently incorporates smoothing, resulting in thinner, cleaner, and better localized edges. This supports the notion that Gaussian pre-smoothing is crucial for robust edge detection.</p>
+                </div>
+            </div>
+
+            <!-- 1.4 Bells and Whistles: Gradient Orientations -->
+            <div id="part1-bw">
+                <h3 class="text-2xl font-semibold mb-4 text-white border-b border-accent pb-2">Bells and Whistles: Gradient Orientations</h3>
+                <p class="mb-6">We computed the gradient orientation $\theta$ for every pixel using the arctangent function $ \theta = \arctan2(\frac{\partial I}{\partial y}, \frac{\partial I}{\partial x}) $ without relying on built-in angle functions. Instead, we manually implemented a mapping to convert the ratio of partial derivatives into an angle in the range $[0, 2\pi)$.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/400x300/1e293b/cbd5e1?text=Gradient+Orientation+Visualization" alt="Visualization of Gradient Orientations" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Cameraman Gradient Orientation Map</figcaption>
+                    </figure>
+                    <div class="bg-slate-800 p-4 rounded-lg">
+                        <h4 class="text-xl font-medium text-slate-200 mb-2">Process Explanation</h4>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li>The $I_x$ and $I_y$ derivatives define the vector direction.</li>
+                            <li>The $\arctan2(y, x)$ function (which was implemented manually using conditional checks on the signs of $I_x$ and $I_y$ to determine the correct quadrant) gives the angle.</li>
+                            <li>Visualization: The resulting angles were mapped to a Hue-Saturation-Value (HSV) color space where Hue represents the angle (e.g., $0$ to $2\pi$ maps to $0$ to $360^{\circ}$) and Value represents the gradient magnitude.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================================================================== -->
+        <!-- SECTION 2: Part 2: Applications -->
+        <!-- ==================================================================== -->
+        <section class="bg-primary/50 p-8 rounded-xl shadow-2xl border-t-4 border-accent" id="part2">
+            <h2 class="text-4xl font-bold mb-8 text-accent">Part 2: Applications</h2>
+
+            <!-- 2.1 Unsharp Masking -->
+            <div class="mb-12 border-b border-slate-700 pb-8" id="part2-1">
+                <h3 class="text-2xl font-semibold mb-4 text-white">2.1. Unsharp Masking</h3>
+                <p class="mb-4">The Unsharp Mask filter works by generating a high-frequency detail layer (the 'mask') and adding it back to the original image. The process is:</p>
+                <div class="bg-slate-800 p-4 rounded-lg mb-6">
+                    <code class="block text-accent font-mono text-sm">Sharpened = Original + $\alpha$ * (Original - Blurred)</code>
+                </div>
+                <p class="mb-6">The blurred version is obtained via a Gaussian filter, which removes high frequencies. Subtracting the blurred image from the original isolates the high-frequency components. Multiplying this by the amplification factor $\alpha$ controls the sharpening intensity.</p>
+
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Taj Mahal Example ($\alpha=2.0$)</h4>
+                <div class="grid md:grid-cols-4 gap-4">
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Taj+Original" alt="Original Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Original Image</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Taj+Blurred" alt="Blurred Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Blurred ($\sigma=3$)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Taj+High+Freq+(Mask)" alt="High frequency mask of Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">High-Frequency Mask</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Taj+Sharpened" alt="Sharpened Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Sharpened ($\alpha=2.0$)</figcaption>
+                    </figure>
+                </div>
+                
+                <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4">Varying Sharpening Amount ($\alpha$) - Custom Set 1</h4>
+                <div class="grid md:grid-cols-3 gap-4 mb-10">
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+1+Alpha=0.5" alt="Custom image sharpened with alpha 0.5" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Custom Image ($\alpha=0.5$)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+1+Alpha=2.0" alt="Custom image sharpened with alpha 2.0" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Custom Image ($\alpha=2.0$)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+1+Alpha=5.0" alt="Custom image sharpened with alpha 5.0 (shows overshoot)" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Custom Image ($\alpha=5.0$, noticeable overshoot)</figcaption>
+                    </figure>
+                </div>
+
+                <!-- START: New Custom Image Set 2 -->
+                <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4">Varying Sharpening Amount ($\alpha$) - Custom Set 2</h4>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+2+Alpha=1.0" alt="Custom image set 2 sharpened with alpha 1.0" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Custom Image Set 2 ($\alpha=1.0$)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+2+Alpha=3.0" alt="Custom image set 2 sharpened with alpha 3.0" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Custom Image Set 2 ($\alpha=3.0$)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+2+Alpha=6.0" alt="Custom image set 2 sharpened with alpha 6.0 (exaggerated)" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Custom Image Set 2 ($\alpha=6.0$, exaggerated)</figcaption>
+                    </figure>
+                </div>
+                <!-- END: New Custom Image Set 2 -->
+            </div>
+
+            <!-- 2.2 Hybrid Images -->
+            <div class="mb-12 border-b border-slate-700 pb-8" id="part2-2">
+                <h3 class="text-2xl font-semibold mb-4 text-white">2.2. Hybrid Images (Blending High and Low Frequencies)</h3>
+                <p class="mb-6">Hybrid images are created by blending the high spatial frequencies of one image with the low spatial frequencies of another. This allows the perception to shift based on viewing distance.</p>
+
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Hybrid 1: DerekPicture (High-Pass) + Nutmeg (Low-Pass)</h4>
+                
+                <div class="bg-slate-800 p-4 rounded-lg mb-6">
+                    <h5 class="text-lg font-medium text-slate-200 mb-2">Full Process Visualization</h5>
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Original+Derek" alt="Original Derek Picture" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Original 1 (Derek)</figcaption>
+                        </figure>
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Original+Nutmeg" alt="Original Nutmeg Picture" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Original 2 (Nutmeg)</figcaption>
+                        </figure>
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Aligned+Images" alt="Aligned images" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Aligned Images</figcaption>
+                        </figure>
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Hybrid+Fourier+Transform" alt="Fourier Transform of the Hybrid Image" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Hybrid Fourier Transform</figcaption>
+                        </figure>
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=High-Pass+Derek" alt="High-Pass filtered Derek" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Filtered 1 (High-Pass)</figcaption>
+                        </figure>
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Low-Pass+Nutmeg" alt="Low-Pass filtered Nutmeg" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Filtered 2 (Low-Pass)</figcaption>
+                        </figure>
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Final+Hybrid+Image" alt="Final Hybrid Image" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs font-bold text-accent">FINAL HYBRID</figcaption>
+                        </figure>
+                        <div class="p-2 text-center text-sm flex items-center justify-center col-span-1 bg-primary/80 rounded-lg">
+                            Cutoff Choice: $\sigma_1=7, \sigma_2=5$
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Custom Hybrid Images</h4>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Hybrid 2 -->
+                    <div class="space-y-3 bg-slate-800 p-4 rounded-lg">
+                        <h5 class="text-lg font-medium text-slate-200">Hybrid 2: Cat + Dog ($\sigma_1=4, \sigma_2=6$)</h5>
+                        <div class="grid grid-cols-3 gap-2">
+                            <figure class="overflow-hidden rounded-md">
+                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Original+Cat" alt="Original Cat" class="w-full h-auto">
+                            </figure>
+                            <figure class="overflow-hidden rounded-md">
+                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Original+Dog" alt="Original Dog" class="w-full h-auto">
+                            </figure>
+                            <figure class="overflow-hidden rounded-md border-2 border-accent">
+                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Hybrid+CatDog" alt="Hybrid CatDog Image" class="w-full h-auto">
+                            </figure>
+                        </div>
+                    </div>
+                    <!-- Hybrid 3 -->
+                    <div class="space-y-3 bg-slate-800 p-4 rounded-lg">
+                        <h5 class="text-lg font-medium text-slate-200">Hybrid 3: Bird + Airplane ($\sigma_1=10, \sigma_2=3$)</h5>
+                        <div class="grid grid-cols-3 gap-2">
+                            <figure class="overflow-hidden rounded-md">
+                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Original+Bird" alt="Original Bird" class="w-full h-auto">
+                            </figure>
+                            <figure class="overflow-hidden rounded-md">
+                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Original+Plane" alt="Original Plane" class="w-full h-auto">
+                            </figure>
+                            <figure class="overflow-hidden rounded-md border-2 border-accent">
+                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Hybrid+PlaneBird" alt="Hybrid PlaneBird Image" class="w-full h-auto">
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bells and Whistles -->
+                <div class="mt-6 p-4 bg-slate-900 rounded-lg border border-slate-700">
+                    <h4 class="text-xl font-medium text-accent mb-2">Bells and Whistles: Hybrid Exploration</h4>
+                    <p class="text-sm">We explored the effect of color mixing. For the Derek/Nutmeg hybrid, we used the color channels of the low-frequency image (Nutmeg) as it is perceived primarily from a distance, where color is more robustly visible. The cutoff frequencies were chosen empirically to ensure the high-frequency image is completely blurred beyond a short distance.</p>
+                </div>
+            </div>
+
+            <!-- 2.3 + 2.4 Multi-resolution Blending -->
+            <div id="part2-3-4">
+                <h3 class="text-2xl font-semibold mb-4 text-white">2.3 + 2.4. Multi-resolution Blending</h3>
+                <p class="mb-6">Multi-resolution blending uses Laplacian stacks to decompose two input images, $I_A$ and $I_B$, and a Gaussian stack of a mask $M$ to blend the images at each frequency level, resulting in a seamless composite image.</p>
+                <code class="block text-accent font-mono text-sm bg-slate-800 p-3 rounded-lg mb-6">Blended Stack Level $l = L_{A,l} \cdot G_{M,l} + L_{B,l} \cdot (1 - G_{M,l})$</code>
+
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Orange + Apple: Stacks Visualization ($N=5$ levels)</h4>
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <!-- Stack Headers -->
+                    <div class="text-center font-bold text-slate-400">Orange Laplacian Stack</div>
+                    <div class="text-center font-bold text-slate-400">Gaussian Mask Stack</div>
+                    <div class="text-center font-bold text-slate-400">Apple Laplacian Stack</div>
+
+                    <!-- Stack Content (Mockup for 3 levels) -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Orange+Laplacian+L0" alt="Orange Laplacian Stack Level 0" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L0</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Mask+Gaussian+G0" alt="Mask Gaussian Stack Level 0" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">G0</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Apple+Laplacian+L0" alt="Apple Laplacian Stack Level 0" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L0</figcaption>
+                    </figure>
+                    
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Orange+Laplacian+L2" alt="Orange Laplacian Stack Level 2" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L2</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Mask+Gaussian+G2" alt="Mask Gaussian Stack Level 2" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">G2</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Apple+Laplacian+L2" alt="Apple Laplacian Stack Level 2" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L2</figcaption>
+                    </figure>
+                </div>
+
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Final Blended Results</h4>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Figure 3.42 Recreation (Oraple) -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Oraple+Straight+Mask" alt="Oraple blend with straight line mask" class="w-full h-auto">
+                        <figcaption class="p-2 text-center text-sm font-bold text-accent">Figure 3.42 (a-l) Recreation</figcaption>
+                    </figure>
+                    
+                    <!-- Custom Blend 1 (Straight Line Mask) -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+Blend+Straight+Mask" alt="Custom blend with straight line mask" class="w-full h-auto">
+                        <figcaption class="p-2 text-center text-sm">Custom Blend 1 (Straight Mask)</figcaption>
+                    </figure>
+
+                    <!-- Custom Blend 2 (Irregular Mask) -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+Blend+Irregular+Mask" alt="Custom blend with irregular mask" class="w-full h-auto">
+                        <figcaption class="p-2 text-center text-sm">Custom Blend 2 (Irregular Mask)</figcaption>
+                    </figure>
+                    
+                    <!-- Bells and Whistles - Exploration -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Exploration+Blend+Justification" alt="Custom blend demonstrating exploration" class="w-full h-auto">
+                        <figcaption class="p-2 text-center text-sm">Exploration Blend (e.g., color/gray mix)</figcaption>
+                    </figure>
+                </div>
+
+                <!-- Bells and Whistles -->
+                <div class="mt-6 p-4 bg-slate-900 rounded-lg border border-slate-700">
+                    <h4 class="text-xl font-medium text-accent mb-2">Bells and Whistles: Blending Exploration & Justification</h4>
+                    <p class="text-sm">For the irregular mask blend (e.g., a hand-drawn or generated contour), the boundary definition was critical. We found that the blending result is significantly improved when the mask contour is soft and aligned with the high-contrast edges of the images being blended, as the Gaussian stack does the heavy lifting of feathering the transition. We experimented with different $\sigma$ values for the mask's Gaussian stack, finding a large $\sigma$ ($>10$) provides the best, most imperceptible blend across the transition zone.</p>
+                </div>
+            </div>
+
+        </section>
+        
+    </main>
+
+    <footer class="bg-primary p-4 text-center text-xs text-slate-500">
+        &copy; 2024 Image Processing Project | Built with HTML & Tailwind CSS
+    </footer>
+
+</body>
+</html>
