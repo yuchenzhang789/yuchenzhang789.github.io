@@ -135,26 +135,26 @@
                     
                     <!-- CONSOLIDATED SUMMARY BLOCK (MOVED HERE) -->
                     <div class="mt-2 p-4 bg-slate-800 rounded-lg">
-                        <h5 class="text-xl font-medium text-slate-200 mb-2">Consolidated Runtime and Boundary Analysis</h5>
-                        <p class="text-sm">Across all kernel sizes (9x9 Box, 3x3 Dx/Dy), the performance gain was dramatic. The **4-loop method** showed prohibitively slow runtimes (e.g., $11.457s$ for 9x9), demonstrating poor efficiency for large kernels. The **2-loop method** (using optimized NumPy slicing/strides) offered a significant speedup (down to $1.774s$ for 9x9). Unsurprisingly, the highly optimized **Scipy Built-in** function consistently delivered the fastest results (down to $0.458s$ for 9x9). Functionally, all three methods produced identical results, confirming the robustness of the **zero-padding boundary handling** across the custom implementations.</p>
+                        <h5 class="text-xl font-medium text-slate-200 mb-2">Runtime and Boundary Analysis</h5>
+                        <p class="text-sm">The runtime analysis across all kernel sizes (9x9 Box, Dx/Dy) established a clear performance hierarchy: the average runtime showed that the **4-loop method** was the **slowest** (e.g., $11.457s$ for 9x9), the **2-loop method** (using optimized NumPy slicing/strides) was significantly **faster** (e.g., $1.774s$ for 9x9), and the **Scipy Built-in** function was consistently the **fastest** (e.g., $0.458s$ for 9x9). We also observed that a **larger filter size**, such as the **9x9 box filter**, necessitates a much **longer runtime** compared to the smaller derivative filters. Functionally, all three methods produced identical results, confirming that the boundary conditions were robustly handled in all cases using **zero-padding** on the edge pixels.</p>
                     </div>
                     <!-- END CONSOLIDATED SUMMARY BLOCK -->
 
                     <h5 class="text-xl font-medium text-slate-200 mt-6 mb-4">Code Snippets Visualization</h5>
-                    <p class="mb-4 text-sm text-slate-400">Screenshots of the Python code demonstrating the convolution function implementation for each filter type, comparing the efficiency of 4-loop, 2-loop, and Scipy usage.</p>
+                    <p class="mb-4 text-sm text-slate-400">Screenshots of the Python code demonstrating the convolution function implementation using 4-loop, 2-loop, and Scipy.</p>
                     
                     <div class="grid md:grid-cols-3 gap-4">
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary border-4 border-slate-500">
-                            <img src="https://placehold.co/400x300/0f172a/7dd3fc?text=Code+Snippet:+Box+Filter" alt="Screenshot of the code snippet for the box filter implementation" class="w-full h-auto">
-                            <figcaption class="p-3 text-center text-sm font-semibold text-sky-300">9x9 Box Filter Code</figcaption>
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/1_1_code_forloop4.jpg" alt="Screenshot of the code snippet for the box filter implementation" class="w-full h-auto">
+                            <figcaption class="p-3 text-center text-sm font-semibold text-sky-300">4 for loop Implementation</figcaption>
                         </figure>
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary border-4 border-slate-500">
-                            <img src="https://placehold.co/400x300/0f172a/7dd3fc?text=Code+Snippet:+Dx+Filter" alt="Screenshot of the code snippet for the Dx filter implementation" class="w-full h-auto">
-                            <figcaption class="p-3 text-center text-sm font-semibold text-sky-300">Dx Filter Code</figcaption>
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/1_1_code_forloop2.jpg" alt="Screenshot of the code snippet for the Dx filter implementation" class="w-full h-auto">
+                            <figcaption class="p-3 text-center text-sm font-semibold text-sky-300">2 for loop Implementation</figcaption>
                         </figure>
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary border-4 border-slate-500">
-                            <img src="https://placehold.co/400x300/0f172a/7dd3fc?text=Code+Snippet:+Dy+Filter" alt="Screenshot of the code snippet for the Dy filter implementation" class="w-full h-auto">
-                            <figcaption class="p-3 text-center text-sm font-semibold text-sky-300">Dy Filter Code</figcaption>
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/1_1_code_scipy.jpg" alt="Screenshot of the code snippet for the Dy filter implementation" class="w-full h-auto">
+                            <figcaption class="p-3 text-center text-sm font-semibold text-sky-300">Built-in Scipy Implementation</figcaption>
                         </figure>
                     </div>
                 </div>
