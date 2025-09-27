@@ -599,6 +599,41 @@
                 </div>
                 <!-- END: Laplacian Stacks Visualization (12 images) -->
 
+                <!-- START: Bells and Whistles - Irregular Mask Illustration -->
+                <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4 border-b border-slate-600 pb-2">Bells and Whistles: Irregular Mask Blending (The Eye-Mouth Blend)</h4>
+                <p class="mb-4 text-sm text-slate-400">Multi-resolution blending use a irregular, circular mask to create different effect.</p>
+                <div class="grid grid-cols-5 gap-4 mb-8">
+                    <!-- Headers -->
+                    <div class="text-center font-bold text-slate-400 border-b pb-2 col-span-1">The Mask</div>
+                    <div class="text-center font-bold text-slate-400 border-b pb-2 col-span-1">Laplacian Stack Level 0</div>
+                    <div class="text-center font-bold text-slate-400 border-b pb-2 col-span-1">Laplacian Stack Level 1</div>
+                    <div class="text-center font-bold text-slate-400 border-b pb-2 col-span-1">Laplacian Stack Level 2</div>
+                    <div class="text-center font-bold text-slate-400 border-b pb-2 col-span-1">Laplacian Stack Level 3</div>
+                    
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/data/mask3.jpg" alt="Input image 1: an eye" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">The Eye</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_4_apple_orange_hybrid_level_0_irregular_mask.jpg" alt="Input image 2: a face with a mouth" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">The Face</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_4_apple_orange_hybrid_level_1_irregular_mask.jpg" alt="Visualization of the irregular mask used for blending" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">The Irregular Mask</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_4_apple_orange_hybrid_level_2_irregular_mask.jpg" alt="Result of a simple cut and paste without blending" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Cut/Paste Artifact</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary border-2 border-accent">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_4_apple_orange_hybrid_blend_irregular_mask.jpg" alt="Final blended result using the irregular mask" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs font-bold text-accent">Final Seamless Blend</figcaption>
+                    </figure>
+                </div>
+                <!-- END: Bells and Whistles - Irregular Mask Illustration -->
+
+
                 <!-- START: Final Blended Results (6 images in 2x3 matrix) -->
                 <h4 class="text-xl font-medium text-slate-200 mb-4">Custom Blended Photo Sets (2 Set of images)</h4>
                 <p class="mb-4 text-sm text-slate-400">Two custom image pairs blended using a multi-resolution approach. Each row shows Input A, Input B, and the Final Blended Result.</p>
