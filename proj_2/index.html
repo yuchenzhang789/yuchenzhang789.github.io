@@ -485,75 +485,200 @@
                 </div>
             </div>
 
-            <!-- 2.3 + 2.4 Multi-resolution Blending -->
+            <!-- 2.3 + 2.4 Multi-resolution Blending (MODIFIED SECTION) -->
             <div id="part2-3-4">
                 <h3 class="text-2xl font-semibold mb-4 text-white">2.3 + 2.4. Multi-resolution Blending</h3>
                 <p class="mb-6">Multi-resolution blending uses Laplacian stacks to decompose two input images, $I_A$ and $I_B$, and a Gaussian stack of a mask $M$ to blend the images at each frequency level, resulting in a seamless composite image.</p>
                 <code class="block text-accent font-mono text-sm bg-slate-800 p-3 rounded-lg mb-6">Blended Stack Level $l = L_{A,l} \cdot G_{M,l} + L_{B,l} \cdot (1 - G_{M,l})$</code>
 
-                <h4 class="text-xl font-medium text-slate-200 mb-4">Orange + Apple: Stacks Visualization ($N=5$ levels)</h4>
+                <!-- Gaussian Stacks Visualization (8 images in 4x2) -->
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Gaussian Stacks (Orange $G_A$ and Apple $G_B$)</h4>
+                <p class="mb-4 text-sm text-slate-400">The Gaussian stacks show the image at progressively lower spatial frequencies and reduced resolution (downsampling).</p>
+                <div class="grid grid-cols-4 gap-4 mb-8">
+                    <!-- Orange Gaussian Stack -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/data/apple.jpg" alt="Apple Original" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Orange $G_A$ (L0)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_apple_guassian_level_0.jpg" alt="Apple Gaussian Stack Level 0" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Orange $G_A$ (L1)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_apple_guassian_level_1.jpg" alt="Apple Gaussian Stack Level 1" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Orange $G_A$ (L2)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_apple_guassian_level_2.jpg" alt="Apple Gaussian Stack Level 2" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Orange $G_A$ (L3)</figcaption>
+                    </figure>
+                    
+                    <!-- Apple Gaussian Stack -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/data/orange" alt="Orange Original" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Apple $G_B$ (L0)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_orange_guassian_level_0.jpg" alt="Apple Gaussian Stack Level 1" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Apple $G_B$ (L1)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_orange_guassian_level_1.jpg" alt="Apple Gaussian Stack Level 2" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Apple $G_B$ (L2)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_orange_guassian_level_2.jpg" alt="Apple Gaussian Stack Level 3" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Apple $G_B$ (L3)</figcaption>
+                    </figure>
+                </div>
+                <!-- END: Gaussian Stacks Visualization -->
+                
+                <!-- Laplacian Stacks Visualization (12 images in 4x3) -->
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Laplacian Stacks and Blended Result ($N=4$ levels)</h4>
+                <p class="mb-4 text-sm text-slate-400">The 4x3 matrix below shows the Laplacian stack for Image A, the Laplacian stack for Image B, and the resulting Blended Laplacian stack, from the highest frequency (L0) down to the lowest (L3).</p>
                 <div class="grid grid-cols-3 gap-4 mb-8">
-                    <!-- Stack Headers -->
-                    <div class="text-center font-bold text-slate-400">Orange Laplacian Stack</div>
-                    <div class="text-center font-bold text-slate-400">Gaussian Mask Stack</div>
-                    <div class="text-center font-bold text-slate-400">Apple Laplacian Stack</div>
+                    <!-- Headers -->
+                    <div class="text-center font-bold text-slate-400 border-b pb-2">Orange Laplacian $L_A$</div>
+                    <div class="text-center font-bold text-slate-400 border-b pb-2">Apple Laplacian $L_B$</div>
+                    <div class="text-center font-bold text-slate-400 border-b pb-2">Blended Laplacian $L_{Blend}$</div>
 
-                    <!-- Stack Content (Mockup for 3 levels) -->
+                    <!-- Level 0 (Highest Frequency) -->
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Orange+Laplacian+L0" alt="Orange Laplacian Stack Level 0" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_apple_laplacian_level_0.jpg" alt="Apple Laplacian Stack Level 0" class="w-full h-auto">
                         <figcaption class="p-1 text-center text-xs">L0</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Mask+Gaussian+G0" alt="Mask Gaussian Stack Level 0" class="w-full h-auto">
-                        <figcaption class="p-1 text-center text-xs">G0</figcaption>
-                    </figure>
-                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Apple+Laplacian+L0" alt="Apple Laplacian Stack Level 0" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_orange_laplacian_level_0.jpg" alt="Orange Laplacian Stack Level 0" class="w-full h-auto">
                         <figcaption class="p-1 text-center text-xs">L0</figcaption>
                     </figure>
-                    
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Orange+Laplacian+L2" alt="Orange Laplacian Stack Level 2" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_4_apple_orange_hybrid_blend_level_0.jpg" alt="Blended Laplacian Stack Level 0" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L0 Blended</figcaption>
+                    </figure>
+
+                    <!-- Level 1 -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_apple_laplacian_level_0.jpg" alt="Apple Laplacian Stack Level 1" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L1</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_orange_laplacian_level_0.jpg" alt="Orange Laplacian Stack Level 1" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L1</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_4_apple_orange_hybrid_blend_level_1.jpg" alt="Blended Laplacian Stack Level 1" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L1 Blended</figcaption>
+                    </figure>
+
+                    <!-- Level 2 -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_apple_laplacian_level_0.jpg" alt="Apple Laplacian Stack Level 2" class="w-full h-auto">
                         <figcaption class="p-1 text-center text-xs">L2</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Mask+Gaussian+G2" alt="Mask Gaussian Stack Level 2" class="w-full h-auto">
-                        <figcaption class="p-1 text-center text-xs">G2</figcaption>
-                    </figure>
-                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Apple+Laplacian+L2" alt="Apple Laplacian Stack Level 2" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_orange_laplacian_level_0.jpg" alt="Orange Laplacian Stack Level 2" class="w-full h-auto">
                         <figcaption class="p-1 text-center text-xs">L2</figcaption>
                     </figure>
-                </div>
-
-                <h4 class="text-xl font-medium text-slate-200 mb-4">Final Blended Results</h4>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Figure 3.42 Recreation (Oraple) -->
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Oraple+Straight+Mask" alt="Oraple blend with straight line mask" class="w-full h-auto">
-                        <figcaption class="p-2 text-center text-sm font-bold text-accent">Figure 3.42 (a-l) Recreation</figcaption>
-                    </figure>
-                    
-                    <!-- Custom Blend 1 (Straight Line Mask) -->
-                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+Blend+Straight+Mask" alt="Custom blend with straight line mask" class="w-full h-auto">
-                        <figcaption class="p-2 text-center text-sm">Custom Blend 1 (Straight Mask)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_4_apple_orange_hybrid_blend_level_2.jpg" alt="Blended Laplacian Stack Level 2" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L2 Blended</figcaption>
                     </figure>
 
-                    <!-- Custom Blend 2 (Irregular Mask) -->
+                    <!-- Level 3 (Lowest Frequency) -->
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+Blend+Irregular+Mask" alt="Custom blend with irregular mask" class="w-full h-auto">
-                        <figcaption class="p-2 text-center text-sm">Custom Blend 2 (Irregular Mask)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_apple_laplacian_level_0.jpg" alt="Apple Laplacian Stack Level 3" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L3</figcaption>
                     </figure>
-                    
-                    <!-- Bells and Whistles - Exploration -->
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Exploration+Blend+Justification" alt="Custom blend demonstrating exploration" class="w-full h-auto">
-                        <figcaption class="p-2 text-center text-sm">Exploration Blend (e.g., color/gray mix)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_3_orange_laplacian_level_0.jpg" alt="Orange Laplacian Stack Level 3" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L3</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_4_apple_orange_hybrid_blend.jpg" alt="Blended Laplacian Stack Level 3" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">L3 Blended</figcaption>
                     </figure>
                 </div>
+                <!-- END: Laplacian Stacks Visualization (12 images) -->
 
-                <!-- Bells and Whistles -->
+                <!-- START: Final Blended Results (6 images in 2x3 matrix) -->
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Custom Blended Photo Sets (2x3 Layout)</h4>
+                <p class="mb-4 text-sm text-slate-400">Two custom image pairs blended using a multi-resolution approach. Each row shows Input A, Input B, and the Final Blended Result, alongside the original Orange/Apple recreation.</p>
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    
+                    <!-- Headers for the blend section -->
+                    <div class="text-center font-bold text-slate-400 border-b pb-2">Input A / Original Blend</div>
+                    <div class="text-center font-bold text-slate-400 border-b pb-2">Input B</div>
+                    <div class="text-center font-bold text-slate-400 border-b pb-2">Final Blend Result</div>
+
+                    <!-- Row 1: Original Oraple Recreation -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Original+Orange" alt="Original Orange Input A" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Original $I_A$ (Orange)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Original+Apple" alt="Original Apple Input B" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Original $I_B$ (Apple)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary border-2 border-accent">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Oraple+Blend" alt="Oraple blend with straight line mask" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs font-bold text-accent">Figure 3.42 Recreation</figcaption>
+                    </figure>
+                    
+                    <!-- Row 2: Custom Blend Set 1 -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+1A" alt="Custom set 1 Input A" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Custom Set 1: Input A</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+1B" alt="Custom set 1 Input B" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Custom Set 1: Input B</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary border-2 border-accent">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+1+Blend" alt="Custom set 1 Blended Result" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs font-bold text-accent">Custom Set 1: Blend</figcaption>
+                    </figure>
+
+                    <!-- Row 3: Custom Blend Set 2 -->
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+2A" alt="Custom set 2 Input A" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Custom Set 2: Input A</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+2B" alt="Custom set 2 Input B" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs">Custom Set 2: Input B</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary border-2 border-accent">
+                        <img src="https://placehold.co/250x250/1e293b/cbd5e1?text=Custom+2+Blend" alt="Custom set 2 Blended Result" class="w-full h-auto">
+                        <figcaption class="p-1 text-center text-xs font-bold text-accent">Custom Set 2: Blend</figcaption>
+                    </figure>
+
+                </div>
+                <!-- END: Final Blended Results -->
+                
+                <!-- START: Bells and Whistles - Additional Visual Explorations (4 Photo Slots) -->
+                <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4 border-b border-slate-600 pb-2">Bells and Whistles: Additional Blending Explorations (4-Slot Gallery)</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/22c55e/FFFFFF?text=Custom+Mask+Design" alt="Custom mask design used for blending" class="w-full h-auto">
+                        <figcaption class="p-2 text-center text-sm">Custom Mask Design (e.g., Circular)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/ef4444/FFFFFF?text=Different+Sigma+Value" alt="Blend result using a different sigma value" class="w-full h-auto">
+                        <figcaption class="p-2 text-center text-sm">Small $\sigma$ Blending Result</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/3b82f6/FFFFFF?text=Single+Resolution+Blend" alt="Blend result with just low frequency layer" class="w-full h-auto">
+                        <figcaption class="p-2 text-center text-sm">Single-Resolution Blend (Failed)</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://placehold.co/250x250/f97316/FFFFFF?text=Blending+Grayscale+Ims" alt="Blending of two grayscale images" class="w-full h-auto">
+                        <figcaption class="p-2 text-center text-sm">Grayscale Blending Result</figcaption>
+                    </figure>
+                </div>
+                <!-- END: Bells and Whistles - Additional Visual Explorations -->
+
+
+                <!-- Bells and Whistles - Exploration (text justification) -->
                 <div class="mt-6 p-4 bg-slate-900 rounded-lg border border-slate-700">
                     <h4 class="text-xl font-medium text-accent mb-2">Bells and Whistles: Blending Exploration & Justification</h4>
                     <p class="text-sm">For the irregular mask blend (e.g., a hand-drawn or generated contour), the boundary definition was critical. We found that the blending result is significantly improved when the mask contour is soft and aligned with the high-contrast edges of the images being blended, as the Gaussian stack does the heavy lifting of feathering the transition. We experimented with different $\sigma$ values for the mask's Gaussian stack, finding a large $\sigma$ ($>10$) provides the best, most imperceptible blend across the transition zone.</p>
