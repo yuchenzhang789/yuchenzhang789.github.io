@@ -295,40 +295,40 @@
                 <h4 class="text-xl font-medium text-slate-200 mb-4">Taj Mahal Example (alpha=1.0)</h4>
                 <div class="grid md:grid-cols-4 gap-4">
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://yuchenzhang789.github.io/proj_2/input/taj.jpg" alt="Original Taj Mahal" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/data/taj.jpg" alt="Original Taj Mahal" class="w-full h-auto">
                         <figcaption class="p-3 text-center text-sm">Original Image</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
                         <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_blurred.jpg" alt="Blurred Taj Mahal" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Blurred ($\sigma=3$)</figcaption>
+                        <figcaption class="p-3 text-center text-sm">Blurred</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
                         <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_high_freq.jpg" alt="High frequency mask of Taj Mahal" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">High-Frequency Mask</figcaption>
+                        <figcaption class="p-3 text-center text-sm">High-Frequency</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
                         <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_sharped.jpg" alt="Sharpened Taj Mahal" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Sharpened ($\alpha=2.0$)</figcaption>
+                        <figcaption class="p-3 text-center text-sm">Sharpened</figcaption>
                     </figure>
                 </div>
                 
                 <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4">Berkeley Example (alpha=1.0)</h4>
                 <div class="grid md:grid-cols-4 gap-4">
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://yuchenzhang789.github.io/proj_2/input/berkeley.jpg" alt="Original Taj Mahal" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/data/berkeley.jpg" alt="Original Taj Mahal" class="w-full h-auto">
                         <figcaption class="p-3 text-center text-sm">Original Image</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
                         <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_berkeley_blurred.jpg" alt="Blurred Taj Mahal" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Blurred ($\sigma=3$)</figcaption>
+                        <figcaption class="p-3 text-center text-sm">Blurred</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
                         <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_berkeley_high_freq.jpg" alt="High frequency mask of Taj Mahal" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">High-Frequency Mask</figcaption>
+                        <figcaption class="p-3 text-center text-sm">High-Frequency</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
                         <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_berkeley_sharped.jpg" alt="Sharpened Taj Mahal" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Sharpened ($\alpha=2.0$)</figcaption>
+                        <figcaption class="p-3 text-center text-sm">Sharpened</figcaption>
                     </figure>
                 </div>
 
@@ -360,83 +360,128 @@
                 <h3 class="text-2xl font-semibold mb-4 text-white">2.2. Hybrid Images (Blending High and Low Frequencies)</h3>
                 <p class="mb-6">Hybrid images are created by blending the high spatial frequencies of one image with the low spatial frequencies of another. This allows the perception to shift based on viewing distance.</p>
 
-                <h4 class="text-xl font-medium text-slate-200 mb-4">Hybrid 1: DerekPicture (High-Pass) + Nutmeg (Low-Pass)</h4>
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Hybrid 1: DerekPicture (High-Pass) + Nutmeg (Low-Pass) Process</h4>
                 
+                <!-- START UPDATED FULL PROCESS VISUALIZATION -->
                 <div class="bg-slate-800 p-4 rounded-lg mb-6">
-                    <h5 class="text-lg font-medium text-slate-200 mb-2">Full Process Visualization</h5>
-                    <div class="grid md:grid-cols-4 gap-4">
+                    <h5 class="text-lg font-medium text-slate-200 mb-4 border-b border-slate-600 pb-2">Full Process Visualization ($ \sigma_1=7, \sigma_2=5 $)</h5>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <!-- Row 1: Inputs and Initial Processing -->
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Original+Derek" alt="Original Derek Picture" class="w-full h-auto">
-                            <figcaption class="p-2 text-center text-xs">Original 1 (Derek)</figcaption>
+                            <img src="https://yuchenzhang789.github.io/proj_2/data/nutmeg.jpg" alt="Original Derek Picture" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Original 1 (High-Pass)</figcaption>
                         </figure>
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Original+Nutmeg" alt="Original Nutmeg Picture" class="w-full h-auto">
-                            <figcaption class="p-2 text-center text-xs">Original 2 (Nutmeg)</figcaption>
+                            <img src="https://yuchenzhang789.github.io/proj_2/data/DerekPicture.jpg" alt="Original Nutmeg Picture" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Original 2 (Low-Pass)</figcaption>
                         </figure>
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Aligned+Images" alt="Aligned images" class="w-full h-auto">
-                            <figcaption class="p-2 text-center text-xs">Aligned Images</figcaption>
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_fourier_img1_fft.jpg" alt="Fourier Transform of Original 1" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">FT: Image 1</figcaption>
                         </figure>
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Hybrid+Fourier+Transform" alt="Fourier Transform of the Hybrid Image" class="w-full h-auto">
-                            <figcaption class="p-2 text-center text-xs">Hybrid Fourier Transform</figcaption>
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_fourier_img2_fft.jpg" alt="Fourier Transform of Original 2" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">FT: Image 2</figcaption>
                         </figure>
+
+                        <!-- Row 2: Filtered Results and Final Output -->
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=High-Pass+Derek" alt="High-Pass filtered Derek" class="w-full h-auto">
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_fourier_im1_high.jpg" alt="High-Pass filtered Derek" class="w-full h-auto">
                             <figcaption class="p-2 text-center text-xs">Filtered 1 (High-Pass)</figcaption>
                         </figure>
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Low-Pass+Nutmeg" alt="Low-Pass filtered Nutmeg" class="w-full h-auto">
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_fourier_im2_low.jpg" alt="Low-Pass filtered Nutmeg" class="w-full h-auto">
                             <figcaption class="p-2 text-center text-xs">Filtered 2 (Low-Pass)</figcaption>
                         </figure>
                         <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                            <img src="https://placehold.co/200x200/1e293b/cbd5e1?text=Final+Hybrid+Image" alt="Final Hybrid Image" class="w-full h-auto">
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_fourier_hybird.jpg" alt="Fourier Transform of the Hybrid Image" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">FT: Final Hybrid</figcaption>
+                        </figure>
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary border-2 border-accent">
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_nutmeg_DerekPicture_hybird.jpg" alt="Final Hybrid Image" class="w-full h-auto">
                             <figcaption class="p-2 text-center text-xs font-bold text-accent">FINAL HYBRID</figcaption>
                         </figure>
-                        <div class="p-2 text-center text-sm flex items-center justify-center col-span-1 bg-primary/80 rounded-lg">
-                            Cutoff Choice: $\sigma_1=7, \sigma_2=5$
-                        </div>
+                    </div>
+
+                    <!-- Cutoff Choice Justification (NEW) -->
+                    <div class="mt-4 p-3 bg-slate-700/50 rounded-lg">
+                        <h6 class="text-sm font-semibold text-slate-300 mb-1">Cutoff Frequency Justification</h6>
+                        <p class="text-xs text-slate-400">The cutoff frequencies were set to sigma_1 = 9 (for high-pass Nutmeg) and sigma_2 = 15 (for low-pass Derek). These values were chosen empirically. sigma_1 needs to be large enough to ensure the cat's low-frequency components are removed so the image is nearly invisible from afar. sigma_2 must be small enough to retain sufficient low-frequency detail of Derek for it to be visible from a distance, while its high frequencies are fully removed to avoid blurring interference when viewed up close.</p>
                     </div>
                 </div>
+                <!-- END UPDATED FULL PROCESS VISUALIZATION -->
 
                 <h4 class="text-xl font-medium text-slate-200 mb-4">Custom Hybrid Images</h4>
                 <div class="grid md:grid-cols-2 gap-8">
                     <!-- Hybrid 2 -->
                     <div class="space-y-3 bg-slate-800 p-4 rounded-lg">
-                        <h5 class="text-lg font-medium text-slate-200">Hybrid 2: Cat + Dog ($\sigma_1=4, \sigma_2=6$)</h5>
+                        <h5 class="text-lg font-medium text-slate-200">Hybrid 2: Cat + Selfie ($\sigma_1=9, \sigma_2=15$)</h5>
                         <div class="grid grid-cols-3 gap-2">
                             <figure class="overflow-hidden rounded-md">
-                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Original+Cat" alt="Original Cat" class="w-full h-auto">
+                                <img src="https://yuchenzhang789.github.io/proj_2/data/toro.jpg" alt="Original Cat" class="w-full h-auto">
                             </figure>
                             <figure class="overflow-hidden rounded-md">
-                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Original+Dog" alt="Original Dog" class="w-full h-auto">
+                                <img src="https://yuchenzhang789.github.io/proj_2/data/selfie.jpg" alt="Original Dog" class="w-full h-auto">
                             </figure>
                             <figure class="overflow-hidden rounded-md border-2 border-accent">
-                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Hybrid+CatDog" alt="Hybrid CatDog Image" class="w-full h-auto">
+                                <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_toro_selfie_hybird_color_color.jpg" alt="Hybrid CatDog Image" class="w-full h-auto">
                             </figure>
                         </div>
                     </div>
                     <!-- Hybrid 3 -->
                     <div class="space-y-3 bg-slate-800 p-4 rounded-lg">
-                        <h5 class="text-lg font-medium text-slate-200">Hybrid 3: Bird + Airplane ($\sigma_1=10, \sigma_2=3$)</h5>
+                        <h5 class="text-lg font-medium text-slate-200">Hybrid 3: Labubu + Actor ($\sigma_1=7, \sigma_2=12$)</h5>
                         <div class="grid grid-cols-3 gap-2">
                             <figure class="overflow-hidden rounded-md">
-                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Original+Bird" alt="Original Bird" class="w-full h-auto">
+                                <img src="https://yuchenzhang789.github.io/proj_2/data/labubu.jpg" alt="Original Bird" class="w-full h-auto">
                             </figure>
                             <figure class="overflow-hidden rounded-md">
-                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Original+Plane" alt="Original Plane" class="w-full h-auto">
+                                <img src="https://yuchenzhang789.github.io/proj_2/data/portrait2.jpg" alt="Original Plane" class="w-full h-auto">
                             </figure>
                             <figure class="overflow-hidden rounded-md border-2 border-accent">
-                                <img src="https://placehold.co/150x150/1e293b/cbd5e1?text=Hybrid+PlaneBird" alt="Hybrid PlaneBird Image" class="w-full h-auto">
+                                <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_labubu_portrait2_hybird.jpg" alt="Hybrid PlaneBird Image" class="w-full h-auto">
                             </figure>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Bells and Whistles -->
+                <!-- Bells and Whistles: Color Exploration (UPDATED) -->
                 <div class="mt-6 p-4 bg-slate-900 rounded-lg border border-slate-700">
-                    <h4 class="text-xl font-medium text-accent mb-2">Bells and Whistles: Hybrid Exploration</h4>
-                    <p class="text-sm">We explored the effect of color mixing. For the Derek/Nutmeg hybrid, we used the color channels of the low-frequency image (Nutmeg) as it is perceived primarily from a distance, where color is more robustly visible. The cutoff frequencies were chosen empirically to ensure the high-frequency image is completely blurred beyond a short distance.</p>
+                    <h4 class="text-xl font-medium text-accent mb-4">Bells and Whistles: Color Exploration in Hybrid Images</h4>
+
+                    <h5 class="text-lg font-medium text-slate-200 mb-3">Color Combinations</h5>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Gray-Gray -->
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_toro_selfie_hybird_gray_gray.jpg" alt="Hybrid image combining two grayscale images" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Gray (High) + Gray (Low)</figcaption>
+                        </figure>
+                        <!-- Gray-Color -->
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_toro_selfie_hybird_gray_color.jpg" alt="Hybrid image combining grayscale high-pass with color low-pass" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Gray (High) + Color (Low)</figcaption>
+                        </figure>
+                        <!-- Color-Gray -->
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_toro_selfie_hybird_color_gray.jpg" alt="Hybrid image combining color high-pass with grayscale low-pass" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Color (High) + Gray (Low)</figcaption>
+                        </figure>
+                        <!-- Color-Color -->
+                        <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                            <img src="https://yuchenzhang789.github.io/proj_2/output/2_2_toro_selfie_hybird_color_color.jpg" alt="Hybrid image combining two color images" class="w-full h-auto">
+                            <figcaption class="p-2 text-center text-xs">Color (High) + Color (Low)</figcaption>
+                        </figure>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-slate-800 rounded-lg">
+                        <h5 class="text-lg font-medium text-slate-200 mb-2">Analysis of Color Blending</h5>
+                        <ul class="list-disc list-inside space-y-2 text-sm text-slate-400">
+                            <li><strong>Gray + Gray:</strong> This yields a purely luminance-based hybrid. The perceptual shift is solely dependent on spatial frequency and viewing distance, offering a clean, traditional result.</li>
+                            <li><strong>Gray + Color (Low-Pass):</strong> This provides the **best perceptual result**. The color of the low-frequency image (visible from afar) dominates the distant view, while the high-frequency image (seen up close) is perceived clearly in black and white, avoiding confusing chromatic fringing.</li>
+                            <li><strong>Color (High-Pass) + Gray:</strong> Up close, the high-frequency image is seen in color, but from a distance, the gray low-frequency image loses its visual impact, making the distant perception less engaging.</li>
+                            <li><strong>Color + Color:</strong> This often results in a poor hybrid due to **chromatic aberration** and **color leakage**. When viewed from afar, the high-frequency image's color channels interfere with the low-frequency image, leading to messy, indistinct colors or blurry edges when the eye tries to fuse the two.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
