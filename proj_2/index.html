@@ -283,65 +283,73 @@
         <section class="bg-primary/50 p-8 rounded-xl shadow-2xl border-t-4 border-accent" id="part2">
             <h2 class="text-4xl font-bold mb-8 text-accent">Part 2: Applications</h2>
 
-            <!-- 2.1 Unsharp Masking -->
+            <!-- 2.1 Image Sharpening -->
             <div class="mb-12 border-b border-slate-700 pb-8" id="part2-1">
-                <h3 class="text-2xl font-semibold mb-4 text-white">2.1. Unsharp Masking</h3>
-                <p class="mb-4">The Unsharp Mask filter works by generating a high-frequency detail layer (the 'mask') and adding it back to the original image. The process is:</p>
+                <h3 class="text-2xl font-semibold mb-4 text-white">2.1. Image Sharpening</h3>
+                <p class="mb-4">This works by generating a high-frequency detail layer (the 'mask') and adding it back to the original image. The process is:</p>
                 <div class="bg-slate-800 p-4 rounded-lg mb-6">
-                    <code class="block text-accent font-mono text-sm">Sharpened = Original + $\alpha$ * (Original - Blurred)</code>
+                    <code class="block text-accent font-mono text-sm">Sharpened = Original + alpha * (Original - Blurred)</code>
                 </div>
-                <p class="mb-6">The blurred version is obtained via a Gaussian filter, which removes high frequencies. Subtracting the blurred image from the original isolates the high-frequency components. Multiplying this by the amplification factor $\alpha$ controls the sharpening intensity.</p>
+                <p class="mb-6">The blurred version is obtained via applying a Gaussian filter, which removes high frequencies. Subtracting the blurred image from the original isolates the high-frequency components. Multiplying this by the amplification factor alpha to control the sharpening intensity.</p>
 
-                <h4 class="text-xl font-medium text-slate-200 mb-4">Taj Mahal Example ($\alpha=2.0$)</h4>
+                <h4 class="text-xl font-medium text-slate-200 mb-4">Taj Mahal Example (alpha=1.0)</h4>
                 <div class="grid md:grid-cols-4 gap-4">
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Taj+Original" alt="Original Taj Mahal" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/input/taj.jpg" alt="Original Taj Mahal" class="w-full h-auto">
                         <figcaption class="p-3 text-center text-sm">Original Image</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Taj+Blurred" alt="Blurred Taj Mahal" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_blurred.jpg" alt="Blurred Taj Mahal" class="w-full h-auto">
                         <figcaption class="p-3 text-center text-sm">Blurred ($\sigma=3$)</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Taj+High+Freq+(Mask)" alt="High frequency mask of Taj Mahal" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_high_freq.jpg" alt="High frequency mask of Taj Mahal" class="w-full h-auto">
                         <figcaption class="p-3 text-center text-sm">High-Frequency Mask</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Taj+Sharpened" alt="Sharpened Taj Mahal" class="w-full h-auto">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_sharped.jpg" alt="Sharpened Taj Mahal" class="w-full h-auto">
                         <figcaption class="p-3 text-center text-sm">Sharpened ($\alpha=2.0$)</figcaption>
                     </figure>
                 </div>
                 
-                <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4">Varying Sharpening Amount ($\alpha$) - Custom Set 1</h4>
-                <div class="grid md:grid-cols-3 gap-4 mb-10">
+                <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4">Berkeley Example (alpha=1.0)</h4>
+                <div class="grid md:grid-cols-4 gap-4">
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+1+Alpha=0.5" alt="Custom image sharpened with alpha 0.5" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Custom Image ($\alpha=0.5$)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/input/berkeley.jpg" alt="Original Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Original Image</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+1+Alpha=2.0" alt="Custom image sharpened with alpha 2.0" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Custom Image ($\alpha=2.0$)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_berkeley_blurred.jpg" alt="Blurred Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Blurred ($\sigma=3$)</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+1+Alpha=5.0" alt="Custom image sharpened with alpha 5.0 (shows overshoot)" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Custom Image ($\alpha=5.0$, noticeable overshoot)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_berkeley_high_freq.jpg" alt="High frequency mask of Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">High-Frequency Mask</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_berkeley_sharped.jpg" alt="Sharpened Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Sharpened ($\alpha=2.0$)</figcaption>
                     </figure>
                 </div>
 
                 <!-- START: New Custom Image Set 2 -->
-                <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4">Varying Sharpening Amount ($\alpha$) - Custom Set 2</h4>
-                <div class="grid md:grid-cols-3 gap-4">
+                <h4 class="text-xl font-medium text-slate-200 mt-8 mb-4">Varying Sharpening Amount (alpha)</h4>
+                <div class="grid md:grid-cols-4 gap-4">
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+2+Alpha=1.0" alt="Custom image set 2 sharpened with alpha 1.0" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Custom Image Set 2 ($\alpha=1.0$)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_sharped_0.5.jpg" alt="Original Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Alpha = 0.5</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+2+Alpha=3.0" alt="Custom image set 2 sharpened with alpha 3.0" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Custom Image Set 2 ($\alpha=3.0$)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_sharped.jpg" alt="Blurred Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Alpha = 1.0</figcaption>
                     </figure>
                     <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
-                        <img src="https://placehold.co/300x200/1e293b/cbd5e1?text=Custom+Set+2+Alpha=6.0" alt="Custom image set 2 sharpened with alpha 6.0 (exaggerated)" class="w-full h-auto">
-                        <figcaption class="p-3 text-center text-sm">Custom Image Set 2 ($\alpha=6.0$, exaggerated)</figcaption>
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_sharped_3.jpg" alt="High frequency mask of Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Alpha = 3.0</figcaption>
+                    </figure>
+                    <figure class="rounded-lg overflow-hidden shadow-xl bg-primary">
+                        <img src="https://yuchenzhang789.github.io/proj_2/output/2_1_taj_sharped_6.jpg" alt="Sharpened Taj Mahal" class="w-full h-auto">
+                        <figcaption class="p-3 text-center text-sm">Alpha = 6.0</figcaption>
                     </figure>
                 </div>
                 <!-- END: New Custom Image Set 2 -->
