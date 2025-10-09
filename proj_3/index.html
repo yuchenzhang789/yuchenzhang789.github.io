@@ -311,7 +311,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                 <div class="p-6 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
                     <div class="bg-white p-4 rounded border-2 border-dashed border-yellow-300">
                         <p class="text-gray-500 italic text-center">
-                            [Comparing the resulted pictures from two interpolation methods, bilinear interpolation produced brighter, more saturated, and more smooth pictures, in contrast to the nearest neighbor interpolation results. However, since bilinear interpolation requires weighted pixel values from neighbor pixels, it takes longer for computation. ]
+                            Comparing the resulted pictures from two interpolation methods, bilinear interpolation produced brighter, more saturated, and more smooth pictures, in contrast to the nearest neighbor interpolation results. However, since bilinear interpolation requires weighted pixel values from neighbor pixels, it takes longer for computation.
                         </p>
                     </div>
                 </div>
@@ -404,7 +404,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                             <img src="https://yuchenzhang789.github.io/proj_3/output/mosaic_building0_with_building1_building2.jpg" alt="Building Interior Mosaic" class="w-full h-48 object-cover">
                             <div class="p-4">
-                                <p class="text-gray-600 text-sm">3-image panorama using bilinear interpolation and Laplacian pyramid blending</p>
+                                <p class="text-gray-600 text-sm">3-image mosaic using bilinear interpolation and Laplacian pyramid blending</p>
                                 <div class="text-xs text-gray-500 mt-2">
                                     <span class="bg-blue-100 px-2 py-1 rounded">3 images</span>
                                     <span class="bg-green-100 px-2 py-1 rounded ml-1">Bilinear interpolation</span>
@@ -438,7 +438,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                             <img src="https://yuchenzhang789.github.io/proj_3/output/mosaic_doorway0_with_doorway1_doorway2.jpg" alt="Landscape Panorama" class="w-full h-48 object-cover">
                             <div class="p-4">
-                                <p class="text-gray-600 text-sm">Wide horizontal panorama with weighted averaging blending</p>
+                                <p class="text-gray-600 text-sm">3-image mosaic using bilinear interpolation and Laplacian pyramid blending</p>
                                 <div class="text-xs text-gray-500 mt-2">
                                     <span class="bg-blue-100 px-2 py-1 rounded">3 images</span>
                                     <span class="bg-green-100 px-2 py-1 rounded ml-1">Bilinear interpolation</span>
@@ -472,7 +472,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
                             <img src="https://yuchenzhang789.github.io/proj_3/output/mosaic_kitchen0_with_kitchen1_kitchen2.jpg" alt="Architecture Mosaic" class="w-full h-48 object-cover">
                             <div class="p-4">
-                                <p class="text-gray-600 text-sm">High-detail facade reconstruction showing intricate patterns</p>
+                                <p class="text-gray-600 text-sm">3-image mosaic using bilinear interpolation and Laplacian pyramid blending</p>
                                 <div class="text-xs text-gray-500 mt-2">
                                     <span class="bg-blue-100 px-2 py-1 rounded">2 images</span>
                                     <span class="bg-green-100 px-2 py-1 rounded ml-1">Bilinear interpolation</span>
@@ -493,7 +493,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
         <div class="space-y-8">
             <div class="p-6 bg-red-50 rounded-lg text-gray-700 leading-relaxed">
                 <p class="mb-4">
-                    For wide-angle panoramas spanning more than 180°, I implemented <strong>cylindrical projection</strong> to better represent the scene. This method projects the images onto a cylinder surface before creating the mosaic, reducing distortion in very wide panoramas.
+                    For wide-angle panoramas, I implemented <strong>cylindrical projection</strong> to better represent the scene. This method projects the images onto a cylinder surface before creating the mosaic, reducing distortion in very wide panoramas.
                 </p>
             </div>
 
@@ -504,7 +504,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                     
                     <!-- Theory -->
                     <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
-                        <h4 class="text-lg font-semibold text-red-800 mb-3">Mathematical Foundation</h4>
+                        <h4 class="text-lg font-semibold text-red-800 mb-3">Some Math: </h4>
                         <p class="text-gray-700 mb-3">
                             Cylindrical projection maps points from the image plane to a cylinder surface. For a point (x, y) in the original image, I first convert it to angular coordinates, then map it to the cylinder surface using focal length f.
                         </p>
@@ -522,7 +522,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                     <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
                         <h4 class="text-lg font-semibold text-red-800 mb-3">Implementation Process</h4>
                         <p class="text-gray-700 mb-3">
-                            I first create standard planar mosaics, then apply cylindrical warping to the final result. This two-step approach allows me to handle the complexity incrementally while maintaining image quality.
+                            I first apply cylindrical warping to the input images, then blend them to create the mosaic. This one-stage approach allows me to handle the complexity incrementally while maintaining image quality.
                         </p>
                         <div class="code-block p-3 rounded text-sm mb-3">
                             <code>def cylindrical_warp(img, focal_length):<br>
@@ -543,7 +543,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                     <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
                         <h4 class="text-lg font-semibold text-red-800 mb-3">Focal Length Selection</h4>
                         <p class="text-gray-700 mb-3">
-                            The choice of focal length is crucial: too small creates excessive curvature, too large provides minimal benefit. I experimented with values from 300-800 pixels and found that <strong>f = 300-400</strong> works well for most indoor scenes spanning 180-360°.
+                            The choice of focal length is crucial: too small creates excessive curvature, too large provides minimal benefit. I experimented with values from 300-800 pixels and found that <strong>f = 300-400</strong> works well for most scenes.
                         </p>
                     </div>
 
