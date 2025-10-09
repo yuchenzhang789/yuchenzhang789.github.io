@@ -217,82 +217,93 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                     I implemented two interpolation methods for image warping: <strong>nearest neighbor</strong> and <strong>bilinear interpolation</strong>. Both use inverse warping to avoid holes in the output. I demonstrated rectification by making perspective-distorted rectangular objects appear frontal.
                 </p>
             </div>
-
-            <!-- Rectification Example 1 -->
-            <div class="mb-8">
-                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Rectification Example 1: Laptop</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
-                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
-                        <div class="gallery-item">
-                            <img src="https://yuchenzhang789.github.io/proj_3/data/laptop3.jpg" alt="Original Painting" class="w-full h-48 object-cover">
-                            <div class="p-4">
-                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Original</h4>
-                                <p class="text-gray-600 text-sm">Perspective-distorted view of rectangular laptop</p>
+                <!-- Rectification Example 1 -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Rectification Example 1: Laptop</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                            <div class="gallery-item">
+                                <div class="aspect-w-4 aspect-h-3 bg-gray-200">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/data/laptop3.jpg" alt="Original Laptop" class="w-full h-full object-contain">
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="text-lg font-semibold mb-2 text-gray-800">Original</h4>
+                                    <p class="text-gray-600 text-sm">Perspective-distorted view of rectangular laptop</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
-                        <div class="gallery-item">
-                            <img src="https://yuchenzhang789.github.io/proj_3/data/laptop3_part3_nearest_warped.png" alt="Nearest Neighbor Rectification" class="w-full h-48 object-cover">
-                            <div class="p-4">
-                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Nearest Neighbor</h4>
-                                <p class="text-gray-600 text-sm">Rectified using nearest neighbor interpolation</p>
+                        
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                            <div class="gallery-item">
+                                <div class="aspect-w-4 aspect-h-3 bg-gray-200">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/laptop3_part3_nearest_warped.png" alt="Nearest Neighbor Rectification" class="w-full h-full object-contain">
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="text-lg font-semibold mb-2 text-gray-800">Nearest Neighbor</h4>
+                                    <p class="text-gray-600 text-sm">Rectified using nearest neighbor interpolation</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
-                        <div class="gallery-item">
-                            <img src="https://yuchenzhang789.github.io/proj_3/data/laptop3_part3_bilinear_warped.png" alt="Bilinear Rectification" class="w-full h-48 object-cover">
-                            <div class="p-4">
-                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Bilinear</h4>
-                                <p class="text-gray-600 text-sm">Rectified using bilinear interpolation</p>
+                
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                            <div class="gallery-item">
+                                <div class="aspect-w-4 aspect-h-3 bg-gray-200">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/laptop3_part3_bilinear_warped.png" alt="Bilinear Rectification" class="w-full h-full object-contain">
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="text-lg font-semibold mb-2 text-gray-800">Bilinear</h4>
+                                    <p class="text-gray-600 text-sm">Rectified using bilinear interpolation</p>
+                                </div>
                             </div>
                         </div>
+                
                     </div>
-
                 </div>
-            </div>
-
-            <!-- Rectification Example 2 -->
-            <div class="mb-8">
-                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Rectification Example 2: Painting</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
-                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
-                        <div class="gallery-item">
-                            <img src="https://yuchenzhang789.github.io/proj_3/data/toro2.jpg" alt="Original Document" class="w-full h-48 object-cover">
-                            <div class="p-4">
-                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Original</h4>
-                                <p class="text-gray-600 text-sm">Perspective-distorted painting</p>
+                
+                <!-- Rectification Example 2 -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Rectification Example 2: Painting</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                            <div class="gallery-item">
+                                <div class="aspect-w-4 aspect-h-3 bg-gray-200">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/data/toro2.jpg" alt="Original Painting" class="w-full h-full object-contain">
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="text-lg font-semibold mb-2 text-gray-800">Original</h4>
+                                    <p class="text-gray-600 text-sm">Perspective-distorted painting</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
-                        <div class="gallery-item">
-                            <img src="https://yuchenzhang789.github.io/proj_3/data/toro2_part3_nearest_warped.png" alt="Nearest Neighbor Document" class="w-full h-48 object-cover">
-                            <div class="p-4">
-                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Nearest Neighbor</h4>
-                                <p class="text-gray-600 text-sm">Rectified document with pixelation artifacts</p>
+                        
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                            <div class="gallery-item">
+                                <div class="aspect-w-4 aspect-h-3 bg-gray-200">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/toro2_part3_nearest_warped.png" alt="Nearest Neighbor Painting" class="w-full h-full object-contain">
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="text-lg font-semibold mb-2 text-gray-800">Nearest Neighbor</h4>
+                                    <p class="text-gray-600 text-sm">Rectified painting with pixelation artifacts</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
-                        <div class="gallery-item">
-                            <img src="https://yuchenzhang789.github.io/proj_3/data/toro2_part3_bilinear_warped.png" alt="Bilinear Document" class="w-full h-48 object-cover">
-                            <div class="p-4">
-                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Bilinear</h4>
-                                <p class="text-gray-600 text-sm">Smooth rectified document with better quality</p>
+                
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                            <div class="gallery-item">
+                                <div class="aspect-w-4 aspect-h-3 bg-gray-200">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/toro2_part3_bilinear_warped.png" alt="Bilinear Painting" class="w-full h-full object-contain">
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="text-lg font-semibold mb-2 text-gray-800">Bilinear</h4>
+                                    <p class="text-gray-600 text-sm">Smooth rectified painting with better quality</p>
+                                </div>
                             </div>
                         </div>
+                
                     </div>
-
                 </div>
-            </div>
 
             <!-- Analysis and Explanation Text Box -->
             <div class="mb-8">
@@ -328,7 +339,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                     <div class="p-6 bg-white rounded-lg border-l-4 border-orange-400">
                         <h4 class="text-lg font-semibold text-orange-800 mb-3">Step 1: Image Warping and Canvas Creation</h4>
                         <p class="text-gray-700 mb-3">
-                            For each image set, I designate one image as the reference (usually the center image) and warp all other images to align with it. I compute the global bounding box by transforming the corner coordinates of each image through their respective homographies, then create a large canvas to accommodate all warped images.
+                            For each image set, I designate one image as the reference (the center image) and warp all other images to align with it. I compute the global bounding box by transforming the corner coordinates of each image through their respective homographies, then create a large canvas to accommodate all warped images.
                         </p>
                         <div class="code-block p-3 rounded text-sm">
                             <code>global_min_x = min(all_image_bounds_x)<br>
@@ -340,11 +351,11 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                     <div class="p-6 bg-white rounded-lg border-l-4 border-orange-400">
                         <h4 class="text-lg font-semibold text-orange-800 mb-3">Step 2: Alpha Mask Generation</h4>
                         <p class="text-gray-700 mb-3">
-                            Each warped image includes an alpha channel indicating valid pixel regions. I create smooth blending masks using <strong>distance transform</strong> from the alpha boundaries. This creates gradual weight transitions instead of hard edges.
+                            Each warped image includes an alpha channel indicating valid pixel regions. I create smooth blending masks using <strong>scipy.ndimage.distance_transform_edt</strong> from the alpha boundaries and apply normalization. This creates gradual weight transitions instead of hard edges.
                         </p>
                         <div class="code-block p-3 rounded text-sm">
                             <code>dist = distance_transform_edt(alpha_mask)<br>
-                            blend_mask = dist / np.max(dist)  # Normalize to [0,1]</code>
+                            blend_mask = dist / np.max(dist)</code>
                         </div>
                     </div>
 
@@ -352,13 +363,10 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                     <div class="p-6 bg-white rounded-lg border-l-4 border-orange-400">
                         <h4 class="text-lg font-semibold text-orange-800 mb-3">Step 3: Weighted Averaging and Laplacian Blending</h4>
                         <p class="text-gray-700 mb-3">
-                            I implemented two blending approaches: <strong>weighted averaging</strong> for simple cases and <strong>Laplacian pyramid blending</strong> for seamless results. The Laplacian method decomposes images into frequency bands, blends each band separately using the distance-based masks, then reconstructs the final image.
+                            I implemented <strong>Laplacian pyramid blending</strong> for seamless results. The Laplacian method decomposes images into frequency bands, blends each band separately using the distance-based masks, then reconstructs the final image. I reused my code from project 2 to perform gaussian/laplacian stacks.
                         </p>
                         <div class="code-block p-3 rounded text-sm">
-                            <code># Weighted averaging<br>
-                            total_weight = mask1 + mask2<br>
-                            blended = (img1 * mask1 + img2 * mask2) / total_weight<br><br>
-                            # Laplacian blending<br>
+                            <code># Laplacian blending<br>
                             laplacian1 = laplacian_stack(img1, levels=4)<br>
                             laplacian2 = laplacian_stack(img2, levels=4)<br>
                             mask_gaussian = gaussian_stack(mask, levels=4)<br>
@@ -375,26 +383,26 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                 
                 <!-- Mosaic Set 1 -->
                 <div>
-                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 1: Building Interior</h3>
+                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 1: Building Exterior</h3>
                     <div class="mb-4">
                         <h4 class="text-lg font-semibold mb-3 text-gray-700">Source Images</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                                <img src="https://via.placeholder.com/400x250/4F46E5/ffffff?text=Building+Interior+1" alt="Building Interior Source 1" class="w-full h-32 object-cover">
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/building1.jpg" alt="Building Exterior Source 1" class="w-full h-32 object-cover">
                                 <p class="p-3 text-center text-gray-700 text-sm">Left View</p>
                             </div>
                             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                                <img src="https://via.placeholder.com/400x250/7C3AED/ffffff?text=Building+Interior+2" alt="Building Interior Source 2" class="w-full h-32 object-cover">
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/building0.jpg" alt="Building Exterior Source 2" class="w-full h-32 object-cover">
                                 <p class="p-3 text-center text-gray-700 text-sm">Center View (Reference)</p>
                             </div>
                             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                                <img src="https://via.placeholder.com/400x250/DC2626/ffffff?text=Building+Interior+3" alt="Building Interior Source 3" class="w-full h-32 object-cover">
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/building2.jpg" alt="Building Exterior Source 3" class="w-full h-32 object-cover">
                                 <p class="p-3 text-center text-gray-700 text-sm">Right View</p>
                             </div>
                         </div>
                         <h4 class="text-lg font-semibold mb-3 text-gray-700">Final Mosaic</h4>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                            <img src="https://via.placeholder.com/800x300/059669/ffffff?text=Building+Interior+Mosaic+Result" alt="Building Interior Mosaic" class="w-full h-48 object-cover">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/mosaic_building0_with_building1_building2.jpg" alt="Building Interior Mosaic" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <p class="text-gray-600 text-sm">3-image panorama using bilinear interpolation and Laplacian pyramid blending</p>
                                 <div class="text-xs text-gray-500 mt-2">
@@ -409,26 +417,26 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
 
                 <!-- Mosaic Set 2 -->
                 <div>
-                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 2: Outdoor Landscape</h3>
+                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 2: Hallway</h3>
                     <div class="mb-4">
                         <h4 class="text-lg font-semibold mb-3 text-gray-700">Source Images</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                                <img src="https://via.placeholder.com/400x250/10B981/ffffff?text=Landscape+1" alt="Landscape Source 1" class="w-full h-32 object-cover">
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/doorway1.jpg" alt="Hallway 1" class="w-full h-32 object-cover">
                                 <p class="p-3 text-center text-gray-700 text-sm">Left Landscape</p>
                             </div>
                             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                                <img src="https://via.placeholder.com/400x250/F59E0B/ffffff?text=Landscape+2" alt="Landscape Source 2" class="w-full h-32 object-cover">
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/doorway0.jpg" alt="Hallway 2" class="w-full h-32 object-cover">
                                 <p class="p-3 text-center text-gray-700 text-sm">Center Landscape (Reference)</p>
                             </div>
                             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                                <img src="https://via.placeholder.com/400x250/EF4444/ffffff?text=Landscape+3" alt="Landscape Source 3" class="w-full h-32 object-cover">
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/doorway2.jpg" alt="Hallway 3" class="w-full h-32 object-cover">
                                 <p class="p-3 text-center text-gray-700 text-sm">Right Landscape</p>
                             </div>
                         </div>
                         <h4 class="text-lg font-semibold mb-3 text-gray-700">Final Mosaic</h4>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                            <img src="https://via.placeholder.com/800x300/8B5CF6/ffffff?text=Landscape+Panorama+Result" alt="Landscape Panorama" class="w-full h-48 object-cover">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/mosaic_doorway0_with_doorway1_doorway2.jpg" alt="Landscape Panorama" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <p class="text-gray-600 text-sm">Wide horizontal panorama with weighted averaging blending</p>
                                 <div class="text-xs text-gray-500 mt-2">
@@ -443,22 +451,26 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
 
                 <!-- Mosaic Set 3 -->
                 <div>
-                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 3: Architectural Details</h3>
+                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 3: Kitchen</h3>
                     <div class="mb-4">
                         <h4 class="text-lg font-semibold mb-3 text-gray-700">Source Images</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                                <img src="https://via.placeholder.com/400x250/6366F1/ffffff?text=Architecture+1" alt="Architecture Source 1" class="w-full h-32 object-cover">
-                                <p class="p-3 text-center text-gray-700 text-sm">Left Architecture</p>
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/kitchen1.jpg" alt="Kitchen 1" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Left Landscape</p>
                             </div>
                             <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                                <img src="https://via.placeholder.com/400x250/EC4899/ffffff?text=Architecture+2" alt="Architecture Source 2" class="w-full h-32 object-cover">
-                                <p class="p-3 text-center text-gray-700 text-sm">Right Architecture</p>
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/kitchen0.jpg" alt="Kitchen 2" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Center Landscape (Reference)</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://yuchenzhang789.github.io/proj_3/data/kitchen2.jpg" alt="Kitchen 3" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Right Landscape</p>
                             </div>
                         </div>
                         <h4 class="text-lg font-semibold mb-3 text-gray-700">Final Mosaic</h4>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                            <img src="https://via.placeholder.com/800x300/059669/ffffff?text=Architecture+Mosaic+Result" alt="Architecture Mosaic" class="w-full h-48 object-cover">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/mosaic_kitchen0_with_kitchen1_kitchen2.jpg" alt="Architecture Mosaic" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <p class="text-gray-600 text-sm">High-detail facade reconstruction showing intricate patterns</p>
                                 <div class="text-xs text-gray-500 mt-2">
@@ -543,7 +555,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                 
                 <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
                     <div class="gallery-item">
-                        <img src="https://via.placeholder.com/600x300/7C3AED/ffffff?text=Planar+Mosaic" alt="Planar Mosaic" class="w-full h-48 object-cover">
+                        <img src="https://yuchenzhang789.github.io/proj_3/output/mosaic_building0_with_building1_building2.jpg" alt="Planar Mosaic" class="w-full h-48 object-cover">
                         <div class="p-4">
                             <h4 class="text-lg font-semibold mb-2 text-gray-800">Planar Projection</h4>
                             <p class="text-gray-600 text-sm">Standard planar mosaic showing perspective distortion at edges for wide fields of view</p>
@@ -553,7 +565,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
 
                 <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
                     <div class="gallery-item">
-                        <img src="https://via.placeholder.com/600x300/F59E0B/ffffff?text=Cylindrical+Mosaic" alt="Cylindrical Mosaic" class="w-full h-48 object-cover">
+                        <img src="https://yuchenzhang789.github.io/proj_3/output/cylindrical_mosaic_f800_size800.jpg" alt="Cylindrical Mosaic" class="w-full h-48 object-cover">
                         <div class="p-4">
                             <h4 class="text-lg font-semibold mb-2 text-gray-800">Cylindrical Projection</h4>
                             <p class="text-gray-600 text-sm">Cylindrical projection reducing wide-angle distortion (f=300px)</p>
@@ -561,24 +573,6 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                     </div>
                 </div>
 
-            </div>
-
-            <!-- 360 Degree Panorama -->
-            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
-                <div class="gallery-item">
-                    <img src="https://via.placeholder.com/1200x300/059669/ffffff?text=360+Degree+Cylindrical+Panorama" alt="360 Degree Panorama" class="w-full h-32 object-cover">
-                    <div class="p-4">
-                        <h4 class="text-lg font-semibold mb-2 text-gray-800">360° Cylindrical Panorama</h4>
-                        <p class="text-gray-600 text-sm">Complete room panorama created from 8 overlapping images, demonstrating the effectiveness of cylindrical projection for full 360° coverage</p>
-                        <div class="text-xs text-gray-500 mt-2">
-                            <span class="bg-blue-100 px-2 py-1 rounded">8 images</span>
-                            <span class="bg-purple-100 px-2 py-1 rounded ml-1">Cylindrical projection</span>
-                            <span class="bg-green-100 px-2 py-1 rounded ml-1">f=300px</span>
-                            <span class="bg-red-100 px-2 py-1 rounded ml-1">360° coverage</span>
-                            <span class="bg-orange-100 px-2 py-1 rounded ml-1">Laplacian blending</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
