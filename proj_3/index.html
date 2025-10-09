@@ -87,15 +87,15 @@
                     <h3 class="text-2xl font-semibold mb-4 text-gray-800">Image Set 1: Building Interior</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                            <img src="https://via.placeholder.com/300x200/4F46E5/ffffff?text=Building+1" alt="Building Image 1" class="w-full h-32 object-cover">
+                            <img src="https://yuchenzhang789.github.io/proj_3/data/building1.jpg" alt="Building Image 1" class="w-full h-32 object-cover">
                             <p class="p-3 font-semibold text-center text-gray-700 text-sm">Left View</p>
                         </div>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                            <img src="https://via.placeholder.com/300x200/7C3AED/ffffff?text=Building+2" alt="Building Image 2" class="w-full h-32 object-cover">
+                            <img src="https://yuchenzhang789.github.io/proj_3/data/building0.jpg" alt="Building Image 2" class="w-full h-32 object-cover">
                             <p class="p-3 font-semibold text-center text-gray-700 text-sm">Center View</p>
                         </div>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                            <img src="https://via.placeholder.com/300x200/DC2626/ffffff?text=Building+3" alt="Building Image 3" class="w-full h-32 object-cover">
+                            <img src="https://yuchenzhang789.github.io/proj_3/data/building2.jpg" alt="Building Image 3" class="w-full h-32 object-cover">
                             <p class="p-3 font-semibold text-center text-gray-700 text-sm">Right View</p>
                         </div>
                     </div>
@@ -103,15 +103,19 @@
 
                 <!-- Set 2 -->
                 <div>
-                    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Image Set 2: Landscape Panorama</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Image Set 2: Kitchen</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                            <img src="https://via.placeholder.com/300x200/059669/ffffff?text=Landscape+Left" alt="Landscape 1" class="w-full h-32 object-cover">
-                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Left Panorama</p>
+                            <img src="https://yuchenzhang789.github.io/proj_3/data/kitchen1.jpg" alt="Building Image 1" class="w-full h-32 object-cover">
+                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Left View</p>
                         </div>
                         <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
-                            <img src="https://via.placeholder.com/300x200/EA580C/ffffff?text=Landscape+Right" alt="Landscape 2" class="w-full h-32 object-cover">
-                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Right Panorama</p>
+                            <img src="https://yuchenzhang789.github.io/proj_3/data/kitchen0.jpg" alt="Building Image 2" class="w-full h-32 object-cover">
+                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Center View</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://yuchenzhang789.github.io/proj_3/data/kitchen2.jpg" alt="Building Image 3" class="w-full h-32 object-cover">
+                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Right View</p>
                         </div>
                     </div>
                 </div>
@@ -137,20 +141,20 @@
                     
                     <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
                         <div class="gallery-item">
-                            <img src="https://via.placeholder.com/500x350/4F46E5/ffffff?text=Image+1+with+Points" alt="Image 1 Point Correspondences" class="w-full h-48 object-cover">
+                            <img src="https://yuchenzhang789.github.io/proj_3/data/p2_1.jpg" alt="Image 1 Point Correspondences" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <h4 class="text-lg font-semibold mb-2 text-gray-800">Image 1: Selected Points</h4>
-                                <p class="text-gray-600 text-sm">Points marked in red showing distinctive features chosen for correspondence matching</p>
+                                <p class="text-gray-600 text-sm">Points marked in red numbers showing distinctive features chosen for correspondence matching</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
                         <div class="gallery-item">
-                            <img src="https://via.placeholder.com/500x350/DC2626/ffffff?text=Image+2+with+Points" alt="Image 2 Point Correspondences" class="w-full h-48 object-cover">
+                            <img src="https://yuchenzhang789.github.io/proj_3/data/p2_2.jpg" alt="Image 2 Point Correspondences" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <h4 class="text-lg font-semibold mb-2 text-gray-800">Image 2: Corresponding Points</h4>
-                                <p class="text-gray-600 text-sm">Matching points in the second image, maintaining the same order as Image 1</p>
+                                <p class="text-gray-600 text-sm">Matching points in the second image, chosen in the same order as Image 1</p>
                             </div>
                         </div>
                     </div>
@@ -163,16 +167,8 @@
                 <h3 class="text-2xl font-semibold mb-4 text-gray-800">Linear System Construction</h3>
                 <div class="p-6 bg-white rounded-lg border-l-4 border-green-400">
                     <p class="mb-4 text-gray-700">
-                        Each point correspondence <span class="math-formula">(x, y)</span> in Image 1 and <span class="math-formula">(u, v)</span> in Image 2 contributes <strong>two rows</strong> to our linear system. From the homography equation:
+                        Each point correspondence <span class="math-formula">(x, y)</span> in Image 1 and <span class="math-formula">(u, v)</span> in Image 2 contributes <strong>two rows</strong> to our linear system. Based on our disccusion 5 materials:
                     </p>
-                    <div class="bg-gray-100 p-4 rounded-lg mb-4 text-center math-formula">
-                        <p class="mb-2"><strong>[u, v, 1]<sup>T</sup> = H × [x, y, 1]<sup>T</sup></strong></p>
-                    </div>
-                    
-                    <p class="mb-4 text-gray-700">
-                        This expands to two equations per point pair:
-                    </p>
-                    
                     <div class="code-block p-4 rounded-lg text-sm mb-4">
                         <pre>u = (h₀x + h₁y + h₂) / (h₆x + h₇y + 1)
 v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
@@ -204,7 +200,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
      [ 0.0001  -0.0002    1.000]]</pre>
                     </div>
                     <p class="text-gray-600 text-sm mt-3">
-                        Matrix elements h₀ through h₇ from least-squares solution, with h₈ = 1 (normalization)
+                        Matrix elements h₀ through h₇ from least-squares solution, with h₈ = 1
                     </p>
                 </div>
             </div>
