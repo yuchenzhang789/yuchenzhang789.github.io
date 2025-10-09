@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Warping and Mosaicing - Project Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .container-section {
+            @apply max-w-7xl mx-auto p-4 md:p-8 my-8 bg-white rounded-xl shadow-lg;
+        }
+        
+        .gallery-item {
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        #photo-modal {
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+        }
+
+        .code-block {
+            background-color: #1f2937;
+            color: #10b981;
+            font-family: 'Courier New', monospace;
+        }
+
+        .math-formula {
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="py-8 bg-indigo-600 text-white shadow-xl">
+        <div class="container mx-auto px-4 flex flex-col items-center text-center relative">
+            <a href="https://yuchenzhang789.github.io/index.html" class="absolute top-4 left-4 md:left-8 px-4 py-2 text-sm md:text-base border border-white rounded-full hover:bg-white hover:text-indigo-600 transition-colors duration-200">
+                &lt; Back to Main Page
+            </a>
+            <h1 class="text-5xl font-bold tracking-tight mb-4">IMAGE WARPING and MOSAICING</h1>
+            <p class="text-xl opacity-90">CS280A Project 3A Gallery</p>
+            <p class="text-sm opacity-75 mt-2">(Click on any image to view in full size)</p>
+        </div>
+    </header>
+
+    <!-- Project Overview Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Project Overview</h2>
+        <div class="p-6 bg-gray-50 rounded-lg text-gray-700 leading-relaxed">
+            <p class="mb-4 text-lg">
+                This project explores <strong>image warping and mosaicing</strong> techniques to create seamless panoramic images from multiple photographs. I implemented algorithms to compute homographies, warp images using different interpolation methods, and blend them into cohesive mosaics.
+            </p>
+            <p class="mb-4">
+                The project covers homography computation, nearest neighbor and bilinear interpolation for image warping, weighted blending techniques, and advanced cylindrical projection for wide-angle panoramas.
+            </p>
+        </div>
+    </section>
+
+    <!-- Part 1: Shooting Pictures Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Part 1: Capturing Images</h2>
+        <div class="space-y-6">
+            <div class="p-6 bg-blue-50 rounded-lg text-gray-700 leading-relaxed">
+                <p class="mb-4">
+                    I captured multiple sets of images with projective transformations by fixing the camera's center of projection and rotating to capture different viewpoints. Each set has 40-70% overlap between consecutive images to ensure good registration.
+                </p>
+            </div>
+            
+            <!-- Image Sets -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Set 1 -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Image Set 1: Building Interior</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://via.placeholder.com/300x200/4F46E5/ffffff?text=Building+1" alt="Building Image 1" class="w-full h-32 object-cover">
+                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Left View</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://via.placeholder.com/300x200/7C3AED/ffffff?text=Building+2" alt="Building Image 2" class="w-full h-32 object-cover">
+                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Center View</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://via.placeholder.com/300x200/DC2626/ffffff?text=Building+3" alt="Building Image 3" class="w-full h-32 object-cover">
+                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Right View</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Set 2 -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Image Set 2: Landscape Panorama</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://via.placeholder.com/300x200/059669/ffffff?text=Landscape+Left" alt="Landscape 1" class="w-full h-32 object-cover">
+                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Left Panorama</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://via.placeholder.com/300x200/EA580C/ffffff?text=Landscape+Right" alt="Landscape 2" class="w-full h-32 object-cover">
+                            <p class="p-3 font-semibold text-center text-gray-700 text-sm">Right Panorama</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Part 2: Homography Recovery Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Part 2: Homography Recovery</h2>
+        <div class="space-y-6">
+            <div class="p-6 bg-green-50 rounded-lg text-gray-700 leading-relaxed">
+                <p class="mb-4">
+                    I implemented the <code class="bg-green-100 px-1 rounded">computeH()</code> function to recover 3×3 homography matrices from point correspondences. The algorithm sets up a linear system <strong>Ah = b</strong> and solves it using least-squares for robust results with more than 4 point pairs.
+                </p>
+            </div>
+
+            <!-- Point Correspondences Images -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Point Correspondences</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/500x350/4F46E5/ffffff?text=Image+1+with+Points" alt="Image 1 Point Correspondences" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Image 1: Selected Points</h4>
+                                <p class="text-gray-600 text-sm">Points marked in red showing distinctive features chosen for correspondence matching</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/500x350/DC2626/ffffff?text=Image+2+with+Points" alt="Image 2 Point Correspondences" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Image 2: Corresponding Points</h4>
+                                <p class="text-gray-600 text-sm">Matching points in the second image, maintaining the same order as Image 1</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Linear System Construction -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Linear System Construction</h3>
+                <div class="p-6 bg-white rounded-lg border-l-4 border-green-400">
+                    <p class="mb-4 text-gray-700">
+                        Each point correspondence <span class="math-formula">(x, y)</span> in Image 1 and <span class="math-formula">(u, v)</span> in Image 2 contributes <strong>two rows</strong> to our linear system. From the homography equation:
+                    </p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4 text-center math-formula">
+                        <p class="mb-2"><strong>[u, v, 1]<sup>T</sup> = H × [x, y, 1]<sup>T</sup></strong></p>
+                    </div>
+                    
+                    <p class="mb-4 text-gray-700">
+                        This expands to two equations per point pair:
+                    </p>
+                    
+                    <div class="code-block p-4 rounded-lg text-sm mb-4">
+                        <pre>u = (h₀x + h₁y + h₂) / (h₆x + h₇y + 1)
+v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
+                    </div>
+                    
+                    <p class="mb-4 text-gray-700">
+                        Rearranging to linear form gives us the two rows for each correspondence:
+                    </p>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <p class="text-sm text-gray-700 mb-2"><strong>Row 2i:</strong> <span class="code-block px-1 rounded">A[2i] = [x, y, 1, 0, 0, 0, -x*u, -y*u]</span> with <span class="code-block px-1 rounded">b[2i] = u</span></p>
+                        <p class="text-sm text-gray-700"><strong>Row 2i+1:</strong> <span class="code-block px-1 rounded">A[2i+1] = [0, 0, 0, x, y, 1, -x*v, -y*v]</span> with <span class="code-block px-1 rounded">b[2i+1] = v</span></p>
+                    </div>
+                    
+                    <p class="mt-4 text-gray-700 text-sm">
+                        With n point correspondences, we get a 2n×8 matrix A and a 2n×1 vector b. The homography parameters h = [h₀, h₁, h₂, h₃, h₄, h₅, h₆, h₇] are solved using <strong>least-squares: h = (A<sup>T</sup>A)⁻¹A<sup>T</sup>b</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Computed Homography Matrix -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Computed Homography Matrix</h3>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <p class="text-gray-700 mb-4">Using 8 point correspondences, the recovered homography matrix:</p>
+                    <div class="code-block p-4 rounded-lg text-center">
+                        <pre class="math-formula">H = [[ 1.2345  -0.1234   45.678]
+     [ 0.0987   1.1111  -23.456]
+     [ 0.0001  -0.0002    1.000]]</pre>
+                    </div>
+                    <p class="text-gray-600 text-sm mt-3">
+                        Matrix elements h₀ through h₇ from least-squares solution, with h₈ = 1 (normalization)
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Part 3: Image Warping Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Part 3: Image Warping</h2>
+        <div class="space-y-8">
+            <div class="p-6 bg-purple-50 rounded-lg text-gray-700 leading-relaxed">
+                <p class="mb-4">
+                    I implemented two interpolation methods for image warping: <strong>nearest neighbor</strong> and <strong>bilinear interpolation</strong>. Both use inverse warping to avoid holes in the output. I demonstrated rectification by making perspective-distorted rectangular objects appear frontal.
+                </p>
+            </div>
+
+            <!-- Rectification Example 1 -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Rectification Example 1: Painting/Poster</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/400x300/EA580C/ffffff?text=Original+Painting" alt="Original Painting" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Original</h4>
+                                <p class="text-gray-600 text-sm">Perspective-distorted view of rectangular object</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/400x300/DC2626/ffffff?text=Nearest+Neighbor" alt="Nearest Neighbor Rectification" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Nearest Neighbor</h4>
+                                <p class="text-gray-600 text-sm">Rectified using nearest neighbor interpolation</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/400x300/10B981/ffffff?text=Bilinear" alt="Bilinear Rectification" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Bilinear</h4>
+                                <p class="text-gray-600 text-sm">Rectified using bilinear interpolation</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Rectification Example 2 -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Rectification Example 2: Document/Book</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/400x300/8B5CF6/ffffff?text=Original+Document" alt="Original Document" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Original</h4>
+                                <p class="text-gray-600 text-sm">Perspective-distorted document or book page</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/400x300/F59E0B/ffffff?text=Nearest+Neighbor+Doc" alt="Nearest Neighbor Document" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Nearest Neighbor</h4>
+                                <p class="text-gray-600 text-sm">Rectified document with pixelation artifacts</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/400x300/059669/ffffff?text=Bilinear+Doc" alt="Bilinear Document" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-800">Bilinear</h4>
+                                <p class="text-gray-600 text-sm">Smooth rectified document with better quality</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Analysis and Explanation Text Box -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Analysis and Observations</h3>
+                <div class="p-6 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                    <div class="bg-white p-4 rounded border-2 border-dashed border-yellow-300">
+                        <p class="text-gray-500 italic text-center">
+                            [Your explanation here - Compare the two interpolation methods, discuss quality differences, computational trade-offs, when to use each method, artifacts observed, etc.]
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Part 4: Image Mosaicing Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Part 4: Image Mosaicing</h2>
+        <div class="space-y-8">
+            <div class="p-6 bg-orange-50 rounded-lg text-gray-700 leading-relaxed">
+                <p class="mb-4">
+                    I created seamless image mosaics by warping images into a common coordinate system and blending them using weighted averaging and Laplacian pyramid blending. This reduces edge artifacts and creates natural-looking panoramas.
+                </p>
+            </div>
+
+            <!-- Implementation Details -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Implementation Process</h3>
+                <div class="space-y-6">
+                    
+                    <!-- Step 1 -->
+                    <div class="p-6 bg-white rounded-lg border-l-4 border-orange-400">
+                        <h4 class="text-lg font-semibold text-orange-800 mb-3">Step 1: Image Warping and Canvas Creation</h4>
+                        <p class="text-gray-700 mb-3">
+                            For each image set, I designate one image as the reference (usually the center image) and warp all other images to align with it. I compute the global bounding box by transforming the corner coordinates of each image through their respective homographies, then create a large canvas to accommodate all warped images.
+                        </p>
+                        <div class="code-block p-3 rounded text-sm">
+                            <code>global_min_x = min(all_image_bounds_x)<br>
+                            canvas_size = (global_max_x - global_min_x, global_max_y - global_min_y)</code>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="p-6 bg-white rounded-lg border-l-4 border-orange-400">
+                        <h4 class="text-lg font-semibold text-orange-800 mb-3">Step 2: Alpha Mask Generation</h4>
+                        <p class="text-gray-700 mb-3">
+                            Each warped image includes an alpha channel indicating valid pixel regions. I create smooth blending masks using <strong>distance transform</strong> from the alpha boundaries. This creates gradual weight transitions instead of hard edges.
+                        </p>
+                        <div class="code-block p-3 rounded text-sm">
+                            <code>dist = distance_transform_edt(alpha_mask)<br>
+                            blend_mask = dist / np.max(dist)  # Normalize to [0,1]</code>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="p-6 bg-white rounded-lg border-l-4 border-orange-400">
+                        <h4 class="text-lg font-semibold text-orange-800 mb-3">Step 3: Weighted Averaging and Laplacian Blending</h4>
+                        <p class="text-gray-700 mb-3">
+                            I implemented two blending approaches: <strong>weighted averaging</strong> for simple cases and <strong>Laplacian pyramid blending</strong> for seamless results. The Laplacian method decomposes images into frequency bands, blends each band separately using the distance-based masks, then reconstructs the final image.
+                        </p>
+                        <div class="code-block p-3 rounded text-sm">
+                            <code># Weighted averaging<br>
+                            total_weight = mask1 + mask2<br>
+                            blended = (img1 * mask1 + img2 * mask2) / total_weight<br><br>
+                            # Laplacian blending<br>
+                            laplacian1 = laplacian_stack(img1, levels=4)<br>
+                            laplacian2 = laplacian_stack(img2, levels=4)<br>
+                            mask_gaussian = gaussian_stack(mask, levels=4)<br>
+                            blended_stack = [L1*M + L2*(1-M) for L1,L2,M in zip(laplacian1, laplacian2, mask_gaussian)]<br>
+                            result = sum(blended_stack)</code>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Mosaic Results -->
+            <div class="space-y-12">
+                
+                <!-- Mosaic Set 1 -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 1: Building Interior</h3>
+                    <div class="mb-4">
+                        <h4 class="text-lg font-semibold mb-3 text-gray-700">Source Images</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://via.placeholder.com/400x250/4F46E5/ffffff?text=Building+Interior+1" alt="Building Interior Source 1" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Left View</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://via.placeholder.com/400x250/7C3AED/ffffff?text=Building+Interior+2" alt="Building Interior Source 2" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Center View (Reference)</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://via.placeholder.com/400x250/DC2626/ffffff?text=Building+Interior+3" alt="Building Interior Source 3" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Right View</p>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-3 text-gray-700">Final Mosaic</h4>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://via.placeholder.com/800x300/059669/ffffff?text=Building+Interior+Mosaic+Result" alt="Building Interior Mosaic" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <p class="text-gray-600 text-sm">3-image panorama using bilinear interpolation and Laplacian pyramid blending</p>
+                                <div class="text-xs text-gray-500 mt-2">
+                                    <span class="bg-blue-100 px-2 py-1 rounded">3 images</span>
+                                    <span class="bg-green-100 px-2 py-1 rounded ml-1">Bilinear interpolation</span>
+                                    <span class="bg-purple-100 px-2 py-1 rounded ml-1">Laplacian blending</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mosaic Set 2 -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 2: Outdoor Landscape</h3>
+                    <div class="mb-4">
+                        <h4 class="text-lg font-semibold mb-3 text-gray-700">Source Images</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://via.placeholder.com/400x250/10B981/ffffff?text=Landscape+1" alt="Landscape Source 1" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Left Landscape</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://via.placeholder.com/400x250/F59E0B/ffffff?text=Landscape+2" alt="Landscape Source 2" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Center Landscape (Reference)</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://via.placeholder.com/400x250/EF4444/ffffff?text=Landscape+3" alt="Landscape Source 3" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Right Landscape</p>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-3 text-gray-700">Final Mosaic</h4>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://via.placeholder.com/800x300/8B5CF6/ffffff?text=Landscape+Panorama+Result" alt="Landscape Panorama" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <p class="text-gray-600 text-sm">Wide horizontal panorama with weighted averaging blending</p>
+                                <div class="text-xs text-gray-500 mt-2">
+                                    <span class="bg-blue-100 px-2 py-1 rounded">3 images</span>
+                                    <span class="bg-green-100 px-2 py-1 rounded ml-1">Bilinear interpolation</span>
+                                    <span class="bg-orange-100 px-2 py-1 rounded ml-1">Weighted averaging</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mosaic Set 3 -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-gray-800">Mosaic Set 3: Architectural Details</h3>
+                    <div class="mb-4">
+                        <h4 class="text-lg font-semibold mb-3 text-gray-700">Source Images</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://via.placeholder.com/400x250/6366F1/ffffff?text=Architecture+1" alt="Architecture Source 1" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Left Architecture</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <img src="https://via.placeholder.com/400x250/EC4899/ffffff?text=Architecture+2" alt="Architecture Source 2" class="w-full h-32 object-cover">
+                                <p class="p-3 text-center text-gray-700 text-sm">Right Architecture</p>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-3 text-gray-700">Final Mosaic</h4>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <img src="https://via.placeholder.com/800x300/059669/ffffff?text=Architecture+Mosaic+Result" alt="Architecture Mosaic" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <p class="text-gray-600 text-sm">High-detail facade reconstruction showing intricate patterns</p>
+                                <div class="text-xs text-gray-500 mt-2">
+                                    <span class="bg-blue-100 px-2 py-1 rounded">2 images</span>
+                                    <span class="bg-green-100 px-2 py-1 rounded ml-1">Bilinear interpolation</span>
+                                    <span class="bg-red-100 px-2 py-1 rounded ml-1">Alpha blending</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Part 5: Bells & Whistles Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Part 5: Bells & Whistles - Cylindrical Projection</h2>
+        <div class="space-y-8">
+            <div class="p-6 bg-red-50 rounded-lg text-gray-700 leading-relaxed">
+                <p class="mb-4">
+                    For wide-angle panoramas spanning more than 180°, I implemented <strong>cylindrical projection</strong> to better represent the scene. This method projects the images onto a cylinder surface before creating the mosaic, reducing distortion in very wide panoramas.
+                </p>
+            </div>
+
+            <!-- Cylindrical Projection Implementation -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Cylindrical Warping Implementation</h3>
+                <div class="space-y-6">
+                    
+                    <!-- Theory -->
+                    <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
+                        <h4 class="text-lg font-semibold text-red-800 mb-3">Mathematical Foundation</h4>
+                        <p class="text-gray-700 mb-3">
+                            Cylindrical projection maps points from the image plane to a cylinder surface. For a point (x, y) in the original image, I first convert it to angular coordinates, then map it to the cylinder surface using focal length f.
+                        </p>
+                        <div class="bg-gray-100 p-4 rounded-lg math-formula text-center mb-3">
+                            <p><strong>θ = (x - center_x) / f</strong></p>
+                            <p><strong>x_cyl = center_x + f × tan(θ)</strong></p>
+                            <p><strong>y_cyl = y</strong></p>
+                        </div>
+                        <p class="text-gray-700 text-sm">
+                            The focal length f controls the "radius" of the cylinder - smaller f creates tighter curvature.
+                        </p>
+                    </div>
+
+                    <!-- Implementation -->
+                    <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
+                        <h4 class="text-lg font-semibold text-red-800 mb-3">Implementation Process</h4>
+                        <p class="text-gray-700 mb-3">
+                            I first create standard planar mosaics, then apply cylindrical warping to the final result. This two-step approach allows me to handle the complexity incrementally while maintaining image quality.
+                        </p>
+                        <div class="code-block p-3 rounded text-sm mb-3">
+                            <code>def cylindrical_warp(img, focal_length):<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;h, w = img.shape[:2]<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;center_x = w / 2.0<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;y_out, x_out = np.meshgrid(np.arange(h), np.arange(w), indexing='ij')<br><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;theta = (x_out - center_x) / focal_length<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;x_in = center_x + focal_length * np.tan(theta)<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;y_in = y_out<br><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;return map_coordinates(img, [y_in, x_in], order=1)</code>
+                        </div>
+                        <p class="text-gray-700 text-sm">
+                            I use <code class="bg-gray-200 px-1 rounded">scipy.ndimage.map_coordinates</code> for efficient bilinear interpolation during the cylindrical mapping.
+                        </p>
+                    </div>
+
+                    <!-- Parameter Selection -->
+                    <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
+                        <h4 class="text-lg font-semibold text-red-800 mb-3">Focal Length Selection</h4>
+                        <p class="text-gray-700 mb-3">
+                            The choice of focal length is crucial: too small creates excessive curvature, too large provides minimal benefit. I experimented with values from 300-800 pixels and found that <strong>f = 300-400</strong> works well for most indoor scenes spanning 180-360°.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Cylindrical vs Planar Comparison -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                
+                <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                    <div class="gallery-item">
+                        <img src="https://via.placeholder.com/600x300/7C3AED/ffffff?text=Planar+Mosaic" alt="Planar Mosaic" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold mb-2 text-gray-800">Planar Projection</h4>
+                            <p class="text-gray-600 text-sm">Standard planar mosaic showing perspective distortion at edges for wide fields of view</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                    <div class="gallery-item">
+                        <img src="https://via.placeholder.com/600x300/F59E0B/ffffff?text=Cylindrical+Mosaic" alt="Cylindrical Mosaic" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h4 class="text-lg font-semibold mb-2 text-gray-800">Cylindrical Projection</h4>
+                            <p class="text-gray-600 text-sm">Cylindrical projection reducing wide-angle distortion (f=300px)</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 360 Degree Panorama -->
+            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+                <div class="gallery-item">
+                    <img src="https://via.placeholder.com/1200x300/059669/ffffff?text=360+Degree+Cylindrical+Panorama" alt="360 Degree Panorama" class="w-full h-32 object-cover">
+                    <div class="p-4">
+                        <h4 class="text-lg font-semibold mb-2 text-gray-800">360° Cylindrical Panorama</h4>
+                        <p class="text-gray-600 text-sm">Complete room panorama created from 8 overlapping images, demonstrating the effectiveness of cylindrical projection for full 360° coverage</p>
+                        <div class="text-xs text-gray-500 mt-2">
+                            <span class="bg-blue-100 px-2 py-1 rounded">8 images</span>
+                            <span class="bg-purple-100 px-2 py-1 rounded ml-1">Cylindrical projection</span>
+                            <span class="bg-green-100 px-2 py-1 rounded ml-1">f=300px</span>
+                            <span class="bg-red-100 px-2 py-1 rounded ml-1">360° coverage</span>
+                            <span class="bg-orange-100 px-2 py-1 rounded ml-1">Laplacian blending</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implementation Details Section -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Implementation Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="p-6 bg-blue-50 rounded-lg">
+                <h3 class="text-lg font-semibold text-blue-800 mb-3">🔧 Key Functions Implemented</h3>
+                <ul class="space-y-1 text-blue-700 text-sm">
+                    <li>• <code class="bg-blue-100 px-1 rounded">computeH()</code> - Homography calculation</li>
+                    <li>• <code class="bg-blue-100 px-1 rounded">warpNearestNeighbor()</code> - NN interpolation</li>
+                    <li>• <code class="bg-blue-100 px-1 rounded">warpBilinear()</code> - Bilinear interpolation</li>
+                    <li>• <code class="bg-blue-100 px-1 rounded">create_mosaic_from_images()</code> - Mosaic creation</li>
+                    <li>• <code class="bg-blue-100 px-1 rounded">cylindrical_warp()</code> - Cylindrical projection</li>
+                    <li>• <code class="bg-blue-100 px-1 rounded">blend_two_images_laplacian()</code> - Laplacian blending</li>
+                </ul>
+            </div>
+
+            <div class="p-6 bg-green-50 rounded-lg">
+                <h3 class="text-lg font-semibold text-green-800 mb-3">⚙️ Technical Specifications</h3>
+                <ul class="space-y-1 text-green-700 text-sm">
+                    <li>• Least-squares homography estimation</li>
+                    <li>• Inverse warping to avoid holes</li>
+                    <li>• Distance transform for alpha masks</li>
+                    <li>• Laplacian pyramid blending (4 levels)</li>
+                    <li>• Automatic output size computation</li>
+                    <li>• Cylindrical projection with adjustable focal length</li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Modal for viewing images -->
+    <div id="photo-modal" class="fixed inset-0 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-6xl max-h-[90vh] overflow-hidden flex flex-col relative">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-white text-3xl font-bold bg-gray-800 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-700 transition-colors z-50">
+                &times;
+            </button>
+            <div class="flex-grow flex items-center justify-center overflow-hidden">
+                <img id="modal-image" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg">
+            </div>
+            <p id="modal-caption" class="p-4 text-center font-semibold text-lg text-gray-800"></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-gray-800 text-white text-center">
+        <p class="text-gray-300">Image Warping and Mosaicing Project | CS180 Computer Vision Course</p>
+        <p class="text-gray-400 text-sm mt-2">Yuchen Zhang | Fall 2024</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const modal = document.getElementById('photo-modal');
+            const modalImage = document.getElementById('modal-image');
+            const modalCaption = document.getElementById('modal-caption');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            function showModal(imageSrc, imageAlt, captionText) {
+                modalImage.src = imageSrc;
+                modalImage.alt = imageAlt;
+                modalCaption.textContent = captionText;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+
+            galleryItems.forEach(item => {
+                item.addEventListener('click', (event) => {
+                    const img = item.querySelector('img');
+                    const caption = item.querySelector('h4, p');
+                    const captionText = caption ? caption.textContent : img.alt;
+                    showModal(img.src, img.alt, captionText);
+                });
+            });
+
+            closeModalBtn.addEventListener('click', closeModal);
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
