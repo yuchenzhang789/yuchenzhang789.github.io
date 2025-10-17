@@ -750,6 +750,210 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
         </div>
     </section>
 
+    <!-- ...[All of your Part A and previous content above]... -->
+
+    <!-- Part B: Automatic Mosaicing & Feature Matching -->
+    <section class="container-section mb-12">
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Part B: Automatic Mosaicing & Feature Matching</h2>
+    
+        <!-- B1: Harris Corner Detection & ANMS -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-bold mb-4 text-indigo-700">B.1: Harris Corner Detection & ANMS</h3>
+            <div class="space-y-8">
+                <div class="p-6 bg-blue-50 rounded-lg text-gray-700 leading-relaxed">
+                    <p>
+                        I implemented automatic Harris corner detection to find interest points in images. I then applied Adaptive Non-Maximal Suppression (ANMS) to select a spatially uniform and robust subset of corners. The comparison below shows that ANMS yields well-distributed features compared to the dense clusters of raw Harris corners.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:180px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b1_harris_anms_building0.png" alt="B1 Harris vs ANMS 1">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Comparison: Harris vs ANMS (Image 1)</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:180px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b1_harris_anms_building1.png" alt="B1 Harris vs ANMS 2">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Comparison: Harris vs ANMS (Image 2)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <!-- B2: Feature Descriptor Extraction -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-bold mb-4 text-indigo-700">B.2: Feature Descriptor Extraction</h3>
+            <div class="space-y-8">
+                <div class="p-6 bg-green-50 rounded-lg text-gray-700 leading-relaxed">
+                    <p>
+                        For each selected corner, I extracted an 8x8 normalized patch as its feature descriptor. These descriptors are robust to illumination and minor geometric changes and enable reliable matching between images. The plot below shows several sample feature descriptors.
+                    </p>
+                </div>
+                <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item max-w-xl mx-auto">
+                    <div class="image-container" style="height:220px;">
+                        <img src="https://yuchenzhang789.github.io/proj_3/output/b2_sample_descriptors.png" alt="B2 Feature Descriptor Samples">
+                    </div>
+                    <p class="p-3 text-center text-gray-700 text-sm">Sample 8x8 Feature Descriptors</p>
+                </div>
+            </div>
+        </section>
+    
+        <!-- B3: Feature Matching -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-bold mb-4 text-indigo-700">B.3: Feature Matching</h3>
+            <div class="space-y-8">
+                <div class="p-6 bg-purple-50 rounded-lg text-gray-700 leading-relaxed">
+                    <p>
+                        Using the extracted descriptors, I matched features between image pairs using Lowe's ratio test. The matches are visualized below, showing correct correspondences between images that are crucial for panorama stitching.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:200px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b3_matches_building0_building1.png" alt="B3 Feature Matches 1">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Feature Matches: Building0 &rarr; Building1</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:200px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b3_matches_building0_building2.png" alt="B3 Feature Matches 2">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Feature Matches: Building0 &rarr; Building2</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:200px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b3_matches_building1_building2.png" alt="B3 Feature Matches 3">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Feature Matches: Building1 &rarr; Building2</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <!-- B4: RANSAC & Automatic vs Manual Mosaic -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-bold mb-4 text-indigo-700">B.4: RANSAC Homography & Automatic Mosaicing</h3>
+            <div class="space-y-8">
+    
+                <!-- Subsection 1: RANSAC Inlier Visualization -->
+                <div class="mb-8">
+                    <div class="p-6 bg-yellow-50 rounded-lg text-gray-700 leading-relaxed">
+                        <p>
+                            To robustly estimate the homography, I applied RANSAC to the matched features, discarding outliers. The result below highlights the inlier matches used for homography computation.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item max-w-2xl mx-auto">
+                        <div class="image-container" style="height:240px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b4_ransac_inliers_building0_building1.png" alt="B4 RANSAC Inliers">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">RANSAC Inlier Matches</p>
+                    </div>
+                </div>
+    
+                <!-- Subsection 2: Manual vs Automatic Mosaic -->
+                <div class="mb-8">
+                    <div class="p-6 bg-green-50 rounded-lg text-gray-700 leading-relaxed">
+                        <p>
+                            I compared mosaics produced with manual point selection and automatic feature matching. The left image in each pair is the manual mosaic, the right is the automatic one (using RANSAC). My automatic pipeline produces results comparable to manual alignment.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <div class="image-container" style="height:180px;">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/b4_mosaic_manual_building0_building1.png" alt="Manual Mosaic 1">
+                                </div>
+                                <p class="p-3 text-center text-gray-700 text-sm">Manual Mosaic 1</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item mt-2">
+                                <div class="image-container" style="height:180px;">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/b4_mosaic_auto_building0_building1.png" alt="Auto Mosaic 1">
+                                </div>
+                                <p class="p-3 text-center text-gray-700 text-sm">Automatic Mosaic 1</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <div class="image-container" style="height:180px;">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/b4_mosaic_manual_building0_building2.png" alt="Manual Mosaic 2">
+                                </div>
+                                <p class="p-3 text-center text-gray-700 text-sm">Manual Mosaic 2</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item mt-2">
+                                <div class="image-container" style="height:180px;">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/b4_mosaic_auto_building0_building2.png" alt="Auto Mosaic 2">
+                                </div>
+                                <p class="p-3 text-center text-gray-700 text-sm">Automatic Mosaic 2</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                                <div class="image-container" style="height:180px;">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/b4_mosaic_manual_building1_building2.png" alt="Manual Mosaic 3">
+                                </div>
+                                <p class="p-3 text-center text-gray-700 text-sm">Manual Mosaic 3</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item mt-2">
+                                <div class="image-container" style="height:180px;">
+                                    <img src="https://yuchenzhang789.github.io/proj_3/output/b4_mosaic_auto_building1_building2.png" alt="Auto Mosaic 3">
+                                </div>
+                                <p class="p-3 text-center text-gray-700 text-sm">Automatic Mosaic 3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <!-- B5: Multiscale Processing -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-bold mb-4 text-indigo-700">B.5: Multiscale Processing</h3>
+            <div class="space-y-8">
+                <div class="p-6 bg-red-50 rounded-lg text-gray-700 leading-relaxed">
+                    <p>
+                        I extended my pipeline with multiscale processing. I built a Gaussian pyramid for each image, detected Harris corners at multiple scales, and extracted descriptors at their respective scales. This enables robust keypoint detection and description, improving mosaic quality for challenging scenes.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:160px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b5_multiscale_layer0.png" alt="B5 Multiscale Layer 0">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Multiscale Layer 0 (Original Scale)</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:160px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b5_multiscale_layer1.png" alt="B5 Multiscale Layer 1">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Multiscale Layer 1</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:160px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b5_multiscale_layer2.png" alt="B5 Multiscale Layer 2">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Multiscale Layer 2</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:220px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b5_single_scale_mosaic.png" alt="B5 Single Scale Mosaic">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Single Scale Mosaic</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:220px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/b5_multiscale_mosaic.png" alt="B5 Multiscale Mosaic">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Multiscale Mosaic</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+
     <!-- Modal for viewing images -->
     <div id="photo-modal" class="fixed inset-0 hidden items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-2xl max-w-6xl max-h-[90vh] overflow-hidden flex flex-col relative">
