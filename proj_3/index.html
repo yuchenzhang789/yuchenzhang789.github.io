@@ -426,6 +426,37 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                 </div>
             </div>
 
+            <!-- Mask Visualizations (NEW for A.4) -->
+                <div class="mb-8">
+                    <h4 class="text-lg font-semibold mb-3 text-gray-700">Mask Visualization Before and After Distance Transform</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <div class="image-container" style="height:180px;">
+                                <img src="https://yuchenzhang789.github.io/proj_3/output/blend_mask_img1_before.png" alt="Mask Before Distance (Image 1)">
+                            </div>
+                            <p class="p-3 text-center text-gray-700 text-sm">Mask Before (Image 1)</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <div class="image-container" style="height:180px;">
+                                <img src="https://yuchenzhang789.github.io/proj_3/output/blend_mask_img2_before.png" alt="Mask Before Distance (Image 2)">
+                            </div>
+                            <p class="p-3 text-center text-gray-700 text-sm">Mask Before (Image 2)</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <div class="image-container" style="height:180px;">
+                                <img src="https://yuchenzhang789.github.io/proj_3/output/blend_mask_img1_after.png" alt="Mask After Distance (Image 1)">
+                            </div>
+                            <p class="p-3 text-center text-gray-700 text-sm">Mask After Distance (Image 1)</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <div class="image-container" style="height:180px;">
+                                <img src="https://yuchenzhang789.github.io/proj_3/output/blend_mask_img2_after.png" alt="Mask After Distance (Image 2)">
+                            </div>
+                            <p class="p-3 text-center text-gray-700 text-sm">Mask After Distance (Image 2)</p>
+                        </div>
+                    </div>
+                </div>
+
             <!-- Mosaic Results -->
             <div class="space-y-12">
                 
@@ -560,66 +591,100 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
     </section>
 
     <!-- Part 5: Bells & Whistles Section -->
+    <!-- Part A.5: Cylindrical Projection and Mosaic -->
     <section class="container-section mb-12">
-        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">Part 5: Bells & Whistles - Cylindrical Projection</h2>
+        <h2 class="text-3xl font-bold mb-6 text-center text-indigo-600">A.5: Cylindrical Projection & Mosaic</h2>
         <div class="space-y-8">
             <div class="p-6 bg-red-50 rounded-lg text-gray-700 leading-relaxed">
                 <p class="mb-4">
-                    For wide-angle panoramas, I implemented <strong>cylindrical projection</strong> to better represent the scene. This method projects the images onto a cylinder surface before creating the mosaic, reducing distortion in very wide panoramas.
+                    To reduce distortion in wide panoramas, I implemented <strong>cylindrical projection</strong> and created cylindrical mosaics. Each image is warped onto a cylinder before blending.
                 </p>
             </div>
-
-            <!-- Cylindrical Projection Implementation -->
+    
+            <!-- Math Section: Updated -->
             <div class="mb-8">
-                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Cylindrical Warping Implementation</h3>
-                <div class="space-y-6">
-                    
-                    <!-- Theory -->
-                    <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
-                        <h4 class="text-lg font-semibold text-red-800 mb-3">Some Math: </h4>
-                        <p class="text-gray-700 mb-3">
-                            Cylindrical projection maps points from the image plane to a cylinder surface. For a point (x, y) in the original image, I first convert it to angular coordinates, then map it to the cylinder surface using focal length f.
-                        </p>
-                        <div class="bg-gray-100 p-4 rounded-lg math-formula text-center mb-3">
-                            <p><strong>θ = (x - center_x) / f</strong></p>
-                            <p><strong>x_cyl = center_x + f × tan(θ)</strong></p>
-                            <p><strong>y_cyl = y</strong></p>
-                        </div>
-                        <p class="text-gray-700 text-sm">
-                            The focal length f controls the "radius" of the cylinder - smaller f creates tighter curvature.
-                        </p>
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Cylindrical Projection Math</h3>
+                <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
+                    <h4 class="text-lg font-semibold text-red-800 mb-3">Theory</h4>
+                    <p class="text-gray-700 mb-3">
+                        For a pixel location <span class="math-formula">(x, y)</span> in the original image, cylindrical projection computes new coordinates:
+                    </p>
+                    <div class="bg-gray-100 p-4 rounded-lg math-formula text-center mb-3">
+                        <p><strong>&theta; = (x - c_x) / f</strong></p>
+                        <p><strong>r = f / cos(&theta;)</strong></p>
+                        <p><strong>x' = f * tan(&theta;) + c_x</strong></p>
+                        <p><strong>y' = (y - c_y) * r / f + c_y</strong></p>
                     </div>
-
-                    <!-- Implementation -->
-                    <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
-                        <h4 class="text-lg font-semibold text-red-800 mb-3">Implementation Process</h4>
-                        <p class="text-gray-700 mb-3">
-                            I first apply cylindrical warping to the input images, then blend them to create the mosaic. This one-stage approach allows me to handle the complexity incrementally while maintaining image quality.
-                        </p>
-                        <div class="code-block p-3 rounded text-sm mb-3">
-                            <code>def cylindrical_warp(img, focal_length):<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;h, w = img.shape[:2]<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;center_x = w / 2.0<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;y_out, x_out = np.meshgrid(np.arange(h), np.arange(w), indexing='ij')<br><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;theta = (x_out - center_x) / focal_length<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;x_in = center_x + focal_length * np.tan(theta)<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;y_in = y_out<br><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;return map_coordinates(img, [y_in, x_in], order=1)</code>
-                        </div>
-                        <p class="text-gray-700 text-sm">
-                            I use <code class="bg-gray-200 px-1 rounded">scipy.ndimage.map_coordinates</code> for efficient bilinear interpolation during the cylindrical mapping.
-                        </p>
-                    </div>
-
-                    <!-- Parameter Selection -->
-                    <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
-                        <h4 class="text-lg font-semibold text-red-800 mb-3">Focal Length Selection</h4>
-                        <p class="text-gray-700 mb-3">
-                            The choice of focal length is crucial: too small creates excessive curvature, too large provides minimal benefit. I experimented with values from 300-800 pixels and found that <strong>f = 300-400</strong> works well for most scenes.
-                        </p>
-                    </div>
-
+                    <p class="text-gray-700 text-sm">
+                        Here, <strong>f</strong> is the focal length, <strong>c_x</strong> and <strong>c_y</strong> are the image center coordinates.
+                    </p>
                 </div>
+            </div>
+    
+            <!-- Implementation Code: Updated -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Implementation Code</h3>
+                <div class="code-block p-3 rounded text-sm mb-3">
+                    <pre>
+    def warpCylindrical(im, focal_length):
+        if len(im.shape) == 3:
+            h, w, c = im.shape
+        else:
+            h, w = im.shape
+            c = 1
+            im = im[:, :, np.newaxis]
+        output_h, output_w = h, w
+        center_x = w / 2.0
+        center_y = h / 2.0
+        y_out, x_out = np.mgrid[0:output_h, 0:output_w].astype(np.float64)
+        x_centered = x_out - center_x
+        y_centered = y_out - center_y
+        theta = x_centered / focal_length
+        r = focal_length / np.cos(theta)
+        x_in = focal_length * np.tan(theta) + center_x
+        y_in = y_centered * r / focal_length + center_y
+        # bilinear interpolation steps omitted for brevity
+                    </pre>
+                </div>
+            </div>
+    
+            <!-- Image/Mask Visualizations (4 slots before focal length selection) -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-3 text-gray-700">Cylindrical Projection & Mask Visualizations</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:180px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/cylindrical_img1.png" alt="Cylindrical Image">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Image After Cylindrical Projection</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:180px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/cylindrical_mask_img1_before.png" alt="Mask After Cylindrical Projection">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Mask After Cylindrical Projection</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:180px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/cylindrical_mask_img1_after_dist.png" alt="Mask After Distance Function">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Mask After Distance Transform</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                        <div class="image-container" style="height:180px;">
+                            <img src="https://yuchenzhang789.github.io/proj_3/output/cylindrical_mask_img1_after_homography.png" alt="Mask After Homography">
+                        </div>
+                        <p class="p-3 text-center text-gray-700 text-sm">Mask After Homography Warp</p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Focal Length Selection -->
+            <div class="p-6 bg-white rounded-lg border-l-4 border-red-400">
+                <h4 class="text-lg font-semibold text-red-800 mb-3">Focal Length Selection</h4>
+                <p class="text-gray-700 mb-3">
+                    The choice of focal length is crucial: too small creates excessive curvature, too large provides minimal benefit. I experimented with values from 500-1200 pixels and found that <strong>f = 800-1200</strong> works well for most scenes.
+                </p>
             </div>
 
             <!-- Cylindrical vs Planar Comparison -->
