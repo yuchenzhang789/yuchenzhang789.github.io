@@ -750,7 +750,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
         </div>
     </section>
 
-    <!-- ...[All of your Part A and previous content above]... -->
+    <!-- ...Part A content above... -->
 
     <!-- Part B: Automatic Mosaicing & Feature Matching -->
     <section class="container-section mb-12">
@@ -762,7 +762,13 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
             <div class="space-y-8">
                 <div class="p-6 bg-blue-50 rounded-lg text-gray-700 leading-relaxed">
                     <p>
-                        I implemented automatic Harris corner detection to find interest points in images. I then applied Adaptive Non-Maximal Suppression (ANMS) to select a spatially uniform and robust subset of corners. The comparison below shows that ANMS yields well-distributed features compared to the dense clusters of raw Harris corners.
+                        I implemented automatic Harris corner detection to identify robust interest points based on local image gradients. However, Harris corners tend to cluster in textured regions. To remedy this, I applied <strong>Adaptive Non-Maximal Suppression (ANMS)</strong> which selects the strongest and most spatially separated corners. ANMS computes a suppression radius for each corner:
+                    </p>
+                    <div class="bg-gray-100 p-4 rounded-lg math-formula mb-3 text-center">
+                        <p><strong>r_i = \min_j \|x_i - x_j\| \quad \text{such that} \quad f_j > c_{robust} \cdot f_i</strong></p>
+                    </div>
+                    <p>
+                        This ensures only the most distinctive and well-distributed corners are selected for further processing, improving downstream matching and mosaicing.
                     </p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -788,7 +794,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
             <div class="space-y-8">
                 <div class="p-6 bg-green-50 rounded-lg text-gray-700 leading-relaxed">
                     <p>
-                        For each selected corner, I extracted an 8x8 normalized patch as its feature descriptor. These descriptors are robust to illumination and minor geometric changes and enable reliable matching between images. The plot below shows several sample feature descriptors.
+                        For each selected corner, I extracted a robust feature descriptor. This started by extracting a 40x40 window around the keypoint, applying Gaussian blurring to reduce noise, then downsampling to an 8x8 patch. Finally, the patch was normalized to zero mean and unit variance, producing a descriptor invariant to brightness and minor geometric changes. This process ensures that features from different images can be reliably compared for matching.
                     </p>
                 </div>
                 <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item max-w-xl mx-auto">
@@ -806,7 +812,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
             <div class="space-y-8">
                 <div class="p-6 bg-purple-50 rounded-lg text-gray-700 leading-relaxed">
                     <p>
-                        Using the extracted descriptors, I matched features between image pairs using Lowe's ratio test. The matches are visualized below, showing correct correspondences between images that are crucial for panorama stitching.
+                        I matched features between images by comparing descriptors using Euclidean distance. For each descriptor in image 1, I found the nearest neighbor (NN1) and the second nearest neighbor (NN2) in image 2. To ensure matches are distinctive and not ambiguous, I applied <strong>Lowe's ratio test</strong>: a match is accepted if <span class="math-formula">NN1 / NN2 &lt; 0.75</span>. This eliminates weak or ambiguous matches and produces a robust set of correspondences for further processing.
                     </p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -841,14 +847,28 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                 <div class="mb-8">
                     <div class="p-6 bg-yellow-50 rounded-lg text-gray-700 leading-relaxed">
                         <p>
-                            To robustly estimate the homography, I applied RANSAC to the matched features, discarding outliers. The result below highlights the inlier matches used for homography computation. The colored lines indicate preserved inliers, while the gray lines represent removed outliers.
+                            To robustly estimate the homography, I used <strong>RANSAC</strong> (Random Sample Consensus). RANSAC repeatedly samples minimal sets of matches to fit a homography, then scores all matches by how well they agree (inliers). The process iterates to find the model with the largest inlier set, discarding outliers. The images below show RANSAC inlier matches for different scenes, with colored lines for inliers and gray for outliers.
                         </p>
                     </div>
-                    <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item max-w-2xl mx-auto">
-                        <div class="image-container" style="height:240px;">
-                            <img src="https://yuchenzhang789.github.io/proj_3/output/ransac_inliers_building0_building1.png" alt="B4 RANSAC Inliers">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <div class="image-container" style="height:220px;">
+                                <img src="https://yuchenzhang789.github.io/proj_3/output/ransac_inliers_building0_building1.png" alt="B4 RANSAC Inliers 1">
+                            </div>
+                            <p class="p-3 text-center text-gray-700 text-sm">RANSAC Inliers: Building0 &rarr; Building1</p>
                         </div>
-                        <p class="p-3 text-center text-gray-700 text-sm">RANSAC Inlier Matches for Apartment Building.</p>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <div class="image-container" style="height:220px;">
+                                <img src="https://yuchenzhang789.github.io/proj_3/output/ransac_inliers_doorway0_doorway1.png" alt="B4 RANSAC Inliers 2">
+                            </div>
+                            <p class="p-3 text-center text-gray-700 text-sm">RANSAC Inliers: Doorway0 &rarr; Doorway1</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden gallery-item">
+                            <div class="image-container" style="height:220px;">
+                                <img src="https://yuchenzhang789.github.io/proj_3/output/ransac_inliers_kitchen0_kitchen1.png" alt="B4 RANSAC Inliers 3">
+                            </div>
+                            <p class="p-3 text-center text-gray-700 text-sm">RANSAC Inliers: Kitchen0 &rarr; Kitchen1</p>
+                        </div>
                     </div>
                 </div>
     
@@ -856,7 +876,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                 <div class="mb-8">
                     <div class="p-6 bg-green-50 rounded-lg text-gray-700 leading-relaxed">
                         <p>
-                            I compared mosaics produced with manual point selection and automatic feature matching. The left image in each pair is the manual mosaic, the right is the automatic one (using RANSAC). My automatic pipeline produces results comparable to manual alignment.
+                            Building on the previous steps, I constructed an <strong>automatic mosaicing pipeline</strong> that integrates feature detection, descriptor extraction, feature matching, and RANSAC-based homography estimation. By warping images using the computed homographies and blending them, I produced automatic mosaics. Below are comparisons between mosaics produced using manual points versus the fully automatic pipeline. My method achieves visually seamless results comparable to manual alignment.
                         </p>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -913,7 +933,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
             <div class="space-y-8">
                 <div class="p-6 bg-red-50 rounded-lg text-gray-700 leading-relaxed">
                     <p>
-                        I extended my pipeline with multiscale processing. I built a Gaussian pyramid for each image, detected Harris corners at multiple scales, and extracted descriptors at their respective scales. This enables robust keypoint detection and description, improving mosaic quality for challenging scenes.
+                        To further improve robustness, I implemented <strong>multiscale feature detection and description</strong>. By constructing a Gaussian pyramid and detecting corners at each scale, the system can find features that are stable across different resolutions, making matching more reliable in challenging scenes (e.g., with scale changes or blur). This also provides denser and more diverse feature coverage, enabling higher quality mosaics, especially when images have varying zoom or focus.
                     </p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
