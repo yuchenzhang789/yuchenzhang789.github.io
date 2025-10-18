@@ -597,7 +597,13 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
         <div class="space-y-8">
             <div class="p-6 bg-red-50 rounded-lg text-gray-700 leading-relaxed">
                 <p class="mb-4">
-                    To reduce distortion in wide panoramas, I implemented <strong>cylindrical projection</strong> and created cylindrical mosaics. Each image is warped onto a cylinder before blending.
+                    To reduce distortion in wide panoramas, I implemented <strong>cylindrical projection</strong> and created cylindrical mosaics. 
+                    
+                    I first projected the image to a cylinder's outside surface (theta and r), then project this concave plane to a 2D plane by computing the new coordinates using the equations listed below. 
+                    After that, each cylinderical projected image is warpped to a global canvas using homography. 
+                    The tricky thing here is to warp the alpha mask as well, so the final mosaic has good blending. 
+                    
+                    Each image is warped onto a cylinder before blending.
                 </p>
             </div>
     
@@ -765,7 +771,7 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                         I implemented automatic Harris corner detection to identify robust interest points based on local image gradients. However, Harris corners tend to cluster in textured regions. To remedy this, I applied <strong>Adaptive Non-Maximal Suppression (ANMS)</strong> which selects the strongest and most spatially separated corners. ANMS computes a suppression radius for each corner:
                     </p>
                     <div class="bg-gray-100 p-4 rounded-lg math-formula mb-3 text-center">
-                        <p><strong>r_i = \min_j \|x_i - x_j\| \quad \text{such that} \quad f_j > c_{robust} \cdot f_i</strong></p>
+                        <p><strong>r_i = min_j (|x_i - x_j|) {s.t.}  f_i < c_robust * f_j</strong></p>
                     </div>
                     <p>
                         This ensures only the most distinctive and well-distributed corners are selected for further processing, improving downstream matching and mosaicing.
@@ -812,7 +818,10 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
             <div class="space-y-8">
                 <div class="p-6 bg-purple-50 rounded-lg text-gray-700 leading-relaxed">
                     <p>
-                        I matched features between images by comparing descriptors using Euclidean distance. For each descriptor in image 1, I found the nearest neighbor (NN1) and the second nearest neighbor (NN2) in image 2. To ensure matches are distinctive and not ambiguous, I applied <strong>Lowe's ratio test</strong>: a match is accepted if <span class="math-formula">NN1 / NN2 &lt; 0.75</span>. This eliminates weak or ambiguous matches and produces a robust set of correspondences for further processing.
+                        I matched features between images by comparing descriptors using Euclidean distance. For each descriptor in image 1, I found the nearest neighbor (NN1) and the second nearest neighbor (NN2) in image 2. To ensure matches are distinctive and not ambiguous, I applied <strong>Lowe's ratio test</strong>: a match is accepted if <span class="math-formula">NN1 / NN2 &lt; 0.75</span>.
+                        This eliminates weak or ambiguous matches and produces a robust set of correspondences for further processing.
+
+                        Using the threshold 0.75, I decreased the corners from 500 (after ANMS) to 170 in the Apartment Building example.
                     </p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -847,7 +856,10 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                 <div class="mb-8">
                     <div class="p-6 bg-yellow-50 rounded-lg text-gray-700 leading-relaxed">
                         <p>
-                            To robustly estimate the homography, I used <strong>RANSAC</strong> (Random Sample Consensus). RANSAC repeatedly samples minimal sets of matches to fit a homography, then scores all matches by how well they agree (inliers). The process iterates to find the model with the largest inlier set, discarding outliers. The images below show RANSAC inlier matches for different scenes, with colored lines for inliers and gray for outliers.
+                            To robustly estimate the homography, I used <strong>RANSAC</strong> . RANSAC repeatedly samples minimal sets of matches (4) to fit a homography, then scores all matches by how well they agree (inliers). The process iterates to find the model with the largest inlier set, discarding outliers, and finally recomputes the homography. 
+                            In the apartment building exmaple, RANSAC reduced the corners from 170 (after feature matching) to 128 inliers.
+                            
+                            The images below show RANSAC inlier matches for different scenes, with colored lines for inliers and gray for outliers.
                         </p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -876,7 +888,11 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
                 <div class="mb-8">
                     <div class="p-6 bg-green-50 rounded-lg text-gray-700 leading-relaxed">
                         <p>
-                            Building on the previous steps, I constructed an <strong>automatic mosaicing pipeline</strong> that integrates feature detection, descriptor extraction, feature matching, and RANSAC-based homography estimation. By warping images using the computed homographies and blending them, I produced automatic mosaics. Below are comparisons between mosaics produced using manual points versus the fully automatic pipeline. My method achieves visually seamless results comparable to manual alignment.
+                            Building on the previous steps, I constructed an <strong>automatic mosaicing pipeline</strong> that integrates feature detection, descriptor extraction, feature matching, and RANSAC-based homography estimation. 
+                            Reusing the blending methods from part A, I produced automatic mosaics. 
+                            
+                            Below are comparisons between mosaics produced using manual points versus the fully automatic pipeline. 
+                            The auto method achieves visually seamless and less blurred results compare to manual alignment.
                         </p>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -933,7 +949,8 @@ v = (h₃x + h₄y + h₅) / (h₆x + h₇y + 1)</pre>
             <div class="space-y-8">
                 <div class="p-6 bg-red-50 rounded-lg text-gray-700 leading-relaxed">
                     <p>
-                        To further improve robustness, I implemented <strong>multiscale feature detection and description</strong>. By constructing a Gaussian pyramid and detecting corners at each scale, the system can find features that are stable across different resolutions, making matching more reliable in challenging scenes (e.g., with scale changes or blur). This also provides denser and more diverse feature coverage, enabling higher quality mosaics, especially when images have varying zoom or focus.
+                        To further improve robustness, I implemented <strong>multiscale feature detection and description</strong>. By constructing a Gaussian pyramid and detecting corners & descriptors at each scale, the system can find features that are stable across different resolutions, making matching more reliable in challenging scenes (e.g., with scale changes or blur). 
+                        Multiscale captures denser and more diverse features, for exmaple, a corner could be less obvious at lower levels but more obvious at higher levels. This enables higher quality mosaics, especially when images have varying zoom or focus.
                     </p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
