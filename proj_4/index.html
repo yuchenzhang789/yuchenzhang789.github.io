@@ -86,8 +86,9 @@
           </li>
           <li><a href="#part1">3. Part 1 — 2D Neural Field</a>
             <ul>
-              <li><a href="#part1-provided">3.1 Provided Image</a></li>
-              <li><a href="#part1-mine">3.2 My Own Image</a></li>
+              <li><a href="#part1-setup">1.0 Architecture &amp; Positional Encoding</a></li>
+              <li><a href="#part1-provided">1.1 Provided Image</a></li>
+              <li><a href="#part1-mine">1.2 My Own Image</a></li>
             </ul>
           </li>
           <li><a href="#part2">4. Part 2 — NeRF</a>
@@ -241,7 +242,34 @@
         iterations, save reconstructions at milestones, and include a small sweep over width and L.
       </p>
 
-      <!-- 3.1 Provided Image -->
+      <!-- 1.0 Model & PE (NEW) -->
+      <section id="part1-setup">
+        <h3>1.0 Architecture &amp; Positional Encoding</h3>
+        <div class="two-col">
+          <figure>
+            <!-- Image 1 -->
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_model_arch.png" alt="2D Neural Field MLP architecture" />
+            <figcaption>Model architecture (MLP with PE input).</figcaption>
+          </figure>
+          <figure>
+            <!-- Image 2 -->
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_pe_equation.png" alt="Positional Encoding (PE) equation" />
+            <figcaption>Sinusoidal positional encoding (2D) used for coordinates.</figcaption>
+          </figure>
+        </div>
+        <ul>
+          <li><strong>Layers (depth):</strong> 3 hidden layers (total depth = 3 hidden + output).</li>
+          <li><strong>Width:</strong> 256 hidden units per layer.</li>
+          <li><strong>Learning rate:</strong> 1e-2 (Adam).</li>
+          <li><strong>PE frequencies:</strong> L = 10 → input dim = 2 + 4L = 42.</li>
+          <li><strong>Activation:</strong> ReLU in hidden layers, Sigmoid at the output.</li>
+          <li><strong>Batch size:</strong> 10,000 random pixels/iteration; <strong>Iterations:</strong> 2,000 (baseline).</li>
+          <li><strong>Device:</strong> Apple Silicon (MPS) with chunked full-image render (chunk = 131,072).</li>
+          <li><strong>Loss:</strong> MSE, metric: PSNR (10 log10(1/MSE)).</li>
+        </ul>
+      </section>
+
+      <!-- 1.1 Provided Image -->
       <section id="part1-provided">
         <h3>1.1 Provided Fox Image</h3>
         <div class="grid">
@@ -279,40 +307,39 @@
         </div>
       </section>
 
-      <!-- 3.2 My Own Image -->
+      <!-- 1.2 My Own Image -->
       <section id="part1-mine">
-        <h3>3.2 My Own Image</h3>
-        <!-- Duplicated displays (replace with your own outputs/paths) -->
+        <h3>1.2 My Own Image</h3>
         <div class="grid">
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_1.jpeg" alt="Iter 1 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_1.jpeg" alt="Iter 1 (mine)" />
             <figcaption>Iter 1</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_2.jpeg" alt="Iter 50 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_2.jpeg" alt="Iter 50 (mine)" />
             <figcaption>Iter 50</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_3.jpeg" alt="Iter 200 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_3.jpeg" alt="Iter 100 (mine)" />
             <figcaption>Iter 100</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_4.jpeg" alt="Iter 2000 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_4.jpeg" alt="Iter 200 (mine)" />
             <figcaption>Iter 200</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_5.jpeg" alt="Iter 2000 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_5.jpeg" alt="Iter 2000 (mine)" />
             <figcaption>Iter 2000</figcaption>
           </figure>
         </div>
 
         <div class="two-col">
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_psnr.png" alt="PSNR curve (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_psnr.png" alt="PSNR curve (mine)" />
             <figcaption>PSNR over iterations</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_grid.jpeg" alt="2x2 sweep grid (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_grid.jpeg" alt="2x2 sweep grid (mine)" />
             <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10}.</figcaption>
           </figure>
         </div>
@@ -472,21 +499,25 @@
           These five images track qualitative improvement: early underfitting → sharper geometry and color
           after extended optimization.
         </p>
-        <div class="grid">
+        <div class="snapshots-grid">
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_1.png" alt="Validation render at 500 iterations" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_1.png" alt="Validation render at 100 iterations" />
             <figcaption>Iter 100</figcaption>
-          
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_2.png" alt="Validation render at 500 iterations" />
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_2.png" alt="Validation render at 200 iterations" />
             <figcaption>Iter 200</figcaption>
-          
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_3.png" alt="Validation render at 500 iterations" />
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_3.png" alt="Validation render at 400 iterations" />
             <figcaption>Iter 400</figcaption>
-          
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_4.png" alt="Validation render at 500 iterations" />
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_4.png" alt="Validation render at 800 iterations" />
             <figcaption>Iter 800</figcaption>
-          
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_5.png" alt="Validation render at 500 iterations" />
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_5.png" alt="Validation render at 3000 iterations" />
             <figcaption>Iter 3000</figcaption>
           </figure>
         </div>
@@ -497,7 +528,7 @@
           (3000 iters). Improvements appear in sharper edges, reduced noise in low-density regions, and better
           color consistency on occluded parts.
         </p>
-        <div class="gif-row">
+        <div class="two-col">
           <figure>
             <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_short.gif" alt="Novel view orbit at 1000 iterations" />
             <figcaption>Orbit GIF @ 1000 iterations.</figcaption>
@@ -517,22 +548,36 @@
             <li><span class="pill">Model</span> <a href="./nerf_model.py">nerf_model.py</a> (PE on xyz & view dir, skip layer 4).</li>
           </ul>
           <p>
-            Snapshot cadence chosen to highlight early underfitting (500–1000) vs mid-training (1500–2000) vs target quality (3000).
+            Snapshot cadence chosen to highlight early underfitting (100–800) vs later quality (3000).
             GIFs produced by rendering <code>c2ws_test</code> path with <code>downscale=2</code> for speed.
           </p>
         </details>
       </section>
 
-      <!-- 2.6 Split into Lafufu and Custom -->
+      <!-- 2.6 Custom datasets -->
       <section id="p26">
         <h3>2.6 NeRF on Lafufu & Custom Datasets</h3>
         <p>
-          I trained the NeRF with my own captured custom dataset using the previous model architecture. This took more iterations to reach a preferable loss compare to the lego scene.
+          I trained the NeRF with my own captured custom dataset using the previous model architecture. This took more iterations to reach a preferable loss compared to the Lego scene.
         </p>
+
+        <!-- Engineering & Hyperparameter Choices (ADDED) -->
+        <h4>2.6.1 — Engineering &amp; Hyperparameter Choices</h4>
+        <ul>
+          <li><strong>Samples per ray:</strong> <code>n_samples = 64</code> (↑ from 32 on Lego) to improve quality on my real data.</li>
+          <li><strong>Model capacity:</strong> hidden width <code>W = 256</code>, depth <code>D = 8</code>, skip at layer <code>4</code>.</li>
+          <li><strong>Training schedule:</strong> <code>iters = 15000</code> (custom dataset).</li>
+          <li><strong>Rays per iteration:</strong> <code>rays_per_batch = 8192</code> (to keep VRAM manageable).</li>
+          <li><strong>Near/Far:</strong> <code>near = 0.02</code>, <code>far = 0.5</code> (tabletop scale; reduces “air” artifacts).</li>
+          <li><strong>Rendering chunk:</strong> <code>render_chunk = 8192</code> for validation/video (fits on MPS).</li>
+          <li><strong>Optimizer:</strong> Adam, <strong>LR</strong> <code>5e-4</code>; cosine LR decay optional.</li>
+          <li><strong>Device &amp; precision:</strong> MPS (Apple Silicon), float32; PNG frames always saved for stability.</li>
+        </ul>
+        <p><em>Why these choices?</em> A slightly larger sampling budget and the same-width MLP stabilize fine details on my real scene while keeping memory in check. Tighter near/far avoids translucent fog and reduces background bias. Lower render chunk avoids OOM during validation/video.</p>
 
         <!-- 2.6.2 Custom -->
         <section id="p26-custom">
-          <h4>2.6 Custom Dataset</h4>
+          <h4>2.6.2 Custom Dataset</h4>
           <div class="two-col">
             <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_loss.png" alt="Loss for custom image" /><figcaption>Loss for custom image</figcaption></figure>
             <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_psnr.png" alt="PSNR for custom image" /><figcaption>PSNR for custom image</figcaption></figure>
@@ -540,15 +585,14 @@
           <h5>Training Snapshots</h5>
           <div class="grid">
             <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_1.png" alt="Custom 500" /><figcaption>Iter 500</figcaption></figure>
-            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_2.png" alt="Custom 500" /><figcaption>Iter 1000</figcaption></figure>
-            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_3.png" alt="Custom 500" /><figcaption>Iter 2000</figcaption></figure>
-            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_4.png" alt="Custom 500" /><figcaption>Iter 4000</figcaption></figure>
-            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_5.png" alt="Custom 500" /><figcaption>Iter 15000</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_2.png" alt="Custom 1000" /><figcaption>Iter 1000</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_3.png" alt="Custom 2000" /><figcaption>Iter 2000</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_4.png" alt="Custom 4000" /><figcaption>Iter 4000</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_5.png" alt="Custom 15000" /><figcaption>Iter 15000</figcaption></figure>
           </div>
-          <h5>Novel View Orbit GIFs</h5>
-          <div class="gif-row">
-            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_gif.gif" alt="Custom orbit 1000" /><figcaption>Custom @ 15000 iters</figcaption></figure>
-           
+          <h5>Novel View Orbit GIF</h5>
+          <div class="two-col">
+            <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_6_gif.gif" alt="Custom orbit 15000" /><figcaption>Custom @ 15000 iters</figcaption></figure>
           </div>
           <details>
             <summary>Files (Custom)</summary>
@@ -567,11 +611,11 @@
         <p>
           Depth visualizations rendered using identical ray marching pipeline as RGB (expected depth
           = Σ w<sub>i</sub> t<sub>i</sub>). I also used different contrast to improve the video quality. Side-by-side comparisons
-          highlight geometric consistency of the learned field. ** The WHITE color indicates CLOSER distance from the camera in the depth video.
+          highlight geometric consistency of the learned field. <strong>White</strong> indicates closer distance to the camera in the depth video.
         </p>
         <div class="two-col">
-          <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_long.gif" alt="RGB vs Disparity side-by-side GIF" /><figcaption>Original Lego GIF.</figcaption></figure>
-          <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part_bw.gif" alt="High contrast depth GIF" /><figcaption>Depth Lego GIF.</figcaption></figure>
+          <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_long.gif" alt="Original Lego GIF" /><figcaption>Original Lego GIF.</figcaption></figure>
+          <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part_bw.gif" alt="Depth GIF" /><figcaption>Depth Lego GIF.</figcaption></figure>
         </div>
         <details>
           <summary>Depth Rendering Implementation</summary>
@@ -648,7 +692,7 @@ python part_bw_render_depth.py --checkpoint part25_outputs/nerf_coarse_step03000
     </section>
 
     <footer style="margin-top:40px; color:#6a737d; font-size: 13px;">
-      © 2025 Yuchen Zhang. Built for CS180/280A Project 4. Replace placeholders under assets/ with your generated figures.
+      © 2025 Yuchen Zhang. Built for CS180/280A Project 4. Replace placeholders under outputs/ with your generated figures.
     </footer>
   </div>
 </body>
