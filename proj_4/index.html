@@ -105,7 +105,7 @@
     </header>
 
     <section id="intro">
-      <h2>1. Introduction</h2>
+      <h2>Introduction</h2>
       <p>
         This project builds a complete pipeline from data capture to neural rendering. In Part 0, I calibrate
         a camera using ArUco markers, estimate camera poses from a single square tag, visualize the rig, and
@@ -115,32 +115,28 @@
         rendering, training on a multi-view dataset, and rendering novel views and depth/disparity videos.
       </p>
       <p class="callout">
-        Reference pages: my Project 3 page
-        <a href="https://yuchenzhang789.github.io/proj_3/index.html" target="_blank" rel="noopener">link</a>
-        and a helpful reference from a friend
-        <a href="https://zhangzhendan-berkeley.github.io/zhangzhendan-Berkeley/4/index.html" target="_blank" rel="noopener">link</a>.
         The implementation follows the <a href="https://cal-cs180.github.io/fa25/hw/proj4/index.html" target="_blank" rel="noopener">Project 4 spec</a>.
       </p>
     </section>
 
     <section id="part0">
-      <h2>2. Part 0 — Data Acquisition &amp; Dataset</h2>
+      <h2>Part 0 — Data Acquisition &amp; Dataset</h2>
 
       <section id="part01">
         <h3>0.1 Camera Calibration</h3>
         <p>
-          I detect ArUco tags in a small board layout and calibrate with multiple images. For each detected tag,
+          I detect ArUco tags in a 2*3 layout and calibrate with 30+ images. For each detected tag,
           I push its four 2D corners and corresponding 3D square corners into OpenCV’s <code>calibrateCamera</code>.
           I fix <code>K3</code> and zero the tangential distortion to produce a stable intrinsics estimate for NeRF.
         </p>
         <div class="two-col">
           <figure>
-            <img src="assets/part0/calib_detections.jpg" alt="Detected ArUco tags overlay" />
-            <figcaption>Detected ArUco corners used as calibration samples.</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part01_1.jpg" alt="Sample calibration image 1" />
+            <figcaption>Sample calibration image 1</figcaption>
           </figure>
           <figure>
-            <img src="assets/part0/reproj_hist.png" alt="Per-sample RMS reprojection histogram" />
-            <figcaption>Per-sample RMS reprojection error (lower is better).</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part01_2.png" alt="Sample calibration image 2" />
+            <figcaption>Sample calibration image 2</figcaption>
           </figure>
         </div>
 
@@ -172,12 +168,12 @@
         </p>
         <div class="two-col">
           <figure>
-            <img src="assets/part0/tag_pnp.png" alt="Pose solvePnP overview" />
-            <figcaption>IPPE solvePnPGeneric on the square tag; pick the physically consistent solution.</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part02_1.jpeg" alt="Pose solvePnP overview" />
+            <figcaption>Sample image for my own labubu</figcaption>
           </figure>
           <figure>
-            <img src="assets/part0/poses_quiver.png" alt="Camera positions/quiver plot" />
-            <figcaption>Camera centers and viewing directions from recovered c2w transforms.</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part02_2.jpeg" alt="Camera positions/quiver plot" />
+            <figcaption>Sample image for my own labubu</figcaption>
           </figure>
         </div>
 
@@ -200,7 +196,11 @@
           This helps verify consistent orientation and overall path coverage.
         </p>
         <figure>
-          <img src="assets/part0/viser_frustums.png" alt="Viser frustums visualization" />
+          <img src="https://yuchenzhang789.github.io/proj_3/outputs/part03_1.png" alt="Viser frustums visualization" />
+          <figcaption>Viser-based 3D visualization of camera frustums in world coordinates.</figcaption>
+        </figure>
+        <figure>
+          <img src="https://yuchenzhang789.github.io/proj_3/outputs/part03_2.png" alt="Viser frustums visualization" />
           <figcaption>Viser-based 3D visualization of camera frustums in world coordinates.</figcaption>
         </figure>
 
@@ -222,22 +222,6 @@
           <code>images_train</code>, <code>c2ws_train</code>, <code>images_val</code>, <code>c2ws_val</code>,
           <code>c2ws_test</code>, and average <code>focal</code> in <code>dataset/my_data.npz</code>.
         </p>
-
-        <div class="two-col">
-          <figure>
-            <img src="assets/part0/undist_before.jpg" alt="Before undistort" />
-            <figcaption>Original frame (BGR).</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/part0/undist_after.jpg" alt="After undistort" />
-            <figcaption>Undistorted frame (RGB) using single newK.</figcaption>
-          </figure>
-        </div>
-
-        <figure>
-          <img src="assets/part0/split_grid.png" alt="Train/Val/Test sample grid" />
-          <figcaption>Train/Val/Test sampling preview from my dataset.</figcaption>
-        </figure>
 
         <details>
           <summary>Implementation details (part04_create_dataset.py)</summary>
@@ -263,7 +247,7 @@
     </section>
 
     <section id="part1">
-      <h2>3. Part 1 — 2D Neural Field</h2>
+      <h2>Part 1 — 2D Neural Field</h2>
       <p>
         I fit a sinusoidally encoded MLP to a single RGB image. Inputs are normalized pixel coordinates
         with positional encoding up to frequency L. The network predicts RGB in [0,1]. I report PSNR over
@@ -272,34 +256,38 @@
 
       <!-- 3.1 Provided Image -->
       <section id="part1-provided">
-        <h3>3.1 Provided Image</h3>
+        <h3>1.1 Provided Fox Image</h3>
         <div class="grid">
           <figure>
-            <img src="part1_outputs/base_W256_L10/recon_it0001.png" alt="Iter 1 (provided)" />
-            <figcaption>Iter 1 (provided image)</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_fox_1.png" alt="Iter 1 (provided)" />
+            <figcaption>Iter 1</figcaption>
           </figure>
           <figure>
-            <img src="part1_outputs/base_W256_L10/recon_it0050.png" alt="Iter 50 (provided)" />
-            <figcaption>Iter 50 (provided image)</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_fox_2.png" alt="Iter 50 (provided)" />
+            <figcaption>Iter 50</figcaption>
           </figure>
           <figure>
-            <img src="part1_outputs/base_W256_L10/recon_it0200.png" alt="Iter 200 (provided)" />
-            <figcaption>Iter 200 (provided image)</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_fox_3.png" alt="Iter 200 (provided)" />
+            <figcaption>Iter 100</figcaption>
           </figure>
           <figure>
-            <img src="part1_outputs/base_W256_L10/recon_it2000.png" alt="Iter 2000 (provided)" />
-            <figcaption>Iter 2000 (final, provided image)</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_fox_4.png" alt="Iter 2000 (provided)" />
+            <figcaption>Iter 200</figcaption>
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_fox_5.png" alt="Iter 2000 (provided)" />
+            <figcaption>Iter 2000</figcaption>
           </figure>
         </div>
 
         <div class="two-col">
           <figure>
-            <img src="part1_outputs/base_W256_L10/psnr_curve.png" alt="PSNR curve (provided)" />
-            <figcaption>PSNR over iterations (provided image baseline).</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_fox_psnr.png" alt="PSNR curve (provided)" />
+            <figcaption>PSNR over iterations</figcaption>
           </figure>
           <figure>
-            <img src="part1_outputs/sweep_grid.png" alt="2x2 sweep grid (provided)" />
-            <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10} (provided).</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_fox_grid.png" alt="2x2 sweep grid (provided)" />
+            <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10}.</figcaption>
           </figure>
         </div>
       </section>
@@ -310,31 +298,35 @@
         <!-- Duplicated displays (replace with your own outputs/paths) -->
         <div class="grid">
           <figure>
-            <img src="part1_outputs/base_W256_L10/recon_it0001.png" alt="Iter 1 (my image)" />
-            <figcaption>Iter 1 (my image)</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_labubu_1.png" alt="Iter 1 (provided)" />
+            <figcaption>Iter 1</figcaption>
           </figure>
           <figure>
-            <img src="part1_outputs/base_W256_L10/recon_it0050.png" alt="Iter 50 (my image)" />
-            <figcaption>Iter 50 (my image)</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_labubu_2.png" alt="Iter 50 (provided)" />
+            <figcaption>Iter 50</figcaption>
           </figure>
           <figure>
-            <img src="part1_outputs/base_W256_L10/recon_it0200.png" alt="Iter 200 (my image)" />
-            <figcaption>Iter 200 (my image)</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_labubu_3.png" alt="Iter 200 (provided)" />
+            <figcaption>Iter 100</figcaption>
           </figure>
           <figure>
-            <img src="part1_outputs/base_W256_L10/recon_it2000.png" alt="Iter 2000 (my image)" />
-            <figcaption>Iter 2000 (final, my image)</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_labubu_4.png" alt="Iter 2000 (provided)" />
+            <figcaption>Iter 200</figcaption>
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_labubu_5.png" alt="Iter 2000 (provided)" />
+            <figcaption>Iter 2000</figcaption>
           </figure>
         </div>
 
         <div class="two-col">
           <figure>
-            <img src="part1_outputs/base_W256_L10/psnr_curve.png" alt="PSNR curve (my image)" />
-            <figcaption>PSNR over iterations (my image baseline).</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_labubu_psnr.png" alt="PSNR curve (provided)" />
+            <figcaption>PSNR over iterations</figcaption>
           </figure>
           <figure>
-            <img src="part1_outputs/sweep_grid.png" alt="2x2 sweep grid (my image)" />
-            <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10} (my image).</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part1_labubu_grid.png" alt="2x2 sweep grid (provided)" />
+            <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10}.</figcaption>
           </figure>
         </div>
       </section>
@@ -365,16 +357,7 @@
           I implement SE(3) transforms, camera intrinsics inversion, and pixel-to-ray conversion. Sanity tests
           ensure invertibility and the center ray direction for a unit pinhole camera.
         </p>
-        <div class="two-col">
-          <figure>
-            <img src="assets/part2/invert_pose.png" alt="Invert pose test" />
-            <figcaption>Transform ∘ inverse consistency test.</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/part2/center_ray.png" alt="Center ray test" />
-            <figcaption>Center pixel ray points along +Z for identity pose/intrinsics.</figcaption>
-          </figure>
-        </div>
+        
         <details>
           <summary>Implementation details (part21_create_rays.py)</summary>
           <ul>
@@ -391,10 +374,7 @@
           I provide uniform and interval-based stratified sampling of <code>t</code> values in [near, far].
           Given ray origin <code>o</code> and direction <code>d</code>, points are <code>o + t d</code>.
         </p>
-        <figure>
-          <img src="assets/part2/sampling_lines.png" alt="Sampling along rays" />
-          <figcaption>Stratified interval sampling along rays (near→far).</figcaption>
-        </figure>
+        
         <details>
           <summary>Implementation details (part22_sampling.py)</summary>
           <ul>
@@ -413,12 +393,24 @@
         </p>
         <div class="two-col">
           <figure>
-            <img src="assets/part2/uv_check.png" alt="UV indexing check" />
-            <figcaption>UV indexing sanity: dataset pixels == image[uv[:,1], uv[:,0]].</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_3_1.png" alt="UV indexing check" />
+            <figcaption>Visualization of camera frustums, sampled rays, and 3D sample points..</figcaption>
           </figure>
           <figure>
-            <img src="assets/part2/rays_pts_vis.png" alt="Rays and sampled points in 3D" />
-            <figcaption>Viser visualization: cameras, example rays, and sampled points.</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_3_2.png" alt="UV indexing check" />
+            <figcaption>Visualization of camera frustums, sampled rays, and 3D sample points..</figcaption>
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_3_3.png" alt="UV indexing check" />
+            <figcaption>Visualization of camera frustums, sampled rays, and 3D sample points..</figcaption>
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_3_4.png" alt="UV indexing check" />
+            <figcaption>Visualization of camera frustums, sampled rays, and 3D sample points..</figcaption>
+          </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_3_5.png" alt="UV indexing check" />
+            <figcaption>Visualization of camera frustums, sampled rays, and 3D sample points..</figcaption>
           </figure>
         </div>
         <details>
@@ -439,12 +431,12 @@
         </p>
         <div class="two-col">
           <figure>
-            <img src="part24_outputs/val_render_010000.npy.png" alt="Validation preview" />
-            <figcaption>Validation render preview (downscaled for speed).</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_4_1.png" alt="Validation preview" />
+            <figcaption>Model Architecture</figcaption>
           </figure>
           <figure>
-            <img src="part24_outputs/psnr_curve.png" alt="PSNR log" />
-            <figcaption>PSNR vs iteration.</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_4_2.png" alt="PSNR log" />
+            <figcaption>Equation for Volume Rendering</figcaption>
           </figure>
         </div>
         <details>
@@ -478,11 +470,11 @@
         <!-- Rays projection + PSNR -->
         <div class="two-col">
           <figure>
-            <img src="part25_outputs/rays_samples_step00300.png" alt="Rays & samples 3D projection" />
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_rays.png" alt="Rays & samples 3D projection" />
             <figcaption>Rays & sampled points visualization (camera frustums + jittered samples).</figcaption>
           </figure>
           <figure>
-            <img src="part25_outputs/psnr_curve.png" alt="PSNR validation curve" />
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_psnr.png" alt="PSNR validation curve" />
             <figcaption>Validation PSNR vs checkpoint index (coarse network).</figcaption>
           </figure>
         </div>
@@ -494,25 +486,25 @@
         </p>
         <div class="snapshots-grid">
           <figure>
-            <img src="part25_outputs/val_pred_step00500.png" alt="Validation render at 500 iterations" />
-            <figcaption>Iter 500</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_1.png" alt="Validation render at 500 iterations" />
+            <figcaption>Iter 100</figcaption>
           </figure>
           <figure>
-            <img src="part25_outputs/val_pred_step01000.png" alt="Validation render at 1000 iterations" />
-            <figcaption>Iter 1000</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_2.png" alt="Validation render at 500 iterations" />
+            <figcaption>Iter 200</figcaption>
           </figure>
           <figure>
-            <img src="part25_outputs/val_pred_step01500.png" alt="Validation render at 1500 iterations" />
-            <figcaption>Iter 1500</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_3.png" alt="Validation render at 500 iterations" />
+            <figcaption>Iter 400</figcaption>
           </figure>
           <figure>
-            <img src="part25_outputs/val_pred_step02000.png" alt="Validation render at 2000 iterations" />
-            <figcaption>Iter 2000</figcaption>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_4.png" alt="Validation render at 500 iterations" />
+            <figcaption>Iter 800</figcaption>
           </figure>
-            <figure>
-              <img src="part25_outputs/val_pred_step03000.png" alt="Validation render at 3000 iterations" />
-              <figcaption>Iter 3000 (final coarse target).</figcaption>
-            </figure>
+          <figure>
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_5.png" alt="Validation render at 500 iterations" />
+            <figcaption>Iter 3000</figcaption>
+          </figure>
         </div>
 
         <h4>Novel View Comparison (GIFs)</h4>
@@ -523,11 +515,11 @@
         </p>
         <div class="gif-row">
           <figure>
-            <img src="part25_outputs/novel_view_step01000.gif" alt="Novel view orbit at 1000 iterations" />
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_short.gif" alt="Novel view orbit at 1000 iterations" />
             <figcaption>Orbit GIF @ 1000 iterations.</figcaption>
           </figure>
           <figure>
-            <img src="part25_outputs/novel_view_step03000.gif" alt="Novel view orbit at 3000 iterations" />
+            <img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_long.gif" alt="Novel view orbit at 3000 iterations" />
             <figcaption>Orbit GIF @ 3000 iterations.</figcaption>
           </figure>
         </div>
@@ -557,23 +549,23 @@
 
         <!-- 2.6.2 Custom -->
         <section id="p26-custom">
-          <h4>2.6.2 Custom Dataset</h4>
+          <h4>2.6 Custom Dataset</h4>
           <div class="two-col">
-            <figure><img src="custom_outputs/rays_samples_step00500.png" alt="Custom rays & samples" /><figcaption>Rays & samples (Custom).</figcaption></figure>
-            <figure><img src="custom_outputs/psnr_curve.png" alt="Custom PSNR curve" /><figcaption>Validation PSNR curve (Custom).</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_6_loss.png" alt="Loss for custom image" /><figcaption>Loss for custom image</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_6_psnr.png" alt="PSNR for custom image" /><figcaption>PSNR for custom image</figcaption></figure>
           </div>
           <h5>Training Snapshots</h5>
           <div class="snapshots-grid">
-            <figure><img src="custom_outputs/val_pred_step00500.png" alt="Custom 500" /><figcaption>Iter 500</figcaption></figure>
-            <figure><img src="custom_outputs/val_pred_step01000.png" alt="Custom 1000" /><figcaption>Iter 1000</figcaption></figure>
-            <figure><img src="custom_outputs/val_pred_step01500.png" alt="Custom 1500" /><figcaption>Iter 1500</figcaption></figure>
-            <figure><img src="custom_outputs/val_pred_step02000.png" alt="Custom 2000" /><figcaption>Iter 2000</figcaption></figure>
-            <figure><img src="custom_outputs/val_pred_step03000.png" alt="Custom 3000" /><figcaption>Iter 3000</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_6_1.png" alt="Custom 500" /><figcaption>Iter 500</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_6_2.png" alt="Custom 500" /><figcaption>Iter 1000</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_6_3.png" alt="Custom 500" /><figcaption>Iter 2000</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_6_4.png" alt="Custom 500" /><figcaption>Iter 4000</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_6_5.png" alt="Custom 500" /><figcaption>Iter 15000</figcaption></figure>
           </div>
           <h5>Novel View Orbit GIFs</h5>
           <div class="gif-row">
-            <figure><img src="custom_outputs/novel_view_step01000.gif" alt="Custom orbit 1000" /><figcaption>Custom @ 1000 iters</figcaption></figure>
-            <figure><img src="custom_outputs/novel_view_step03000.gif" alt="Custom orbit 3000" /><figcaption>Custom @ 3000 iters</figcaption></figure>
+            <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_6_gif.gif" alt="Custom orbit 1000" /><figcaption>Custom @ 15000 iters</figcaption></figure>
+           
           </div>
           <details>
             <summary>Files (Custom)</summary>
@@ -594,13 +586,9 @@
           = Σ w<sub>i</sub> t<sub>i</sub>). Disparity (1/depth) improves visual contrast. Side-by-side comparisons
           highlight geometric consistency of the learned field.
         </p>
-        <div class="gif-row">
-          <figure><img src="depth_video.gif" alt="Depth GIF (closer=brighter)" /><figcaption>Depth (closer=brighter) — GIF.</figcaption></figure>
-          <figure><img src="depth_disparity.gif" alt="Disparity GIF (1/depth)" /><figcaption>Disparity (1/depth) — GIF.</figcaption></figure>
-        </div>
         <div class="two-col">
-          <figure><img src="depth_comparison.gif" alt="RGB vs Disparity side-by-side GIF" /><figcaption>RGB vs disparity — side-by-side GIF.</figcaption></figure>
-          <figure><img src="depth_highcontrast.gif" alt="High contrast depth GIF" /><figcaption>High-contrast depth (gamma boost) — GIF.</figcaption></figure>
+          <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part2_5_long.gif" alt="RGB vs Disparity side-by-side GIF" /><figcaption>Original Lego GIF.</figcaption></figure>
+          <figure><img src="https://yuchenzhang789.github.io/proj_3/outputs/part_bw.gif" alt="High contrast depth GIF" /><figcaption>Depth Lego GIF.</figcaption></figure>
         </div>
         <details>
           <summary>Depth Rendering Implementation</summary>
