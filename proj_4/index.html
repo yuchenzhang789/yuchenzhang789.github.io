@@ -462,103 +462,185 @@
         </details>
       </section>
 
+      <!-- UPDATED SECTION 2.5 -->
       <section id="p25">
         <h3>2.5 Full NeRF (coarse)</h3>
         <p>
-          The full pipeline trains a coarse NeRF on Lego, saves checkpoints, visualizes sampled rays/points,
-          logs validation PSNR, and renders a novel-view video along <code>c2ws_test</code>. Volume rendering is
-          factored in a reusable module.
+          This section presents the coarse NeRF training progression on the Lego dataset. I show:
         </p>
+        <ul>
+          <li>Rays & sampled points visualization (single snapshot).</li>
+          <li>PSNR curve over validation checkpoints.</li>
+          <li>Five rendered validation snapshots at different training iterations.</li>
+          <li>Two GIFs comparing novel view quality at 1000 vs 3000 iterations.</li>
+        </ul>
 
+        <!-- Rays projection + PSNR -->
         <div class="two-col">
           <figure>
-            <img src="part25_outputs/rays_samples_step00300.png" alt="Rays and samples visualization" />
-            <figcaption>One-time 3D snapshot of cameras, random rays, and jittered samples.</figcaption>
+            <img src="part25_outputs/rays_samples_step00300.png" alt="Rays & samples 3D projection" />
+            <figcaption>Rays & sampled points visualization (camera frustums + jittered samples).</figcaption>
           </figure>
           <figure>
-            <img src="part25_outputs/psnr_curve.png" alt="PSNR curve" />
-            <figcaption>Validation PSNR over checkpoints.</figcaption>
+            <img src="part25_outputs/psnr_curve.png" alt="PSNR validation curve" />
+            <figcaption>Validation PSNR vs checkpoint index (coarse network).</figcaption>
           </figure>
         </div>
 
-        <div class="grid">
+        <h4>Validation Snapshots During Training</h4>
+        <p>
+          These five images track qualitative improvement: early underfitting → sharper geometry and color
+          after extended optimization.
+        </p>
+        <div class="snapshots-grid">
           <figure>
-            <img src="part25_outputs/val_pred_step03000.png" alt="Validation prediction at step 3000" />
-            <figcaption>Validation prediction (coarse) at final checkpoint.</figcaption>
+            <img src="part25_outputs/val_pred_step00500.png" alt="Validation render at 500 iterations" />
+            <figcaption>Iter 500</figcaption>
           </figure>
           <figure>
-            <video controls muted src="part25_outputs/novel_view_step03000.mp4"></video>
-            <figcaption>Novel-view video along c2ws_test (MP4).</figcaption>
+            <img src="part25_outputs/val_pred_step01000.png" alt="Validation render at 1000 iterations" />
+            <figcaption>Iter 1000</figcaption>
+          </figure>
+          <figure>
+            <img src="part25_outputs/val_pred_step01500.png" alt="Validation render at 1500 iterations" />
+            <figcaption>Iter 1500</figcaption>
+          </figure>
+          <figure>
+            <img src="part25_outputs/val_pred_step02000.png" alt="Validation render at 2000 iterations" />
+            <figcaption>Iter 2000</figcaption>
+          </figure>
+            <figure>
+              <img src="part25_outputs/val_pred_step03000.png" alt="Validation render at 3000 iterations" />
+              <figcaption>Iter 3000 (final coarse target).</figcaption>
+            </figure>
+        </div>
+
+        <h4>Novel View Comparison (GIFs)</h4>
+        <p>
+          Comparing the novel view path rendered at an early checkpoint (1000 iters) versus the final target
+          (3000 iters). Improvements appear in sharper edges, reduced noise in low-density regions, and better
+          color consistency on occluded parts.
+        </p>
+        <div class="gif-row">
+          <figure>
+            <img src="part25_outputs/novel_view_step01000.gif" alt="Novel view orbit at 1000 iterations" />
+            <figcaption>Orbit GIF @ 1000 iterations.</figcaption>
+          </figure>
+          <figure>
+            <img src="part25_outputs/novel_view_step03000.gif" alt="Novel view orbit at 3000 iterations" />
+            <figcaption>Orbit GIF @ 3000 iterations.</figcaption>
           </figure>
         </div>
 
         <details>
-          <summary>Implementation notes and files</summary>
+          <summary>Implementation notes & files</summary>
           <ul>
             <li><span class="pill">Training</span> <a href="./part25_train_nerf.py">part25_train_nerf.py</a></li>
             <li><span class="pill">Renderer</span> <a href="./part25_render_video.py">part25_render_video.py</a></li>
-            <li><span class="pill">Vol. Rendering</span> <a href="./volume_rendering.py">volume_rendering.py</a> (exports <code>volrend</code> and <code>volrend_deltas</code>).</li>
-            <li><span class="pill">Model</span> <a href="./nerf_model.py">nerf_model.py</a> (NeRF with PE on xyz and dir, skip at layer 4).</li>
+            <li><span class="pill">Volume Rendering</span> <a href="./volume_rendering.py">volume_rendering.py</a> — uses <code>volrend_deltas</code>.</li>
+            <li><span class="pill">Model</span> <a href="./nerf_model.py">nerf_model.py</a> (PE on xyz & view dir, skip layer 4).</li>
           </ul>
+          <p>
+            Snapshot cadence chosen to highlight early underfitting (500–1000) vs mid-training (1500–2000) vs target quality (3000).
+            GIFs produced by rendering <code>c2ws_test</code> path with <code>downscale=2</code> for speed.
+          </p>
         </details>
       </section>
 
+      <!-- 2.6 Split into Lafufu and Custom -->
       <section id="p26">
-        <h3>2.6 Custom Dataset + Bells &amp; Whistles</h3>
+        <h3>2.6 NeRF on Lafufu & Custom Datasets</h3>
         <p>
-          I train on my custom dataset with focal-only intrinsics. For novel views, I render along <code>c2ws_test</code>
-          or synthesize a spherical orbit. I also render grayscale depth maps and disparity visualizations, and produce
-          long videos with camera-path interpolation.
+          Two separate training runs: (a) provided Lafufu debugging dataset; (b) my captured custom dataset.
+          Each mirrors the coarse Lego setup to highlight generalization and dataset-specific differences.
         </p>
 
-        <div class="grid">
-          <figure>
-            <video controls muted src="custom_outputs/custom_orbit.gif"></video>
-            <figcaption>Custom dataset GIF (spherical orbit).</figcaption>
-          </figure>
-          <figure>
-            <video controls muted src="custom_outputs/circle_long.mp4"></video>
-            <figcaption>Long orbit video via path upsampling + loops.</figcaption>
-          </figure>
-          <figure>
-            <video controls muted src="depth_video.mp4"></video>
-            <figcaption>Depth video (grayscale, closer=brighter).</figcaption>
-          </figure>
-          <figure>
-            <video controls muted src="depth_disparity.mp4"></video>
-            <figcaption>Disparity visualization (1/depth) for better contrast.</figcaption>
-          </figure>
-          <figure>
-            <video controls muted src="depth_comparison.mp4"></video>
-            <figcaption>Side-by-side RGB (left) and disparity (right).</figcaption>
-          </figure>
-        </div>
+        <!-- 2.6.1 Lafufu -->
+        <section id="p26-lafufu">
+          <h4>2.6.1 Lafufu Dataset</h4>
+          <div class="two-col">
+            <figure><img src="lafufu_outputs/rays_samples_step00500.png" alt="Lafufu rays & samples" /><figcaption>Rays & samples (Lafufu).</figcaption></figure>
+            <figure><img src="lafufu_outputs/psnr_curve.png" alt="Lafufu PSNR curve" /><figcaption>Validation PSNR curve (Lafufu).</figcaption></figure>
+          </div>
+          <h5>Training Snapshots</h5>
+          <div class="snapshots-grid">
+            <figure><img src="lafufu_outputs/val_pred_step00500.png" alt="Lafufu 500" /><figcaption>Iter 500</figcaption></figure>
+            <figure><img src="lafufu_outputs/val_pred_step01000.png" alt="Lafufu 1000" /><figcaption>Iter 1000</figcaption></figure>
+            <figure><img src="lafufu_outputs/val_pred_step01500.png" alt="Lafufu 1500" /><figcaption>Iter 1500</figcaption></figure>
+            <figure><img src="lafufu_outputs/val_pred_step02000.png" alt="Lafufu 2000" /><figcaption>Iter 2000</figcaption></figure>
+            <figure><img src="lafufu_outputs/val_pred_step02500.png" alt="Lafufu 2500" /><figcaption>Iter 2500</figcaption></figure>
+          </div>
+          <h5>Novel View Orbit GIFs</h5>
+            <div class="gif-row">
+              <figure><img src="lafufu_outputs/novel_view_step01000.gif" alt="Lafufu orbit 1000" /><figcaption>Lafufu @ 1000 iters</figcaption></figure>
+              <figure><img src="lafufu_outputs/novel_view_step02500.gif" alt="Lafufu orbit 2500" /><figcaption>Lafufu @ 2500 iters</figcaption></figure>
+            </div>
+          <details>
+            <summary>Files (Lafufu)</summary>
+            <ul>
+              <li><span class="pill">Train</span> <a href="./part26_debug_lafufu.py">part26_debug_lafufu.py</a></li>
+              <li><span class="pill">Model</span> <a href="./nerf_model.py">nerf_model.py</a></li>
+              <li><span class="pill">Vol Rend</span> <a href="./volume_rendering.py">volume_rendering.py</a></li>
+            </ul>
+          </details>
+        </section>
 
+        <!-- 2.6.2 Custom -->
+        <section id="p26-custom">
+          <h4>2.6.2 Custom Dataset</h4>
+          <div class="two-col">
+            <figure><img src="custom_outputs/rays_samples_step00500.png" alt="Custom rays & samples" /><figcaption>Rays & samples (Custom).</figcaption></figure>
+            <figure><img src="custom_outputs/psnr_curve.png" alt="Custom PSNR curve" /><figcaption>Validation PSNR curve (Custom).</figcaption></figure>
+          </div>
+          <h5>Training Snapshots</h5>
+          <div class="snapshots-grid">
+            <figure><img src="custom_outputs/val_pred_step00500.png" alt="Custom 500" /><figcaption>Iter 500</figcaption></figure>
+            <figure><img src="custom_outputs/val_pred_step01000.png" alt="Custom 1000" /><figcaption>Iter 1000</figcaption></figure>
+            <figure><img src="custom_outputs/val_pred_step01500.png" alt="Custom 1500" /><figcaption>Iter 1500</figcaption></figure>
+            <figure><img src="custom_outputs/val_pred_step02000.png" alt="Custom 2000" /><figcaption>Iter 2000</figcaption></figure>
+            <figure><img src="custom_outputs/val_pred_step03000.png" alt="Custom 3000" /><figcaption>Iter 3000</figcaption></figure>
+          </div>
+          <h5>Novel View Orbit GIFs</h5>
+          <div class="gif-row">
+            <figure><img src="custom_outputs/novel_view_step01000.gif" alt="Custom orbit 1000" /><figcaption>Custom @ 1000 iters</figcaption></figure>
+            <figure><img src="custom_outputs/novel_view_step03000.gif" alt="Custom orbit 3000" /><figcaption>Custom @ 3000 iters</figcaption></figure>
+          </div>
+          <details>
+            <summary>Files (Custom)</summary>
+            <ul>
+              <li><span class="pill">Train</span> <a href="./part26_train_custom_nerf.py">part26_train_custom_nerf.py</a></li>
+              <li><span class="pill">Render</span> <a href="./part26_render_video_custom.py">part26_render_video_custom.py</a></li>
+              <li><span class="pill">Long Path</span> <a href="./part26_render_video_custom_long.py">part26_render_video_custom_long.py</a></li>
+            </ul>
+          </details>
+        </section>
+      </section>
+
+      <!-- 2.7 Bells & Whistles depth/disparity -->
+      <section id="p_bw">
+        <h3>2.7 Bells & Whistles — Depth / Disparity</h3>
+        <p>
+          Depth and disparity visualizations rendered using identical ray marching pipeline as RGB (expected depth
+          = Σ w<sub>i</sub> t<sub>i</sub>). Disparity (1/depth) improves visual contrast. Side-by-side comparisons
+          highlight geometric consistency of the learned field.
+        </p>
+        <div class="gif-row">
+          <figure><video controls muted src="depth_video.mp4"></video><figcaption>Depth (closer=brighter).</figcaption></figure>
+          <figure><video controls muted src="depth_disparity.mp4"></video><figcaption>Disparity (1/depth).</figcaption></figure>
+        </div>
+        <div class="two-col">
+          <figure><video controls muted src="depth_comparison.mp4"></video><figcaption>RGB vs disparity side-by-side.</figcaption></figure>
+          <figure><video controls muted src="depth_highcontrast.mp4"></video><figcaption>High contrast depth (gamma boost).</figcaption></figure>
+        </div>
         <details>
-          <summary>Implementation details</summary>
+          <summary>Depth Rendering Implementation</summary>
           <ul>
-            <li><span class="pill">Training (custom)</span> <a href="./part26_train_custom_nerf.py">part26_train_custom_nerf.py</a>
-              builds K from focal, includes safe downsampling on MPS, and optional GIF export.</li>
-            <li><span class="pill">Simple video</span> <a href="./part26_render_video_custom.py">part26_render_video_custom.py</a>
-              uses <code>c2ws_test</code> if present or builds K from <code>focal</code>.</li>
-            <li><span class="pill">Long video</span> <a href="./part26_render_video_custom_long.py">part26_render_video_custom_long.py</a>
-              supports quaternion SLERP pose upsampling and spherical path synthesis (x/y/z axis, z-up or y-up).</li>
-            <li><span class="pill">Depth renderer</span> <a href="./part_bw_render_depth.py">part_bw_render_depth.py</a>:
-              <ul>
-                <li>Renders RGB and depth with identical pipeline; depth = E[t] with compositing weights.</li>
-                <li>Grayscale mapping with percentile-based normalization and gamma contrast; background masked by accumulated alpha.</li>
-                <li>Disparity mode uses inverse depth for better contrast; optional side-by-side RGB+depth.</li>
-              </ul>
-            </li>
+            <li><span class="pill">Script</span> <a href="./part_bw_render_depth.py">part_bw_render_depth.py</a></li>
+            <li>Percentile-based normalization (1st–99th) to suppress outliers.</li>
+            <li>Background masked using accumulated alpha threshold (≥ 0.05).</li>
+            <li>Optional side-by-side mode concatenates RGB and depth horizontally.</li>
           </ul>
         </details>
-
-        <h4>Key formulas</h4>
-        <p>
-          Depth composition with weights w<sub>i</sub>:
-          <br/>
-          <code>depth = Σ_i w_i t_i, where w_i = T_i α_i, α_i = 1 - exp(-σ_i Δ_i), T_i = Π_{j<i} (1 - α_j)</code>
-        </p>
       </section>
     </section>
 
