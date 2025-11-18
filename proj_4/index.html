@@ -555,36 +555,6 @@
           Each mirrors the coarse Lego setup to highlight generalization and dataset-specific differences.
         </p>
 
-        <!-- 2.6.1 Lafufu -->
-        <section id="p26-lafufu">
-          <h4>2.6.1 Lafufu Dataset</h4>
-          <div class="two-col">
-            <figure><img src="lafufu_outputs/rays_samples_step00500.png" alt="Lafufu rays & samples" /><figcaption>Rays & samples (Lafufu).</figcaption></figure>
-            <figure><img src="lafufu_outputs/psnr_curve.png" alt="Lafufu PSNR curve" /><figcaption>Validation PSNR curve (Lafufu).</figcaption></figure>
-          </div>
-          <h5>Training Snapshots</h5>
-          <div class="snapshots-grid">
-            <figure><img src="lafufu_outputs/val_pred_step00500.png" alt="Lafufu 500" /><figcaption>Iter 500</figcaption></figure>
-            <figure><img src="lafufu_outputs/val_pred_step01000.png" alt="Lafufu 1000" /><figcaption>Iter 1000</figcaption></figure>
-            <figure><img src="lafufu_outputs/val_pred_step01500.png" alt="Lafufu 1500" /><figcaption>Iter 1500</figcaption></figure>
-            <figure><img src="lafufu_outputs/val_pred_step02000.png" alt="Lafufu 2000" /><figcaption>Iter 2000</figcaption></figure>
-            <figure><img src="lafufu_outputs/val_pred_step02500.png" alt="Lafufu 2500" /><figcaption>Iter 2500</figcaption></figure>
-          </div>
-          <h5>Novel View Orbit GIFs</h5>
-            <div class="gif-row">
-              <figure><img src="lafufu_outputs/novel_view_step01000.gif" alt="Lafufu orbit 1000" /><figcaption>Lafufu @ 1000 iters</figcaption></figure>
-              <figure><img src="lafufu_outputs/novel_view_step02500.gif" alt="Lafufu orbit 2500" /><figcaption>Lafufu @ 2500 iters</figcaption></figure>
-            </div>
-          <details>
-            <summary>Files (Lafufu)</summary>
-            <ul>
-              <li><span class="pill">Train</span> <a href="./part26_debug_lafufu.py">part26_debug_lafufu.py</a></li>
-              <li><span class="pill">Model</span> <a href="./nerf_model.py">nerf_model.py</a></li>
-              <li><span class="pill">Vol Rend</span> <a href="./volume_rendering.py">volume_rendering.py</a></li>
-            </ul>
-          </details>
-        </section>
-
         <!-- 2.6.2 Custom -->
         <section id="p26-custom">
           <h4>2.6.2 Custom Dataset</h4>
@@ -616,7 +586,7 @@
         </section>
       </section>
 
-      <!-- 2.7 Bells & Whistles depth/disparity -->
+      <!-- 2.7 Bells & Whistles depth/disparity (now GIFs) -->
       <section id="p_bw">
         <h3>2.7 Bells & Whistles — Depth / Disparity</h3>
         <p>
@@ -625,12 +595,12 @@
           highlight geometric consistency of the learned field.
         </p>
         <div class="gif-row">
-          <figure><video controls muted src="depth_video.mp4"></video><figcaption>Depth (closer=brighter).</figcaption></figure>
-          <figure><video controls muted src="depth_disparity.mp4"></video><figcaption>Disparity (1/depth).</figcaption></figure>
+          <figure><img src="depth_video.gif" alt="Depth GIF (closer=brighter)" /><figcaption>Depth (closer=brighter) — GIF.</figcaption></figure>
+          <figure><img src="depth_disparity.gif" alt="Disparity GIF (1/depth)" /><figcaption>Disparity (1/depth) — GIF.</figcaption></figure>
         </div>
         <div class="two-col">
-          <figure><video controls muted src="depth_comparison.mp4"></video><figcaption>RGB vs disparity side-by-side.</figcaption></figure>
-          <figure><video controls muted src="depth_highcontrast.mp4"></video><figcaption>High contrast depth (gamma boost).</figcaption></figure>
+          <figure><img src="depth_comparison.gif" alt="RGB vs Disparity side-by-side GIF" /><figcaption>RGB vs disparity — side-by-side GIF.</figcaption></figure>
+          <figure><img src="depth_highcontrast.gif" alt="High contrast depth GIF" /><figcaption>High-contrast depth (gamma boost) — GIF.</figcaption></figure>
         </div>
         <details>
           <summary>Depth Rendering Implementation</summary>
