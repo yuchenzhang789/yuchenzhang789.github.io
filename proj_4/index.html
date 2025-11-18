@@ -84,7 +84,12 @@
               <li><a href="#part04">0.4 Create NeRF Dataset (npz)</a></li>
             </ul>
           </li>
-          <li><a href="#part1">3. Part 1 — 2D Neural Field</a></li>
+          <li><a href="#part1">3. Part 1 — 2D Neural Field</a>
+            <ul>
+              <li><a href="#part1-provided">3.1 Provided Image</a></li>
+              <li><a href="#part1-mine">3.2 My Own Image</a></li>
+            </ul>
+          </li>
           <li><a href="#part2">4. Part 2 — NeRF</a>
             <ul>
               <li><a href="#p21">2.1 Rays from Cameras</a></li>
@@ -265,35 +270,74 @@
         iterations, save reconstructions at milestones, and include a small sweep over width and L.
       </p>
 
-      <div class="grid">
-        <figure>
-          <img src="part1_outputs/base_W256_L10/recon_it0001.png" alt="Iter 1" />
-          <figcaption>Iter 1</figcaption>
-        </figure>
-        <figure>
-          <img src="part1_outputs/base_W256_L10/recon_it0050.png" alt="Iter 50" />
-          <figcaption>Iter 50</figcaption>
-        </figure>
-        <figure>
-          <img src="part1_outputs/base_W256_L10/recon_it0200.png" alt="Iter 200" />
-          <figcaption>Iter 200</figcaption>
-        </figure>
-        <figure>
-          <img src="part1_outputs/base_W256_L10/recon_it2000.png" alt="Iter 2000" />
-          <figcaption>Iter 2000 (final baseline)</figcaption>
-        </figure>
-      </div>
+      <!-- 3.1 Provided Image -->
+      <section id="part1-provided">
+        <h3>3.1 Provided Image</h3>
+        <div class="grid">
+          <figure>
+            <img src="part1_outputs/base_W256_L10/recon_it0001.png" alt="Iter 1 (provided)" />
+            <figcaption>Iter 1 (provided image)</figcaption>
+          </figure>
+          <figure>
+            <img src="part1_outputs/base_W256_L10/recon_it0050.png" alt="Iter 50 (provided)" />
+            <figcaption>Iter 50 (provided image)</figcaption>
+          </figure>
+          <figure>
+            <img src="part1_outputs/base_W256_L10/recon_it0200.png" alt="Iter 200 (provided)" />
+            <figcaption>Iter 200 (provided image)</figcaption>
+          </figure>
+          <figure>
+            <img src="part1_outputs/base_W256_L10/recon_it2000.png" alt="Iter 2000 (provided)" />
+            <figcaption>Iter 2000 (final, provided image)</figcaption>
+          </figure>
+        </div>
 
-      <div class="two-col">
-        <figure>
-          <img src="part1_outputs/base_W256_L10/psnr_curve.png" alt="PSNR curve" />
-          <figcaption>PSNR over iterations (baseline).</figcaption>
-        </figure>
-        <figure>
-          <img src="part1_outputs/sweep_grid.png" alt="2x2 sweep grid" />
-          <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10}.</figcaption>
-        </figure>
-      </div>
+        <div class="two-col">
+          <figure>
+            <img src="part1_outputs/base_W256_L10/psnr_curve.png" alt="PSNR curve (provided)" />
+            <figcaption>PSNR over iterations (provided image baseline).</figcaption>
+          </figure>
+          <figure>
+            <img src="part1_outputs/sweep_grid.png" alt="2x2 sweep grid (provided)" />
+            <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10} (provided).</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- 3.2 My Own Image -->
+      <section id="part1-mine">
+        <h3>3.2 My Own Image</h3>
+        <!-- Duplicated displays (replace with your own outputs/paths) -->
+        <div class="grid">
+          <figure>
+            <img src="part1_outputs/base_W256_L10/recon_it0001.png" alt="Iter 1 (my image)" />
+            <figcaption>Iter 1 (my image)</figcaption>
+          </figure>
+          <figure>
+            <img src="part1_outputs/base_W256_L10/recon_it0050.png" alt="Iter 50 (my image)" />
+            <figcaption>Iter 50 (my image)</figcaption>
+          </figure>
+          <figure>
+            <img src="part1_outputs/base_W256_L10/recon_it0200.png" alt="Iter 200 (my image)" />
+            <figcaption>Iter 200 (my image)</figcaption>
+          </figure>
+          <figure>
+            <img src="part1_outputs/base_W256_L10/recon_it2000.png" alt="Iter 2000 (my image)" />
+            <figcaption>Iter 2000 (final, my image)</figcaption>
+          </figure>
+        </div>
+
+        <div class="two-col">
+          <figure>
+            <img src="part1_outputs/base_W256_L10/psnr_curve.png" alt="PSNR curve (my image)" />
+            <figcaption>PSNR over iterations (my image baseline).</figcaption>
+          </figure>
+          <figure>
+            <img src="part1_outputs/sweep_grid.png" alt="2x2 sweep grid (my image)" />
+            <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10} (my image).</figcaption>
+          </figure>
+        </div>
+      </section>
 
       <details>
         <summary>Implementation details (part1_neural_field_2d.py)</summary>
