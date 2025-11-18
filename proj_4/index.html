@@ -653,20 +653,16 @@ python part26_train_custom_nerf.py --dataset_path dataset/my_data_resized.npz --
 
 # Simple path
 python part26_render_video_custom.py --dataset dataset/my_data_resized.npz \
-  --checkpoint custom_outputs/custom_nerf_step014000.pt --out custom_outputs/circle.mp4
+  --checkpoint custom_outputs/custom_nerf_step015000.pt --out custom_outputs/circle.mp4
 
 # Long path (upsampled/loops)
 python part26_render_video_custom_long.py --dataset dataset/my_data_resized.npz \
-  --checkpoint custom_outputs/custom_nerf_step014000.pt --out custom_outputs/circle_long.mp4 \
-  --use_test_path --upsample 9 --loops 3 --close_loop
+  --checkpoint custom_outputs/custom_nerf_step015000.pt --out custom_outputs/circle_long.mp4 \
+  --use_test_path --upsample 9 --loops 1 --close_loop
 
 # Depth videos (grayscale/disparity/side-by-side)
 python part_bw_render_depth.py --checkpoint part25_outputs/nerf_coarse_step03000.pt \
-  --dataset data/lego_200x200.npz --out depth_video.mp4
-python part_bw_render_depth.py --checkpoint part25_outputs/nerf_coarse_step03000.pt \
-  --dataset data/lego_200x200.npz --out depth_disparity.mp4 --use_disparity
-python part_bw_render_depth.py --checkpoint part25_outputs/nerf_coarse_step03000.pt \
-  --dataset data/lego_200x200.npz --out depth_comparison.mp4 --side_by_side --use_disparity</code></pre>
+  --dataset data/lego_200x200.npz --out depth_video.mp4</code></pre>
         </li>
       </ol>
     </section>
