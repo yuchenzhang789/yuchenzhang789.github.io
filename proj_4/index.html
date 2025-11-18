@@ -131,7 +131,7 @@
         </p>
         <div class="two-col">
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part01_1.jpg" alt="Sample calibration image 1" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part01_1.jpeg" alt="Sample calibration image 1" />
             <figcaption>Sample calibration image 1</figcaption>
           </figure>
           <figure>
@@ -162,9 +162,7 @@
       <section id="part02">
         <h3>0.2 Single-Tag Camera Poses</h3>
         <p>
-          For each image, I detect the specified tag ID and solve PnP with the square-specific IPPE method to obtain
-          two candidate solutions. I disambiguate by choosing the solution whose camera z is above the plane (z &gt; 0).
-          Then I convert OpenCV’s w2c to c2w for NeRF.
+          Here are pictures of my own labubu to be used as datasets for later parts.
         </p>
         <div class="two-col">
           <figure>
@@ -176,22 +174,15 @@
             <figcaption>Sample image for my own labubu</figcaption>
           </figure>
         </div>
-
-        <details>
-          <summary>Implementation details (part03_find_camera_pose.py)</summary>
-          <ul>
-            <li>Detection: <code>cv2.aruco.ArucoDetector</code> → <code>corners, ids</code>.</li>
-            <li>Pose: <code>cv2.solvePnPGeneric(..., SOLVEPNP_IPPE_SQUARE)</code> → choose solution by comparing
-                <code>cam = -R^T t</code> z-components.</li>
-            <li>c2w: set <code>R_c2w = R^T</code>, <code>t_c2w = -R^T t</code>; save each pose under <code>poses/pose_###.npz</code>.</li>
-          </ul>
-          <p><span class="pill">Code</span> <a href="./part03_find_camera_pose.py">part03_find_camera_pose.py</a></p>
-        </details>
       </section>
 
       <section id="part03">
         <h3>0.3 Pose Visualization</h3>
         <p>
+          For each image, I detect the specified tag ID (here I used ID 5) and solve PnP with the square-specific IPPE method to obtain
+          two candidate solutions. I disambiguate by choosing the solution whose camera z is above the plane (z &gt; 0).
+          Then I convert OpenCV’s w2c to c2w for NeRF.
+          
           I visualize the recovered rig with <code>viser</code>, adding a frustum for each camera with the undistorted image.
           This helps verify consistent orientation and overall path coverage.
         </p>
@@ -207,6 +198,10 @@
         <details>
           <summary>Implementation notes</summary>
           <ul>
+            <li>Detection: <code>cv2.aruco.ArucoDetector</code> → <code>corners, ids</code>.</li>
+            <li>Pose: <code>cv2.solvePnPGeneric(..., SOLVEPNP_IPPE_SQUARE)</code> → choose solution by comparing
+                <code>cam = -R^T t</code> z-components.</li>
+            <li>c2w: set <code>R_c2w = R^T</code>, <code>t_c2w = -R^T t</code>; save each pose under <code>poses/pose_###.npz</code>.</li>
             <li>Field-of-view computed from fy: <code>fov_y = 2 atan(H/2 / fy)</code>.</li>
             <li>Frustum geometry uses c2w rotation and translation directly.</li>
           </ul>
@@ -235,14 +230,6 @@
             <span class="pill">Resizer</span> <a href="./resize_dataset.py">resize_dataset.py</a>
           </p>
         </details>
-
-        <h4>Deliverables checklist</h4>
-        <ul>
-          <li class="req">Show tag detections and calibration diagnostics.</li>
-          <li class="req">Show pose recovery and a 3D visualization.</li>
-          <li class="req">Show undistortion before/after and dataset split preview.</li>
-          <li class="req">Provide dataset stats: H×W, focal, counts per split.</li>
-        </ul>
       </section>
     </section>
 
@@ -298,23 +285,23 @@
         <!-- Duplicated displays (replace with your own outputs/paths) -->
         <div class="grid">
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_1.png" alt="Iter 1 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_1.jpeg" alt="Iter 1 (provided)" />
             <figcaption>Iter 1</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_2.png" alt="Iter 50 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_2.jpeg" alt="Iter 50 (provided)" />
             <figcaption>Iter 50</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_3.png" alt="Iter 200 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_3.jpeg" alt="Iter 200 (provided)" />
             <figcaption>Iter 100</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_4.png" alt="Iter 2000 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_4.jpeg" alt="Iter 2000 (provided)" />
             <figcaption>Iter 200</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_5.png" alt="Iter 2000 (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_5.jpeg" alt="Iter 2000 (provided)" />
             <figcaption>Iter 2000</figcaption>
           </figure>
         </div>
@@ -325,7 +312,7 @@
             <figcaption>PSNR over iterations</figcaption>
           </figure>
           <figure>
-            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_grid.png" alt="2x2 sweep grid (provided)" />
+            <img src="https://yuchenzhang789.github.io/proj_4/outputs/part1_labubu_grid.jpeg" alt="2x2 sweep grid (provided)" />
             <figcaption>2×2 sweep over width ∈ {64, 256} and L ∈ {4, 10}.</figcaption>
           </figure>
         </div>
@@ -417,7 +404,7 @@
           <summary>Implementation details (part23_rays_dataloader.py)</summary>
           <ul>
             <li><code>RaysData</code> builds rays via <code>_rays_for_image</code>; <code>sample_rays</code> supports "global" and "per_image".</li>
-            <li>Device-first selection prefers MPS, then CUDA, then CPU.</li>
+            
           </ul>
           <p><span class="pill">Code</span> <a href="./part23_rays_dataloader.py">part23_rays_dataloader.py</a> · <a href="./part23_visualize_2.py">part23_visualize_2.py</a></p>
         </details>
@@ -427,7 +414,7 @@
         <h3>2.4 Training Skeleton</h3>
         <p>
           I train a NeRF-like MLP on Lego using stratified sampling, volume rendering, and MSE loss,
-          periodically rendering a validation view and logging PSNR.
+          periodically rendering a validation view and logging PSNR. The model architecture is shown here, it follows the suggested architecture given by the course staffs.
         </p>
         <div class="two-col">
           <figure>
@@ -444,11 +431,12 @@
           <ul>
             <li>Front-to-back compositing with white background:
               <div style="margin-top:6px">
-                <code>alpha_i = 1 - exp(-sigma_i * delta_i), T_i = Π_{j<i}(1 - alpha_j), w_i = T_i alpha_i,</code><br/>
+                <code>alpha_i = 1 - exp(-sigma_i * delta_i), T_i = Π_{j<i}(1 - alpha_j), w_i = T_i alpha_i, </code><br/>
                 <code>C = Σ_i w_i c_i + (1 - Σ_i w_i)</code>
               </div>
             </li>
             <li>Validation builds a reduced grid and renders without jitter.</li>
+            <li>Device-first selection prefers MPS for my M2 chip.</li>
           </ul>
           <p><span class="pill">Code</span> <a href="./part24_train_nerf.py">part24_train_nerf.py</a></p>
         </details>
@@ -458,7 +446,7 @@
       <section id="p25">
         <h3>2.5 Full NeRF (coarse)</h3>
         <p>
-          This section presents the coarse NeRF training progression on the Lego dataset. I show:
+          This section presents the NeRF training progression on the Lego dataset. I show:
         </p>
         <ul>
           <li>Rays & sampled points visualization (single snapshot).</li>
@@ -488,20 +476,16 @@
           <figure>
             <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_1.png" alt="Validation render at 500 iterations" />
             <figcaption>Iter 100</figcaption>
-          </figure>
-          <figure>
+          
             <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_2.png" alt="Validation render at 500 iterations" />
             <figcaption>Iter 200</figcaption>
-          </figure>
-          <figure>
+          
             <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_3.png" alt="Validation render at 500 iterations" />
             <figcaption>Iter 400</figcaption>
-          </figure>
-          <figure>
+          
             <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_4.png" alt="Validation render at 500 iterations" />
             <figcaption>Iter 800</figcaption>
-          </figure>
-          <figure>
+          
             <img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_5.png" alt="Validation render at 500 iterations" />
             <figcaption>Iter 3000</figcaption>
           </figure>
@@ -543,8 +527,7 @@
       <section id="p26">
         <h3>2.6 NeRF on Lafufu & Custom Datasets</h3>
         <p>
-          Two separate training runs: (a) provided Lafufu debugging dataset; (b) my captured custom dataset.
-          Each mirrors the coarse Lego setup to highlight generalization and dataset-specific differences.
+          I trained the NeRF with my own captured custom dataset using the previous model architecture. This took more iterations to reach a preferable loss compare to the lego scene.
         </p>
 
         <!-- 2.6.2 Custom -->
@@ -582,9 +565,9 @@
       <section id="p_bw">
         <h3>2.7 Bells & Whistles — Depth / Disparity</h3>
         <p>
-          Depth and disparity visualizations rendered using identical ray marching pipeline as RGB (expected depth
-          = Σ w<sub>i</sub> t<sub>i</sub>). Disparity (1/depth) improves visual contrast. Side-by-side comparisons
-          highlight geometric consistency of the learned field.
+          Depth visualizations rendered using identical ray marching pipeline as RGB (expected depth
+          = Σ w<sub>i</sub> t<sub>i</sub>). I also used different contrast to improve the video quality. Side-by-side comparisons
+          highlight geometric consistency of the learned field. ** The WHITE color indicates CLOSER distance from the camera in the depth video.
         </p>
         <div class="two-col">
           <figure><img src="https://yuchenzhang789.github.io/proj_4/outputs/part2_5_long.gif" alt="RGB vs Disparity side-by-side GIF" /><figcaption>Original Lego GIF.</figcaption></figure>
@@ -594,9 +577,8 @@
           <summary>Depth Rendering Implementation</summary>
           <ul>
             <li><span class="pill">Script</span> <a href="./part_bw_render_depth.py">part_bw_render_depth.py</a></li>
-            <li>Percentile-based normalization (1st–99th) to suppress outliers.</li>
             <li>Background masked using accumulated alpha threshold (≥ 0.05).</li>
-            <li>Optional side-by-side mode concatenates RGB and depth horizontally.</li>
+            <li>Using color contrast to improve quality</li>
           </ul>
         </details>
       </section>
@@ -643,12 +625,6 @@ python part_bw_render_depth.py --checkpoint part25_outputs/nerf_coarse_step03000
   --dataset data/lego_200x200.npz --out depth_comparison.mp4 --side_by_side --use_disparity</code></pre>
         </li>
       </ol>
-      <p class="callout">
-        Note: Replace image/video paths above with your actual outputs. This page references common default paths
-        produced by the scripts. To satisfy the display requirements, ensure each subsection has the required
-        figures (detections, undistort before/after, pose/rig visualization, PSNR curves, validation images,
-        and novel-view videos).
-      </p>
     </section>
 
     <section id="links">
