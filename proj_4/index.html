@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project 4: Neural Radiance Fields (NeRF) — Yuchen Zhang</title>
+  <meta name="description" content="CS180/280A Project 4: Neural Radiance Fields (NeRF) — write‑up, results, videos, discussion, and implementation details." />
+  <meta name="author" content="Yuchen Zhang (yuchenzhang789)" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg: #0b0c10;
+      --bg-soft: #12131a;
+      --panel: #171821;
+      --text: #e8ecf1;
+      --muted: #a9b1bd;
+      --accent: #66d9ef;
+      --accent-2: #7ee787;
+      --link: #8fbffb;
+      --warn: #ffbf69;
+      --danger: #ff7b7b;
+      --shadow: rgba(0,0,0,.25);
+      --maxw: 1000px;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header.hero {
+      background: radial-gradient(1200px 600px at 20% 0%, #1b2130, transparent 60%), linear-gradient(180deg, #111422 0%, #0b0c10 66%);
+      border-bottom: 1px solid #262a3b;
+      padding: 54px 16px 28px;
+    }
+    header .wrap, main, footer .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; }
+    .title { font-size: clamp(28px, 3.2vw, 44px); margin: 0 0 10px; letter-spacing: .2px; }
+    .subtitle { color: var(--muted); margin: 0 0 14px; }
+    .meta { color: var(--muted); font-size: 14px; }
+    .pill { display: inline-block; background: #1c2333; color: var(--accent); border: 1px solid #263453; padding: 4px 10px; border-radius: 100px; font-size: 12px; margin-right: 6px; }
+    nav.toc {
+      position: sticky; top: 0; z-index: 10; background: rgba(11,12,16,.76); backdrop-filter: blur(8px);
+      border-bottom: 1px solid #262a3b;
+    }
+    nav.toc .wrap { display: flex; gap: 18px; overflow-x: auto; padding: 10px 16px; scrollbar-width: thin; }
+    nav.toc a { white-space: nowrap; font-size: 14px; color: var(--muted); padding: 7px 10px; border-radius: 8px; }
+    nav.toc a:hover { color: var(--text); background: #1b1e27; text-decoration: none; }
+
+    main { padding: 28px 16px 60px; }
+    section { margin: 34px 0; padding: 22px; background: var(--panel); border: 1px solid #262a3b; border-radius: var(--radius); box-shadow: 0 10px 28px var(--shadow); }
+    section h2 { margin-top: 0; font-size: clamp(20px, 2.2vw, 28px); }
+    section h3 { margin: 28px 0 8px; font-size: 18px; color: var(--accent-2); }
+    p { line-height: 1.6; }
+    ul, ol { margin: 0 0 0 22px; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    pre { padding: 12px; background: #11141c; border: 1px solid #262a3b; border-radius: 10px; overflow: auto; }
+
+    .grid { display: grid; gap: 12px; }
+    .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 860px) { .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; } }
+
+    figure { margin: 0; background: #0f121a; border: 1px solid #262a3b; border-radius: 12px; overflow: hidden; }
+    figure img, figure video { width: 100%; height: auto; display: block; }
+    figcaption { font-size: 13px; color: var(--muted); padding: 10px 12px; border-top: 1px solid #262a3b; }
+    .badge { color: var(--accent); font-weight: 600; }
+    .callout { border-left: 4px solid var(--accent); padding: 8px 12px; background: #10131b; border-radius: 8px; }
+    .good { color: var(--accent-2); }
+    .warn { color: var(--warn); }
+    .danger { color: var(--danger); }
+
+    .footer-note { color: var(--muted); font-size: 13px; }
+    .small { font-size: 13px; color: var(--muted); }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace; background: #0e1117; border: 1px solid #262a3b; padding: 1px 6px; border-radius: 6px; font-size: 12px; }
+
+    .center { text-align: center; }
+    .spacer { height: 6px; }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="wrap">
+      <div class="pill">CS180/280A — Project 4</div>
+      <h1 class="title">Neural Radiance Fields (NeRF)</h1>
+      <p class="subtitle">Project 4 write‑up: implementation highlights, results, ablations, and discussion.</p>
+      <p class="meta">Author: <strong>Yuchen Zhang</strong> (<a href="https://github.com/yuchenzhang789" target="_blank" rel="noopener">yuchenzhang789</a>) • Last updated: <span id="lu">—</span></p>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="wrap">
+      <a href="#overview">Overview</a>
+      <a href="#part0">Part 0 — Data Capture</a>
+      <a href="#calibration">Calibration & Intrinsics</a>
+      <a href="#impl">Implementation Notes</a>
+      <a href="#debug">Debug: Lafufu Dataset</a>
+      <a href="#own">Part 2.6 — Own Dataset</a>
+      <a href="#ablations">Ablations</a>
+      <a href="#discussion">Discussion & Limitations</a>
+      <a href="#usage">Reproduction (Commands)</a>
+      <a href="#refs">References</a>
+      <a href="#ack">Acknowledgements</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <h2>Overview</h2>
+      <p>
+        In this project I implemented a NeRF pipeline to learn a continuous radiance field from a set of posed RGB images.
+        The system supports training on the provided test scenes and custom captures, with memory‑aware volume rendering,
+        configurable sampling, validation snapshots, and novel‑view video generation (circular and elliptical paths).
+      </p>
+      <div class="callout">
+        <strong>Deliverables checklist (per spec)</strong>
+        <ul>
+          <li>Loss curves for training; intermediate validation renders (first view).</li>
+          <li>Novel‑view animation (MP4) circling the object with correct up axis.</li>
+          <li>Discussion of hyperparameters and any code changes for real data.</li>
+          <li>Results on the provided debugging dataset (Lafufu) and my own capture.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="part0">
+      <h2>Part 0 — Data Capture</h2>
+      <p>
+        I captured ~<span class="badge">N≈25–40</span> images of a small tabletop object under stable lighting. Images were
+        undistorted and paired with camera poses via a standard chessboard/Aruco calibration procedure. I resized large
+        photos before training to control memory, and adjusted intrinsics accordingly.
+      </p>
+      <div class="grid cols-3">
+        <figure>
+          <img src="assets/capture_01.jpg" alt="Sample training view 1" />
+          <figcaption>Sample training view (resized if needed).</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/capture_02.jpg" alt="Sample training view 2" />
+          <figcaption>Varied azimuth around the object.</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/capture_03.jpg" alt="Sample training view 3" />
+          <figcaption>Limited elevation for a “side” orbit aesthetic.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="calibration">
+      <h2>Calibration & Intrinsics</h2>
+      <p>
+        I estimate intrinsics via calibration; for custom datasets I store only <code>focal</code> in the NPZ and construct
+        <code>K</code> at runtime as <code>[[f,0,W/2],[0,f,H/2],[0,0,1]]</code>. When downscaling for rendering, I proportionally
+        scale <code>fx, fy, cx, cy</code>. A consistent world frame is used with a fixed up axis (Z‑up by default).
+      </p>
+      <pre><code># intrinsics build (training/render)
+K = [[f, 0, W/2],
+     [0, f, H/2],
+     [0, 0,   1 ]]</code></pre>
+      <p class="small">For MPS (Apple Silicon), validation downsampling uses a divisible‑safe bilinear fallback to avoid adaptive avg pool constraints.</p>
+    </section>
+
+    <section id="impl">
+      <h2>Implementation Notes</h2>
+      <ul>
+        <li><strong>Ray sampling:</strong> stratified samples per ray (32–96), larger counts for final quality.</li>
+        <li><strong>Renderer:</strong> chunked rays to avoid OOM; white background composition: <code>rgb = Σ wᵢ cᵢ + (1 − Σ wᵢ)</code>.</li>
+        <li><strong>Training:</strong> Adam with lr=5e‑4; batch size in rays (4k–10k) depending on device.</li>
+        <li><strong>MPS tips:</strong> set <code>precompute=False</code> for large images; use higher <code>val_downscale</code> and smaller <code>render_chunk</code>.</li>
+        <li><strong>Paths:</strong> spherical (circle) and elliptical orbits with configurable up axis (Z‑up or Y‑up).</li>
+      </ul>
+    </section>
+
+    <section id="debug">
+      <h2>Debug Results — Lafufu Dataset</h2>
+      <p>
+        The provided calibrated Lafufu dataset was used to verify correctness and memory behavior. Below are validation
+        snapshots during training and the final orbit video.
+      </p>
+      <div class="grid cols-3">
+        <figure>
+          <img src="lafufu_outputs/val_step001000.png" alt="Lafufu validation step 1k" />
+          <figcaption>Validation @1k iters.</figcaption>
+        </figure>
+        <figure>
+          <img src="lafufu_outputs/val_step005000.png" alt="Lafufu validation step 5k" />
+          <figcaption>Validation @5k iters.</figcaption>
+        </figure>
+        <figure>
+          <img src="lafufu_outputs/val_step010000.png" alt="Lafufu validation step 10k" />
+          <figcaption>Validation @10k iters.</figcaption>
+        </figure>
+      </div>
+      <div class="spacer"></div>
+      <div class="grid cols-2">
+        <figure>
+          <img src="lafufu_outputs/train_loss_curve.png" alt="Training loss curve (Lafufu)" />
+          <figcaption>Training MSE loss (Lafufu).</figcaption>
+        </figure>
+        <figure>
+          <video controls muted playsinline src="lafufu_outputs/orbit_from_ckpt.mp4"></video>
+          <figcaption>Novel views (orbit video) from Lafufu checkpoint.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="own">
+      <h2>Part 2.6 — Training with My Own Data</h2>
+      <p>
+        I trained a NeRF on my capture (Part 0). For real data I found <span class="badge">near=0.02</span>,
+        <span class="badge">far=0.5–0.8</span>, and <span class="badge">64 samples</span> to work well after verifying with 32 samples.
+        I also used an orbit with the correct world up (Z‑up) and a side‑circle camera path to match the intended perspective.
+      </p>
+
+      <h3>Loss Curve & Intermediate Renders</h3>
+      <div class="grid cols-2">
+        <figure>
+          <img src="custom_outputs/train_loss_curve.png" alt="Training loss curve (custom)" />
+          <figcaption>Training MSE loss (custom object).</figcaption>
+        </figure>
+        <figure>
+          <img src="custom_outputs/val_step010000.png" alt="Validation snapshot (custom)" />
+          <figcaption>Intermediate validation render.</figcaption>
+        </figure>
+      </div>
+
+      <h3>Novel Views — Z‑up Side Orbit (One Full Circle)</h3>
+      <div class="grid cols-2">
+        <figure>
+          <video controls muted playsinline src="custom_outputs/side_circle_zup.mp4"></video>
+          <figcaption>One full side circle (Z‑up); constant radius in XY plane, fixed height.</figcaption>
+        </figure>
+        <figure>
+          <video controls muted playsinline src="custom_outputs/ellipse.mp4"></video>
+          <figcaption>Elliptical near–far path variant for additional parallax.</figcaption>
+        </figure>
+      </div>
+
+      <h3>Key Hyperparameters</h3>
+      <ul>
+        <li>Samples per ray: <span class="badge">32 → 64</span> (final), stratified on.</li>
+        <li>Rays per batch: <span class="badge">8192–10000</span> (device‑dependent).</li>
+        <li>Learning rate: <code>5e-4</code> (Adam).</li>
+        <li>Near/Far: <span class="badge">0.02 / 0.5–0.8</span> (tuned to object scale).</li>
+        <li>Validation downscale: <span class="badge">4–8</span>; render chunk: <span class="badge">4096–8192</span> to avoid OOM.</li>
+      </ul>
+
+      <h3>Code Changes That Mattered</h3>
+      <ul>
+        <li><strong>Safe downsampling on MPS:</strong> bilinear fallback when sizes are not divisible for <code>area</code>.</li>
+        <li><strong>No precompute for large images:</strong> compute rays on‑the‑fly to keep memory bounded.</li>
+        <li><strong>Chunked renderer:</strong> stricter <code>chunk</code> and higher <code>val_downscale</code> for high‑res photos.</li>
+        <li><strong>Custom paths:</strong> Z‑up side circle and elliptical orbits with configurable <code>phase_deg</code>, <code>radius_scale</code>.</li>
+      </ul>
+    </section>
+
+    <section id="ablations">
+      <h2>Ablations</h2>
+      <div class="grid cols-3">
+        <figure>
+          <img src="custom_outputs/ablate_samples_32.png" alt="Ablation samples 32" />
+          <figcaption>32 samples/ray (faster, slightly noisier/softer).</figcaption>
+        </figure>
+        <figure>
+          <img src="custom_outputs/ablate_samples_64.png" alt="Ablation samples 64" />
+          <figcaption>64 samples/ray (better detail & transparency handling).</figcaption>
+        </figure>
+        <figure>
+          <img src="custom_outputs/ablate_far_08.png" alt="Ablation far 0.8" />
+          <figcaption>Increasing <code>far</code> to 0.8 recovers back geometry at the cost of more samples needed.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="discussion">
+      <h2>Discussion & Limitations</h2>
+      <ul>
+        <li><strong>Calibration sensitivity:</strong> small pose errors create floating artifacts; undistortion helps.</li>
+        <li><strong>Background:</strong> white composition can reveal gaps for sparse views; more samples reduce it.</li>
+        <li><strong>Performance:</strong> high‑res training is slow; resizing with matched intrinsics is crucial.</li>
+        <li><strong>Generalization:</strong> extreme view extrapolation remains challenging without multi‑scale regularizers.</li>
+      </ul>
+    </section>
+
+    <section id="usage">
+      <h2>Reproduction (Commands)</h2>
+      <h3>Environment</h3>
+      <pre><code># Python 3.10+
+pip install torch torchvision --extra-index-url https://download.pytorch.org/whl/cpu  # or MPS/CUDA wheel
+pip install numpy matplotlib imageio imageio-ffmpeg opencv-python</code></pre>
+
+      <h3>Train on the custom dataset (focal in NPZ)</h3>
+      <pre><code>python3 part26_train_custom_nerf.py \
+  --dataset_path dataset/my_data_resized.npz \
+  --out_dir custom_outputs \
+  --near 0.02 --far 0.6 \
+  --n_samples 64 --rays_per_batch 8192 \
+  --val_downscale 4 --val_n_samples 48 --render_chunk 8192 \
+  --iters 20000 --device_preference mps</code></pre>
+
+      <h3>Render a side circle (Z‑up)</h3>
+      <pre><code>python3 part26_render_video_side_circle_zup.py \
+  --dataset dataset/my_data_resized.npz \
+  --checkpoint custom_outputs/custom_nerf_step020000.pt \
+  --out custom_outputs/side_circle_zup.mp4 \
+  --downscale 2 --n_samples 64 --near 0.02 --far 0.6 \
+  --frames 360 --elev_deg 5 --radius_scale 1.0 --phase_deg 0 --target_mode origin</code></pre>
+
+      <h3>Render an elliptical near–far orbit</h3>
+      <pre><code>python3 part26_render_ellipse_video.py \
+  --dataset dataset/my_data_resized.npz \
+  --checkpoint custom_outputs/custom_nerf_step020000.pt \
+  --out custom_outputs/ellipse.mp4 \
+  --downscale 2 --n_samples 64 --near 0.02 --far 0.6 \
+  --frames 240 --elev_deg 10 --orbit_axis z --up_axis z --major_scale 1.3 --minor_scale 0.7</code></pre>
+    </section>
+
+    <section id="refs">
+      <h2>References</h2>
+      <ul>
+        <li>NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis (Mildenhall et al., ECCV 2020).</li>
+        <li>Volumetric rendering formulations and soft compositing as in the NeRF paper.</li>
+        <li>Course notes/specifications for CS180/280A Project 4.</li>
+      </ul>
+    </section>
+
+    <section id="ack">
+      <h2>Acknowledgements</h2>
+      <p>Thanks to the course staff for the starter code and datasets, and classmates for discussions and debugging tips.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap" style="padding: 24px 16px 60px;">
+      <p class="footer-note">© <span id="yr">2025</span> Yuchen Zhang. This page is part of CS180/280A Project 4.</p>
+    </div>
+  </footer>
+
+  <script>
+    const d = new Date();
+    document.getElementById('yr').textContent = d.getFullYear();
+    document.getElementById('lu').textContent = d.toISOString().slice(0,10);
+  </script>
+</body>
+</html>
