@@ -1,1 +1,339 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CS180 Project 5 | Diffusion Models & Flow Matching</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #121212;
+      --fg: #e0e0e0;
+      --card-bg: #1e1e1e;
+      --accent: #bb86fc; /* Purple accent */
+      --secondary: #03dac6; /* Teal secondary */
+      --border: #333;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4 {
+      color: #ffffff;
+      margin-top: 1.5em;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 10px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-top: 60px;
+    }
+
+    h3 {
+      font-size: 1.4rem;
+      color: var(--secondary);
+      margin-top: 40px;
+    }
+    
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .content-block {
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+      justify-items: center;
+    }
+
+    figure {
+      margin: 0;
+      width: 100%;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.2s;
+    }
+    
+    figure:hover {
+      transform: scale(1.02);
+      border-color: var(--secondary);
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    figcaption {
+      padding: 12px;
+      font-size: 0.9rem;
+      color: #aaa;
+      text-align: center;
+      background: #181818;
+      border-top: 1px solid var(--border);
+    }
+
+    code {
+      background: #2d2d2d;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+      color: #ff80ab;
+    }
+    
+    .nav-links {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .nav-links a {
+        margin: 0 15px;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>CS 180 Project 5: Fun With Diffusion Models!</h1>
+    <div class="nav-links">
+        <a href="#part-a">Part A: The Power of Diffusion</a>
+        <a href="#part-b">Part B: Diffusion from Scratch</a>
+    </div>
+  </header>
+
+  <section id="part-a">
+    <div class="content-block">
+      <h2>Part A: The Power of Diffusion Models</h2>
+      <p>In this part, I experimented with the <strong>DeepFloyd IF</strong> diffusion model, playing with sampling loops, inpainting, and optical illusions.</p>
+    </div>
+
+    <div class="content-block">
+      <h3>0. Setup & Text-to-Image Generation</h3>
+      <p>Using the DeepFloyd IF-I-XL-v1.0 model, I generated images from text prompts. I used a random seed of <code>180</code> to ensure high-quality outputs.</p>
+      
+      <div class="gallery">
+        <figure>
+          <img src="media/part_a/0_generated_1.png" alt="DeepFloyd Generation 1">
+          <figcaption>Prompt: "an oil painting of a snowy mountain village"</figcaption>
+        </figure>
+        <figure>
+          <img src="media/part_a/0_generated_2.png" alt="DeepFloyd Generation 2">
+          <figcaption>Prompt: "a man wearing a hat"</figcaption>
+        </figure>
+        <figure>
+          <img src="media/part_a/0_generated_3.png" alt="DeepFloyd Generation 3">
+          <figcaption>Prompt: "a photo of a campfire"</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h3>1. Sampling Loops</h3>
+      
+      <h4>1.1 The Forward Process</h4>
+      <p>The forward process adds noise to a clean image. Below is the test image (Campanile) with increasing amounts of noise at timesteps <code>t = 250, 500, 750</code>.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_a/1_forward_process.png" alt="Forward Process">
+            <figcaption>Noisy Images at t=250, 500, 750</figcaption>
+        </figure>
+      </div>
+
+      <h4>1.2 Classical Denoising</h4>
+      <p>I attempted to remove the noise using Gaussian Blur. As expected, this simple method fails to recover the high-frequency details.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_a/1_classical_denoising.png" alt="Classical Denoising">
+            <figcaption>Gaussian Blur Denoising Results</figcaption>
+        </figure>
+      </div>
+
+      <h4>1.3 One-Step Denoising</h4>
+      <p>Here, I used the pre-trained diffusion model to estimate the noise and subtract it in a single step. The model performs better than Gaussian blur but still yields blurry results for high noise levels because the problem is ill-posed.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_a/1_onestep_denoising.png" alt="One-Step Denoising">
+            <figcaption>One-Step Denoising (Model Prediction)</figcaption>
+        </figure>
+      </div>
+
+      <h4>1.4 Iterative Denoising</h4>
+      <p>Instead of jumping straight to the clean image, iterative denoising takes small steps (strided sampling). This allows the model to hallucinate realistic details gradually.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_a/1_iterative_denoising.png" alt="Iterative Denoising">
+            <figcaption>Iterative Denoising vs One-Step vs Clean</figcaption>
+        </figure>
+      </div>
+
+      <h4>1.5 Diffusion Model Sampling</h4>
+      <p>Finally, I generated 5 random images from pure noise using the iterative sampling loop implementing the formula: <code>x_{t-1} = (x_t - ... )</code>.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_a/1_generated_samples.png" alt="Generated Samples">
+            <figcaption>Images Generated from Pure Noise</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h3>2. Inpainting</h3>
+      <p>By enforcing the known pixels of an original image at every step of the diffusion process, we can "inpaint" specific regions. I replaced the top of the Campanile with new content.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_a/2_inpainting_result.png" alt="Inpainting Result">
+            <figcaption>Left: Original, Middle: Mask, Right: Inpainted Result</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h3>3. Optical Illusions</h3>
+      
+      <h4>3.1 Visual Anagrams</h4>
+      <p>Visual anagrams are images that look like one thing when upright and another when flipped. This is achieved by averaging the noise estimates for the upright prompt and the flipped prompt.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_a/3_anagram_1.png" alt="Anagram 1">
+            <figcaption>"an oil painting of an old man" (Upright)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/part_a/3_anagram_1_flip.png" alt="Anagram 1 Flip">
+            <figcaption>"an oil painting of people around a campfire" (Flipped)</figcaption>
+        </figure>
+      </div>
+
+      <h4>3.2 Hybrid Images</h4>
+      <p>Hybrid images look like one thing from up close (high frequency) and another from afar (low frequency).</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_a/3_hybrid_image.png" alt="Hybrid Image">
+            <figcaption>Hybrid Image: Skull (Low Freq) + Waterfall (High Freq)</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="part-b">
+    <div class="content-block">
+      <h2>Part B: Diffusion Models from Scratch</h2>
+      <p>In this part, I trained a diffusion model on the MNIST dataset using <strong>Flow Matching</strong>. I built the architecture and training loop from the ground up.</p>
+    </div>
+
+    <div class="content-block">
+      <h3>1. Training a Single-Step Denoising UNet</h3>
+      
+      <h4>1.1 The UNet Architecture</h4>
+      <p>I implemented a UNet with `DownConv`, `UpConv`, and `Flatten`/`Unflatten` operations. This serves as the backbone for the denoiser.</p>
+
+      <h4>1.2 Visualizing the Noising Process</h4>
+      <p>Below is the visualization of the noising process on MNIST digits with varying sigma.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_b/1_noising_process.png" alt="Noising Process">
+            <figcaption>MNIST Digits with varying noise levels (σ)</figcaption>
+        </figure>
+      </div>
+
+      <h4>1.3 Training Results (Single Step)</h4>
+      <p>I trained the model to regress the clean image from the noisy image (MSE Loss). Below are the loss curve and sample results.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_b/1_training_loss.png" alt="Training Loss">
+            <figcaption>Training Loss (Single Step Denoiser)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/part_b/1_results_epoch1.png" alt="Epoch 1 Results">
+            <figcaption>Results after Epoch 1</figcaption>
+        </figure>
+        <figure>
+            <img src="media/part_b/1_results_epoch5.png" alt="Epoch 5 Results">
+            <figcaption>Results after Epoch 5</figcaption>
+        </figure>
+      </div>
+      
+      <h4>1.4 Out-of-Distribution Testing</h4>
+      <p>I tested the single-step denoiser on different noise levels it wasn't trained on. The results show the limitations of a simple regression approach.</p>
+      <div class="gallery">
+         <figure>
+            <img src="media/part_b/1_out_of_distribution.png" alt="OOD Results">
+            <figcaption>Denoising performance on varying sigma</figcaption>
+         </figure>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h3>2. Training a Diffusion Model (Flow Matching)</h3>
+      <p>Instead of single-step denoising, I implemented <strong>Flow Matching</strong>. This involves training the UNet to predict the vector field (velocity) that flows from noise to data.</p>
+      
+      <h4>2.1 Time-Conditioned UNet</h4>
+      <p>I modified the UNet to accept a time embedding `t`, injecting it into the network using Fully Connected Blocks (FCBlock).</p>
+
+      <h4>2.2 Training Loss</h4>
+      <p>The model was trained using the Flow Matching objective. Below is the training loss curve.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_b/2_flow_matching_loss.png" alt="FM Loss">
+            <figcaption>Flow Matching Training Loss</figcaption>
+        </figure>
+      </div>
+
+      <h4>2.3 Sampling Results</h4>
+      <p>Sampling is performed by integrating the ODE. Below are samples generated at early and late stages of training.</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_b/2_samples_epoch5.png" alt="FM Epoch 5">
+            <figcaption>Samples from Flow Matching (Epoch 5)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/part_b/2_samples_epoch20.png" alt="FM Epoch 20">
+            <figcaption>Samples from Flow Matching (Final Epoch)</figcaption>
+        </figure>
+      </div>
+
+      <h4>2.4 Class-Conditioned Generation</h4>
+      <p>To enable control over the generated digits, I added class conditioning and trained the model with a 10% dropout on the class labels (Classifier-Free Guidance).</p>
+      <div class="gallery">
+        <figure>
+            <img src="media/part_b/2_class_loss.png" alt="Class Loss">
+            <figcaption>Class-Conditioned Training Loss</figcaption>
+        </figure>
+        <figure>
+            <img src="media/part_b/2_class_grid.png" alt="Class Grid">
+            <figcaption>Generated Digits 0-9 (CFG Scale = 5.0)</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
