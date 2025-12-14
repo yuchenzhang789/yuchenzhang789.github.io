@@ -1119,62 +1119,122 @@ class DownConv(nn.Module):
       </p>
     </div>
   
-    <section id="B2" class="card">
-        <h3>Part 2. Training a Flow Matching Model</h3>
-  
-        <h4>2.1 Adding Time Conditioning to UNet</h4>
-        <p>
-          One-step denoising can clean a digit if some signal remains, but it cannot <i>generate</i> from pure noise.
-          Flow matching fixes this by learning a continuous-time transport from noise to data.
-          I implement a time-conditioned UNet that takes <code class="inline">(x<sub>t</sub>, t)</code> as input and predicts a
-          velocity field. I inject time information using an MLP/FCBlock that
-          maps the scalar <code class="inline">t ∈ [0, 1]</code> into a feature embedding that conditions the UNet blocks.
-        </p>
-  
-        <h4>2.2 Training the UNet (Flow Matching Objective)</h4>
-        <p>
-          For each batch of clean digits <code class="inline">x<sub>1</sub></code>, I sample a noise image
-          <code class="inline">x<sub>0</sub> ~ N(0, I)</code> and a random time <code class="inline">t ~ Uniform(0, 1)</code>.
-          I construct the interpolated point
-          <code class="inline">x<sub>t</sub> = (1 − t) x<sub>0</sub> + t x<sub>1</sub></code>.
-          The target velocity for this simple linear path is constant:
-          <code class="inline">v<sub>target</sub> = x<sub>1</sub> − x<sub>0</sub></code>.
-          The network predicts <code class="inline">v<sub>θ</sub>(x<sub>t</sub>, t)</code>, and I train with MSE
-          <code class="inline">||v<sub>θ</sub> − v<sub>target</sub>||<sub>2</sub><sup>2</sup></code>.
-        </p>
-        <div class="grid">
-            <figure>
-                <img src="media/PartB/2_2_loss_curve.png" alt="B2.2 time-conditioned training loss curve">
-                <figcaption>Training loss curve for time-conditioned flow matching.</figcaption>
-              </figure>
-        </div>
-  
-        <h4>2.3 Sampling from the Time-Conditioned UNet</h4>
-        <p>
-          I train the time-conditioned model with the recommended settings: batch size 64, hidden channels
-          <code class="inline">D = 64</code>, and Adam with an initial learning rate <code class="inline">1e−2</code>
-          plus an exponential LR decay schedule that drops by 10× over 10 epochs.
-          To <b>sample</b>, I start from <code class="inline">x<sub>0</sub> ~ N(0, I)</code> and numerically integrate the learned
-          velocity field from <code class="inline">t = 0</code> to <code class="inline">t = 1</code> using
-          <code class="inline">num_ts = 50</code> steps (Euler updates). Each step applies:
-          <code class="inline">x ← x + (Δt) · v<sub>θ</sub>(x, t)</code>.
-          Over the trajectory, samples gradually sharpen from noise into digit-like structure.
-        </p>
-  
-        <div class="grid">
-          <figure>
-            <img src="media/PartB/2_2_results_epoch1.png" alt="B2.3 samples after epoch 1">
-            <figcaption>Samples from the time-conditioned model after epoch 1.</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartB/2_2_results_epoch5.png" alt="B2.3 samples after epoch 5">
-            <figcaption>Samples from the time-conditioned model after epoch 10 (digits become sharper and more coherent).</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartB/2_2_results_epoch10.png" alt="B2.3 samples after epoch 10">
-            <figcaption>Samples from the time-conditioned model after epoch 10 (digits become sharper and more coherent).</figcaption>
-          </figure>
-        </div>
+    <section id="part2" class="card">
+    <h2>Part 2: Training a Flow Matching Model</h2>
+    <p>
+      As seen in section 1.2.3, single-step denoising fails to generate coherent images from pure noise because the problem is ill-posed. 
+      To fix this, I implemented <b>Flow Matching</b>. Instead of predicting the clean image in one jump, we train the model to 
+      predict the <i>velocity</i> (or flow) that moves the probability distribution of pure noise ($t=0$) toward the distribution of clean images ($t=1$).
+    </p>
+
+    <h3>2.0 The Math of Flow Matching</h3>
+    <p>
+      We define a linear interpolation between a sample of pure noise ($x_0$) and a clean image ($x_1$):
+    </p>
+    <div class="math-block">
+      $$ x_t = (1 - t)x_0 + t x_1 $$
+    </div>
+    <p>
+      The "flow" or velocity required to move along this path is simply the derivative with respect to time:
+    </p>
+    <div class="math-block">
+      $$ u_t(x) = x_1 - x_0 $$
+    </div>
+    <p>
+      Our goal is to train a neural network $v_\theta(x_t, t)$ to regress this target velocity. The loss function is:
+    </p>
+    <div class="math-block">
+      $$ \mathcal{L}_{FM} = \mathbb{E}_{t, x_0, x_1} [ \| v_\theta(x_t, t) - (x_1 - x_0) \|^2 ] $$
+    </div>
+
+    <div class="content-block">
+      <h3>2.1 Adding Time Conditioning to UNet</h3>
+      <p>
+        Since the flow changes over time (the direction we need to move changes as we get closer to the image), the UNet must be 
+        conditioned on the timestep $t$. I modified the UNet to inject $t$ into the architecture using <b>FCBlocks</b> (Fully Connected Blocks).
+      </p>
+
+      <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+        <figure>
+          <img src="media/partB/time_condition_unet.jpg" alt="Conditioned UNet Diagram">
+          <figcaption>Figure 4: Conditioned UNet Architecture</figcaption>
+        </figure>
+        <figure>
+          <img src="media/partB/fcblock.png" alt="FCBlock Diagram">
+          <figcaption>Figure 5: FCBlock for Conditioning</figcaption>
+        </figure>
+      </div>
+
+      <p>
+        The time signal $t \in [0, 1]$ is passed through two linear layers (FCBlock) to generate a scaling factor that modulates the feature maps 
+        in the UNet (similar to AdaGN or Stylization).
+      </p>
+
+      <div style="background: #2d2d2d; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #444; margin-bottom: 20px;">
+<pre><code style="color: #f8f8f2; font-family: Consolas, monospace;"># Implementation Logic for Time Embedding
+# 1. Normalize t to [0, 1]
+# 2. Pass through FCBlocks
+scale1 = self.fc1(t)  # Learnable scaling for block 1
+scale2 = self.fc2(t)  # Learnable scaling for block 2
+
+# 3. Modulate features (Spatial Broadcasting)
+# x has shape (B, C, H, W), scale has shape (B, 1)
+# We reshape scale to (B, 1, 1, 1) for broadcasting
+out_block1 = out_block1 * scale1.view(-1, 1, 1, 1)
+out_block2 = out_block2 * scale2.view(-1, 1, 1, 1)</code></pre>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h3>2.2 Training the Time-Conditioned UNet</h3>
+      <p>
+        I trained the model on the MNIST training set.
+      </p>
+      <ul>
+        <li><b>Batch Size:</b> 64</li>
+        <li><b>Hidden Dimensions:</b> 64</li>
+        <li><b>Optimizer:</b> Adam (Initial LR = 1e-2)</li>
+        <li><b>Scheduler:</b> Exponential Decay ($\gamma = 0.1$) applied every epoch.</li>
+      </ul>
+
+      <figure>
+        <img src="media/partB/2_2_loss.jpg" alt="Flow Matching Training Loss">
+        <figcaption>Training Loss (Flow Matching)</figcaption>
+      </figure>
+    </div>
+
+    <div class="content-block">
+      <h3>2.3 Sampling from the UNet</h3>
+      <p>
+        To generate images, we solve the Ordinary Differential Equation (ODE) defined by our learned vector field. 
+        I used an Euler integrator: starting from random noise at $t=0$, I took small steps $dt$ following the predicted velocity $v_\theta(x_t, t)$ until $t=1$.
+      </p>
+      
+      <p>
+        Below are the results of the sampling process at different stages of training.
+      </p>
+
+      <div class="gallery" style="grid-template-columns: repeat(3, 1fr); gap: 15px;">
+        <figure>
+          <img src="media/partB/2_2_epoch_1.jpg" alt="Epoch 1 Samples">
+          <figcaption>Epoch 1<br>(Blurry, some shapes)</figcaption>
+        </figure>
+        <figure>
+          <img src="media/partB/2_2_epoch_5.jpg" alt="Epoch 5 Samples">
+          <figcaption>Epoch 5<br>(Recognizable digits)</figcaption>
+        </figure>
+        <figure>
+          <img src="media/partB/2_2_epoch_10.jpg" alt="Epoch 10 Samples">
+          <figcaption>Epoch 10<br>(Clear, distinct digits)</figcaption>
+        </figure>
+      </div>
+      
+      <p class="muted">
+        <b>Observation:</b> Unlike the single-step denoiser which produced a blurry average, the Flow Matching model generates 
+        sharp, diverse digits. This confirms that the iterative process successfully models the complex data distribution.
+      </p>
+    </div>
+  </section>
   
         <h4>2.4 Adding Class-Conditioning to UNet</h4>
         <p>
