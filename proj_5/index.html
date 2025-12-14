@@ -67,16 +67,16 @@
 
 <body>
   <header class="card">
-    <h1>Project 5 — Fun With Diffusion Models (Part A + Part B)</h1>
+    <h1>Project 5 — Fun With Diffusion Models</h1>
     <div class="muted">
-      <span class="pill">Name: Yuchen Zhang</span>
-      <span class="pill">Course: CS280A Fall 2025</span>
-      <span class="pill">Topic: Diffusion + Flow Matching</span>
+      <span class="pill">Author: Yuchen Zhang</span>
+      <span class="pill">CS280A Fall 2025</span>
+      <span class="pill">Topics: Diffusion + Flow Matching</span>
     </div>
     <p class="muted" style="margin-top:10px;">
-      This project is split into two parts:
-      <b>Part A</b> explores a pretrained text-to-image diffusion model (DeepFloyd IF) and builds intuition by implementing sampling loops and creative conditioning tasks.
-      <b>Part B</b trains my own generative model from scratch on MNIST using UNets and flow matching, gradually adding time/class conditioning and improving sampling quality.
+      This project contains two parts:
+      <b>Part A</b> explores a pretrained diffusion model, DeepFloyd IF, and experimented with sampling loops, inpainting, and optical illusions.
+      <b>Part B</b> trains a generative model from scratch on the MNIST dataset using UNets and flow matching, also played with time/class conditioning to improve sampling quality.
     </p>
   </header>
 
@@ -91,8 +91,8 @@
     <a href="#B1">B1. Train a Single-Step Denoising UNet</a>
     <a href="#B2">B2. Train a Flow Matching Model (Time Conditioning)</a>
     <a href="#B3">B3. Add Class Conditioning + CFG + Simplify Training</a>
-    <a href="#B4">B4. Bells & Whistles (Part B / CS280A)</a>
-    <a href="#learned">What I Learned</a>
+    <a href="#B4">B4. Bells & Whistles (Part B)</a>
+    <a href="#learned">Takeaways</a>
   </section>
 
   <hr />
@@ -102,128 +102,192 @@
     <h2>Part A — The Power of Diffusion Models</h2>
 
     <p>
-        In Part A, I build intuition for how diffusion models generate and edit images by explicitly implementing the
-        core “noise ↔ denoise” mechanics. I start by visualizing the <b>forward process</b>, where a clean image is
-        gradually corrupted by Gaussian noise according to a fixed schedule, and then show how a pretrained denoiser
-        can reverse this process through <b>iterative sampling</b>. After validating the sampling loop on a real image
-        (the Campanile), I use the exact same loop to generate images from pure noise. Finally, I demonstrate how the
-        sampling dynamics can be <b>steered</b> with classifier-free guidance (CFG) and repurposed for
-        <b>image-to-image translation</b>, including SDEdit-style projection, inpainting (RePaint-style constraint
-        enforcement), and text-conditional edits.
+        In Part A, I explore the fundamental mechanics of diffusion models by manually implementing the sampling loops
+    rather than relying on a "black box" pipeline. I start by visualizing the <b>forward process</b>, taking a clean
+    test image (the Campanile) and gradually corrupting it with Gaussian noise. Then, I implement the reverse process,
+    demonstrating how a model can recover the image through <b>iterative denoising</b>. Finally, I apply these
+    concepts to creative tasks, including <b>inpainting</b> (restoring missing parts of an image),
+    <b>Visual Anagrams</b> (optical illusions), and <b>Hybrid Images</b>.
       </p>
 
     <!-- A0 -->
-<section id="A0" class="card">
-    <h3>A0. Setup + Prompt Embeddings</h3>
-    <p>
-        I use the two-stage <b>DeepFloyd IF</b> text-to-image pipeline: <b>Stage I</b> synthesizes a coarse
-        <b>64×64</b> sample, and <b>Stage II</b> upsamples/refines it to <b>256×256</b>. In this project, the text
-        string is not fed to the diffusion model directly; instead it is converted into a high-dimensional
-        <b>prompt embedding</b> (produced by a large text encoder). Because prompt encoding is relatively expensive,
-        I precompute and cache embeddings once and reuse them throughout Part A (standard sampling, CFG, and all
-        editing / illusion variants). I also fix the random seed (<b>666</b>) to ensure comparisons across settings
-        isolate the effect of the algorithm (e.g., step count, CFG scale, noise strength), rather than randomness.
-      </p>
-      <ul>
-        <li>
-          <b>Prompt embedding dictionary:</b> I created a set of 16 prompts spanning photorealistic and artistic
-          styles and generated their text embeddings ahead of time. This makes later sections much faster and keeps
-          all experiments controlled (same prompt, same seed, different sampling method).
-        </li>
-        <li>
-          <b>Baseline prompts shown below:</b> I generated examples from three prompts to establish a consistent
-          reference point for later sections:
-          <i>a realistic image of a snowy owl perched on a branch during winter</i>,
-          <i>a watercolor painting of a quiet village beside a calm river</i>, and
-          <i>an artistic image of floating islands in a bright blue sky</i>.
-        </li>
-        <li>
-          <b>Inference steps:</b> I sample both Stage I and Stage II using
-          <code class="inline">num_inference_steps</code> = <b>20</b> and <b>100</b> to compare the tradeoff between
-          speed and refinement.
-        </li>
-      </ul>
 
-      <p class="muted">
-        <b>Observation:</b> Increasing inference steps generally improves global coherence and reduces obvious
-        artifacts because the model makes more incremental denoising updates. However, “more steps” does not always
-        mean “more photorealistic.” In some cases, longer sampling can shift the image toward a more stylized look,
-        reflecting the fact that diffusion sampling is a trajectory through a learned prior—not a simple
-        post-processing denoise. The best step count therefore depends on the prompt and the desired aesthetic.
-      </p>
+<section id="A0" class="card">
+  <h3>A0. Setup & Text Embeddings</h3>
+  <p>
+    For this project, I utilized the <b>DeepFloyd IF</b> diffusion pipeline, a pixel-based diffusion model. 
+    DeepFloyd operates in a cascaded fashion: <b>Stage I</b> generates a base <b>64×64</b> image, which can then be passed to 
+    <b>Stage II</b> for super-resolution upscaling to <b>256×256</b>.
+  </p>
   
-      <p class="muted">
-        I reuse these baseline prompts (and the same seed) later so that changes in output can be attributed to the
-        algorithmic choice (plain sampling vs. CFG vs. image-to-image) rather than random variation.
-      </p>
+  <p>
+    The model is conditioned on text, but it does not process raw strings directly. Instead, text prompts must be encoded into 
+    high-dimensional vectors (embeddings) using a T5 encoder. Since this encoding process is computationally heavy, 
+    I pre-computed the embeddings for a set of specific prompts. This allowed me to iterate quickly on the diffusion 
+    mechanics (like noise levels and guidance scales) without re-running the text encoder every time.
+  </p>
   
-    <div class="grid">
+  <p>
+    To ensure scientific reproducibility, I fixed the random seed to <b>404</b> for all experiments. This guarantees that 
+    any visual differences observed in later sections are due to algorithmic changes (e.g., comparing random sampling vs. CFG) 
+    rather than the inherent randomness of the noise generation.
+  </p>
+
+  <ul>
+    <li>
+      <b>Selected Prompts:</b> I chose three distinct prompts to test the model's ability to handle different subjects and styles:
+      <ol>
+        <li><i>"a UC Berkeley oski"</i> (Artistic/Landscape)</li>
+        <li><i>"a man fighting with a tree"</i> (Portrait/Realistic)</li>
+        <li><i>"a frozen university campus"</i> (Lighting/Texture)</li>
+      </ol>
+    </li>
+    <li>
+      <b>Inference Parameters:</b> I primarily utilized <code class="inline">num_inference_steps = 20</code> for sampling. 
+      This provides a strong balance between generation speed and visual fidelity. Then I also experimented with num_inference_steps = 5, 10, 50 to see the effect of inference steps.
+    </li>
+  </ul>
+
+  <p class="muted">
+    <b>Observation:</b> Even at the coarse Stage I resolution (64x64), the model successfully captures the semantic core 
+    of the prompts. The "a man fighting with a tree" and "a frozen university campus" both show good visual of the scene, capturing most of the semantic elements. For example, a university campus and snow in the later prompt. However, the "a UC Berkeley oski" is the least precise visual, none of them correctly displayed the true oski figure. This indicates the model cannot create concepts it never seen before.
+    Also the number of inference steps play a vital role. The low steps often produced course and unprecise images, whereas the photos become more precise as the steps increase. For example, in the UC Berkeley oski case, the low steps had completely lost, whereas the high steps showed a university building implying that it realized the comcept of UC Berkeley.
+  </p>
+
+  <div class="grid">
         <!-- Prompt 1 -->
         <figure>
-          <img src="media/PartA/part0/stage1_owl_20.png" alt="Stage I owl (20 steps)">
-          <figcaption>Owl — Stage I (64×64), 20 steps</figcaption>
+          <img src="media/PartA/0_0/a_UC_Berkeley_oski_20_64.png" alt="Stage I owl (20 steps)">
+          <figcaption>a UC Berkeley oski — Stage I (64×64), 20 steps</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part0/stage2_owl_20.png" alt="Stage II owl (20 steps)">
-          <figcaption>Owl — Stage II (256×256), 20 steps</figcaption>
+          <img src="media/PartA/part0/a_UC_Berkeley_oski_20_256.png" alt="Stage II owl (20 steps)">
+          <figcaption>a UC Berkeley oski — Stage II (256×256), 20 steps</figcaption>
         </figure>
       
         <!-- Prompt 2 -->
         <figure>
-          <img src="media/PartA/part0/stage1_village_20.png" alt="Stage I village (20 steps)">
-          <figcaption>Village — Stage I (64×64), 20 steps</figcaption>
+          <img src="media/PartA/0_0/a_man_fighting_with_a_tree_20_64.png" alt="Stage I village (20 steps)">
+          <figcaption>a man fighting with a tree — Stage I (64×64), 20 steps</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part0/stage2_village_20.png" alt="Stage II village (20 steps)">
-          <figcaption>Village — Stage II (256×256), 20 steps</figcaption>
+          <img src="media/PartA/0_0/a_man_fighting_with_a_tree_20_256.png" alt="Stage II village (20 steps)">
+          <figcaption>a man fighting with a tree — Stage II (256×256), 20 steps</figcaption>
         </figure>
       
         <!-- Prompt 3 -->
         <figure>
-          <img src="media/PartA/part0/stage1_island_20.png" alt="Stage I islands (20 steps)">
-          <figcaption>Floating Islands — Stage I (64×64), 20 steps</figcaption>
+          <img src="media/PartA/0_0/a_frozen_university_campus_20_64.png" alt="Stage I islands (20 steps)">
+          <figcaption>a frozen university campus — Stage I (64×64), 20 steps</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part0/stage2_island_20.png" alt="Stage II islands (20 steps)">
-          <figcaption>Floating Islands — Stage II (256×256), 20 steps</figcaption>
+          <img src="media/PartA/0_0/a_frozen_university_campus_20_256.png" alt="Stage II islands (20 steps)">
+          <figcaption>a frozen university campus — Stage II (256×256), 20 steps</figcaption>
         </figure>
       </div>
       
-      <h3 style="margin-top:18px;">100 inference steps</h3>
+      <h3 style="margin-top:18px;">5 inference steps</h3>
       <div class="grid">
         <!-- Prompt 1 -->
         <figure>
-          <img src="media/PartA/part0/stage1_owl_100.png" alt="Stage I owl (100 steps)">
-          <figcaption>Owl — Stage I (64×64), 100 steps</figcaption>
+          <img src="media/PartA/0_0/a_UC_Berkeley_oski_5_64.png" alt="Stage I owl (20 steps)">
+          <figcaption>a UC Berkeley oski — Stage I (64×64), 5 steps</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part0/stage2_owl_100.png" alt="Stage II owl (100 steps)">
-          <figcaption>Owl — Stage II (256×256), 100 steps</figcaption>
+          <img src="media/PartA/part0/a_UC_Berkeley_oski_5_256.png" alt="Stage II owl (20 steps)">
+          <figcaption>a UC Berkeley oski — Stage II (256×256), 5 steps</figcaption>
         </figure>
       
         <!-- Prompt 2 -->
         <figure>
-          <img src="media/PartA/part0/stage1_village_100.png" alt="Stage I village (100 steps)">
-          <figcaption>Village — Stage I (64×64), 100 steps</figcaption>
+          <img src="media/PartA/0_0/a_man_fighting_with_a_tree_5_64.png" alt="Stage I village (20 steps)">
+          <figcaption>a man fighting with a tree — Stage I (64×64), 5 steps</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part0/stage2_village_100.png" alt="Stage II village (100 steps)">
-          <figcaption>Village — Stage II (256×256), 100 steps</figcaption>
+          <img src="media/PartA/0_0/a_man_fighting_with_a_tree_5_256.png" alt="Stage II village (20 steps)">
+          <figcaption>a man fighting with a tree — Stage II (256×256), 5 steps</figcaption>
         </figure>
       
         <!-- Prompt 3 -->
         <figure>
-          <img src="media/PartA/part0/stage1_island_100.png" alt="Stage I islands (100 steps)">
-          <figcaption>Floating Islands — Stage I (64×64), 100 steps</figcaption>
+          <img src="media/PartA/0_0/a_frozen_university_campus_5_64.png" alt="Stage I islands (20 steps)">
+          <figcaption>a frozen university campus — Stage I (64×64), 5 steps</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part0/stage2_island_100.png" alt="Stage II islands (100 steps)">
-          <figcaption>Floating Islands — Stage II (256×256), 100 steps</figcaption>
+          <img src="media/PartA/0_0/a_frozen_university_campus_5_256.png" alt="Stage II islands (20 steps)">
+          <figcaption>a frozen university campus — Stage II (256×256), 5 steps</figcaption>
+        </figure>
+      </div>
+
+      <h3 style="margin-top:18px;">10 inference steps</h3>
+      <div class="grid">
+        <!-- Prompt 1 -->
+        <figure>
+          <img src="media/PartA/0_0/a_UC_Berkeley_oski_10_64.png" alt="Stage I owl (20 steps)">
+          <figcaption>a UC Berkeley oski — Stage I (64×64), 10 steps</figcaption>
+        </figure>
+        <figure>
+          <img src="media/PartA/part0/a_UC_Berkeley_oski_10_256.png" alt="Stage II owl (20 steps)">
+          <figcaption>a UC Berkeley oski — Stage II (256×256), 10 steps</figcaption>
+        </figure>
+      
+        <!-- Prompt 2 -->
+        <figure>
+          <img src="media/PartA/0_0/a_man_fighting_with_a_tree_10_64.png" alt="Stage I village (20 steps)">
+          <figcaption>a man fighting with a tree — Stage I (64×64), 10 steps</figcaption>
+        </figure>
+        <figure>
+          <img src="media/PartA/0_0/a_man_fighting_with_a_tree_10_256.png" alt="Stage II village (20 steps)">
+          <figcaption>a man fighting with a tree — Stage II (256×256), 10 steps</figcaption>
+        </figure>
+      
+        <!-- Prompt 3 -->
+        <figure>
+          <img src="media/PartA/0_0/a_frozen_university_campus_10_64.png" alt="Stage I islands (20 steps)">
+          <figcaption>a frozen university campus — Stage I (64×64), 10 steps</figcaption>
+        </figure>
+        <figure>
+          <img src="media/PartA/0_0/a_frozen_university_campus_10_256.png" alt="Stage II islands (20 steps)">
+          <figcaption>a frozen university campus — Stage II (256×256), 10 steps</figcaption>
+        </figure>
+      </div>
+
+      <h3 style="margin-top:18px;">50 inference steps</h3>
+      <div class="grid">
+        <!-- Prompt 1 -->
+        <figure>
+          <img src="media/PartA/0_0/a_UC_Berkeley_oski_50_64.png" alt="Stage I owl (20 steps)">
+          <figcaption>a UC Berkeley oski — Stage I (64×64), 50 steps</figcaption>
+        </figure>
+        <figure>
+          <img src="media/PartA/part0/a_UC_Berkeley_oski_50_256.png" alt="Stage II owl (20 steps)">
+          <figcaption>a UC Berkeley oski — Stage II (256×256), 50 steps</figcaption>
+        </figure>
+      
+        <!-- Prompt 2 -->
+        <figure>
+          <img src="media/PartA/0_0/a_man_fighting_with_a_tree_50_64.png" alt="Stage I village (20 steps)">
+          <figcaption>a man fighting with a tree — Stage I (64×64), 50 steps</figcaption>
+        </figure>
+        <figure>
+          <img src="media/PartA/0_0/a_man_fighting_with_a_tree_50_256.png" alt="Stage II village (20 steps)">
+          <figcaption>a man fighting with a tree — Stage II (256×256), 50 steps</figcaption>
+        </figure>
+      
+        <!-- Prompt 3 -->
+        <figure>
+          <img src="media/PartA/0_0/a_frozen_university_campus_50_64.png" alt="Stage I islands (20 steps)">
+          <figcaption>a frozen university campus — Stage I (64×64), 50 steps</figcaption>
+        </figure>
+        <figure>
+          <img src="media/PartA/0_0/a_frozen_university_campus_50_256.png" alt="Stage II islands (20 steps)">
+          <figcaption>a frozen university campus — Stage II (256×256), 50 steps</figcaption>
         </figure>
       </div>
       
   </section>
   
+</section>
 
     <!-- A1 -->
     <section id="A1" class="card">
