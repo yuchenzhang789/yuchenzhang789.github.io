@@ -901,10 +901,10 @@
     <h2>Part B — Flow Matching from Scratch</h2>
   
     <p>
-      In Part B, I train a generative model on <b>MNIST</b> from scratch. I start with a warm-up task:
-      implement a lightweight <b>single-step denoising UNet</b> and train it to map a noisy digit back to
-      a clean digit using an L2 reconstruction loss. :contentReference[oaicite:1]{index=1}
-      Then I move to <b>flow matching</b>, where the UNet learns a <i>time-dependent velocity field</i> that
+      In Part B, I train a flow matching model from scratch using the MNIST dataset. I first
+      implement a <b>single-step denoising UNet</b> and train it to map a noisy digit back to
+      a clean digit.
+      Then I create the <b>flow matching</b>, where the UNet learns a <i>time-dependent velocity field</i> and <i>class conditioning</i> that
       transports samples from a simple noise distribution to the data distribution via ODE integration.
     </p>
   
@@ -912,125 +912,212 @@
     <section id="B1" class="card">
       <h3>B1. Train a Single-Step Denoising UNet</h3>
   
-      <h4>B1.1 Implementing the UNet</h4>
+      <div class="content-block">
+      <h3>B1.1 Implementing the UNet</h3>
       <p>
-        I implemented the UNet architecture specified in the handout using a small set of reusable tensor
-        operations: <code class="inline">Conv</code> (resolution-preserving), <code class="inline">DownConv</code>
-        (stride-2 downsample), <code class="inline">UpConv</code> (transpose-conv upsample),
-        <code class="inline">Flatten</code> (avgpool 7×7 → 1×1 bottleneck), <code class="inline">Unflatten</code>
-        (1×1 → 7×7), and <code class="inline">Concat</code> for skip connections. :contentReference[oaicite:2]{index=2}
-      </p>
-  
-      <ul>
-        <li>
-          <b>Encoder (down path):</b> progressively reduces spatial resolution while increasing channels.
-          This lets the network capture larger receptive fields and global digit structure.
-        </li>
-        <li>
-          <b>Bottleneck:</b> the <code class="inline">Flatten</code> step compresses the 7×7 feature map into a
-          1×1 representation, forcing the model to summarize global information.
-        </li>
-        <li>
-          <b>Decoder (up path):</b> upsamples back to 28×28, using <b>skip connections</b> to re-inject
-          fine-grained spatial details (strokes/edges) from earlier layers.
-        </li>
-      </ul>
-  
-      <p class="muted">
-        <b>Why UNet?</b> For denoising, we need both (1) global context (what digit is it / overall shape)
-        and (2) local detail (clean strokes). UNet’s multi-scale pathway + skip connections is a strong
-        inductive bias for this.
-      </p>
-  
-      <h4>B1.2 Using the UNet to Train a Denoiser</h4>
-      <p>
-        To train the one-step denoiser, I generate noisy/clean pairs by corrupting clean MNIST images
-        with Gaussian noise:
-        <code class="inline">z = x + σ · ε</code>, where <code class="inline">ε ~ N(0, I)</code>.
-        The network <code class="inline">Dθ(z)</code> is trained to directly predict <code class="inline">x</code>
-        using an L2 loss:
-        <code class="inline">E[ || Dθ(z) − x ||² ]</code>. :contentReference[oaicite:3]{index=3}
+        In this part, I implemented the denoiser as a <strong>UNet</strong>. The architecture consists of downsampling and upsampling blocks with skip connections, allowing the network to retain high-frequency details while processing semantic information at lower resolutions.
       </p>
 
-      <div class="grid">
-        <figure>
-          <img src="media/PartB/1_2_0_noisy.png" alt="B1 denoising examples">
-          <figcaption> Visualization of the noisy images</figcaption>
-        </figure>
-      </div>
-  
-      <h4>B1.2.1 Training</h4>
+      <h4>The Architecture</h4>
       <p>
-        During training I fix a noise level (e.g. <code class="inline">σ = 0.5</code>) and repeatedly sample
-        batches of MNIST digits, corrupt them into <code class="inline">z</code>, and optimize the UNet to
-        minimize reconstruction error. This setup forces the model to learn a “typical” denoising transform
-        for that corruption strength.
+        The Unconditional UNet (Figure 1) takes a 1-channel image (MNIST digit) and outputs a 1-channel image (denoised result). It uses composed operations (Figure 2) to build deeper blocks without losing spatial resolution unnecessarily.
       </p>
-  
-      <div class="grid">
+
+      <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
         <figure>
-          <img src="media/PartB/1_2_1_training_curve.png" alt="B1 training loss curve">
-          <figcaption>Training loss curve for the single-step denoiser.</figcaption>
+          <img src="media/partB/unet.jpg" alt="UNet Structure">
+          <figcaption>Figure 1: Unconditional UNet Architecture</figcaption>
         </figure>
         <figure>
-          <img src="media/PartB/1_2_1_training_e1.png" alt= "Training examples at epoch 1">
-          <figcaption>Results on the test set with noise level 0.5 after the first epoch</figcaption>
+          <img src="media/partB/operations.jpg" alt="UNet Operations">
+          <figcaption>Figure 2: Standard UNet Operations</figcaption>
         </figure>
-        <figure>
-            <img src="media/PartB/1_2_1_training_e5.png" alt= "Training examples at epoch 5">
-            <figcaption>Results on the test set with noise level 0.5 after the 5th epoch</figcaption>
-          </figure>
       </div>
+
+      <h4>Code Implementation</h4>
+      <p>
+        I implemented the atomic blocks (<code>Conv</code>, <code>DownConv</code>, <code>UpConv</code>, <code>Flatten</code>, <code>Unflatten</code>) and composed them into the full <code>UnconditionalUNet</code> class. A few examples of the atomic blocks are shown below:
+      </p>
+
+      <div style="background: #2d2d2d; padding: 15px; border-radius: 8px; overflow-x: auto; margin-bottom: 20px; border: 1px solid #444;">
+<pre><code style="color: #f8f8f2; font-family: Consolas, monospace;">class Conv(nn.Module):
+    def __init__(self, in_channels: int, out_channels: int):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(out_channels),
+            nn.GELU()
+        )
+    def forward(self, x): return self.net(x)
+
+class DownConv(nn.Module):
+    def __init__(self, in_channels: int, out_channels: int):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(out_channels),
+            nn.GELU()
+        )
+    def forward(self, x): return self.net(x)
+
+      <p>Putting it all together in the main class:</p>
+      <div style="background: #2d2d2d; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #444;">
+<pre><code style="color: #f8f8f2; font-family: Consolas, monospace;">class UnconditionalUNet(nn.Module):
+    def __init__(self, in_channels=1, num_hiddens=128):
+        super().__init__()
+        # Encoder
+        self.conv_block1 = ConvBlock(...)
+        self.down_block1 = DownBlock(...)
+        self.down_block2 = DownBlock(...)
+        
+        # Bottleneck
+        self.flatten = Flatten()
+        self.unflatten = Unflatten(...)
+        
+        # Decoder
+        self.up_block1 = UpBlock(...)
+        self.up_block2 = UpBlock(...)
+        self.conv_block_out = ConvBlock(...)
+        self.final_conv = nn.Conv2d(...)
+
+    def forward(self, x):
+        # Encoder
+        
+        # Bottleneck
+        
+        # Decoder (with Skip Connections)
+      </div>
+    </div>
   
+      <div class="content-block">
+      <h3>1.2 Using the UNet to Train a Denoiser</h3>
+      <p>
+        This section train the UNet to act as a denoiser $D_\theta$. Given a noisy image $z$, 
+        the model recovers the original clean image $x$.
+      </p>
+      
+      <h4>The Objective</h4>
+      <p>
+        I optimize the network parameters $\theta$ by minimizing the L2 loss between the predicted image and the ground truth:
+      </p>
+      <div class="math-block" style="text-align: center; margin: 15px 0; font-family: 'Times New Roman', serif;">
+        $$ \mathcal{L} = \| D_\theta(z) - x \|^2 $$
+      </div>
+
+      <h4>The Noising Process</h4>
+      <p>
+        To generate training data pairs $(z, x)$, I corrupt clean MNIST digits on the fly by adding Gaussian noise:
+      </p>
+      <div class="math-block" style="text-align: center; margin: 15px 0; font-family: 'Times New Roman', serif;">
+        $$ z = x + \sigma \epsilon, \quad \text{where } \epsilon \sim \mathcal{N}(0, I) $$
+      </div>
+
+      <p>
+        Below is a visualization of this noising process across varying noise levels ($\sigma$). 
+        As $\sigma$ increases, the original digit becomes increasingly indistinguishable from the background noise.
+      </p>
+
+      <figure>
+        <img src="media/partB/1_2_0.jpg" alt="Visualization of Noising Process" style="width: 100%; max-width: 800px;">
+        <figcaption>
+          <b>Varying Noise Levels ($\sigma$):</b> Ranging from 0.0 (clean) to 1.0 (pure noise). 
+          Note that at $\sigma=1.0$, the digit is almost entirely obscured.
+        </figcaption>
+      </figure>
+    </div>
+  
+   <div class="content-block">
+      <h3>1.2.1 Training the Denoiser</h3>
+      <p>
+        I trained the UNet to denoise images corrupted with $\sigma=0.5$ Gaussian noise.
+      </p>
+      <ul>
+        <li><b>Dataset:</b> MNIST (Training Set)</li>
+        <li><b>Batch Size:</b> 256</li>
+        <li><b>Hidden Dimension:</b> 128</li>
+        <li><b>Optimizer:</b> Adam (lr=1e-4)</li>
+        <li><b>Epochs:</b> 5</li>
+      </ul>
+
+      <h4>Training Loss</h4>
+      <figure>
+        <img src="media/partB/1_2_1_loss.jpg" alt="Training Loss Curve">
+        <figcaption>Training Loss over 5 Epochs</figcaption>
+      </figure>
+
+      <h4>Results on Test Set</h4>
+      <p>
+        Below are the denoising results on the unseen test set. Even after just 1 epoch, the model begins to recover digits. 
+        By epoch 5, the reconstructions are sharp and clear.
+      </p>
+
+      <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+        <figure>
+          <img src="media/partB/1_2_1_epoch_1.jpg" alt="Epoch 1 Results">
+          <figcaption>Epoch 1 Results</figcaption>
+        </figure>
+        <figure>
+          <img src="media/partB/1_2_1_epoch_5.jpg" alt="Epoch 5 Results">
+          <figcaption>Epoch 5 Results</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h3>1.2.2 Out-of-Distribution Testing</h3>
+      <p>
+        The model was trained strictly on noise level $\sigma=0.5$. Here, I tested its generalization by feeding it images with 
+        noise levels it was not trained on, ranging from $\sigma=0.0$ (clean) to $\sigma=1.0$ (very noisy).
+      </p>
+
+      <figure>
+        <img src="media/partB/1_2_2.jpg" alt="Out of Distribution Testing">
+        <figcaption>
+          Denoising performance on varying $\sigma$. 
+          <br>Top Row: Input (Noisy) | Bottom Row: Output (Denoised)
+        </figcaption>
+      </figure>
+
       <p class="muted">
-        <b>What to look for:</b> Early in training the output is blurry/averaged because the model only
-        learns coarse structure first. As training progresses, strokes sharpen and background noise is
-        suppressed more consistently.
+        <b>Observation:</b> The model performs well when $\sigma$ is less than 0.5. However, at $\sigma$ near 1.0, it struggles to identify the structure, often hallucinating incorrect digits or failing to remove the noise entirely.
       </p>
-  
-      <h4>B1.2.2 Out-of-Distribution (OOD) Testing</h4>
+    </div>
+
+    <div class="content-block">
+      <h3>1.2.3 Denoising Pure Noise</h3>
       <p>
-        After training at a fixed σ, I evaluate robustness by testing the denoiser on noise levels it
-        was <b>not</b> trained on (smaller σ = easier, larger σ = harder). This reveals whether the model
-        learned a generally useful denoising prior or whether it overfit to a specific corruption strength.
+        I attempted to train the denoiser to map 
+        <b>Pure Noise</b> ($\sigma \to \infty$) directly to clean MNIST digits.
       </p>
-  
-      <div class="grid">
+
+      <h4>Training Loss & Results</h4>
+      <figure>
+        <img src="media/partB/1_2_3_loss.jpg" alt="Pure Noise Training Loss">
+        <figcaption>Training Loss (Pure Noise)</figcaption>
+      </figure>
+
+      <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
         <figure>
-          <img src="media/PartB/1_2_2.png" alt="B1 OOD sigma sweep">
-          <figcaption>OOD sweep across σ values (increasing corruption strength).</figcaption>
-        </figure>
-      </div>
-  
-      <p class="muted">
-        <b>Expected behavior:</b> For σ lower than training, outputs should look clean (often slightly
-        oversmoothed). For σ higher than training, the model often fails by hallucinating ambiguous
-        strokes or collapsing to “average digit-like” blobs because too much information is destroyed.
-      </p>
-  
-      <h4>B1.2.3 Denoising Pure Noise</h4>
-      <p>
-        I also test the extreme case: input is <b>pure Gaussian noise</b> (no underlying digit), and I apply
-        the denoiser anyway. This is a stress test: a single-step denoiser is <b>not</b> trained to be a
-        full generative model, so it typically does not converge to realistic samples from pure noise.
-        Instead, it tends to produce faint digit-like textures or unstable artifacts.
-      </p>
-  
-      <div class="grid">
-        <figure>
-          <img src="media/PartB/1_2_3_loss_curve.png" alt="Training loss curve">
-          <figcaption>Training loss curve for the single-step denoiser.</figcaption>
+          <img src="media/partB/1_2_3_epoch_1.jpg" alt="Pure Noise Epoch 1">
+          <figcaption>Epoch 1 (Pure Noise Input)</figcaption>
         </figure>
         <figure>
-            <img src="media/PartB/1_2_3_results_epoch1.png" alt="Results on the test set with noise level 0.5 after the first epoch">
-            <figcaption>Results on the test set with noise level 0.5 after the first epoch</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartB/1_2_3_results_epoch5.png" alt="Results on the test set with noise level 0.5 after the 5th epoch">
-            <figcaption>Results on the test set with noise level 0.5 after the 5th epoch</figcaption>
-          </figure>
+          <img src="media/partB/1_2_3_epoch_5.jpg" alt="Pure Noise Epoch 5">
+          <figcaption>Epoch 5 (Pure Noise Input)</figcaption>
+        </figure>
       </div>
-    </section>
+
+      <h4 style="margin-top: 20px;">Analysis: Why does it look like this?</h4>
+      <p>
+        The generated images do not look like specific digits. Instead, they resemble a blurry, generic blob that looks like 
+        a mix of all digits overlaid on top of each other.
+      </p>
+      <p>
+        <b>Reason:</b> This happens because the problem is ill-posed. We are training the model to minimize the 
+        <b>Mean Squared Error (MSE)</b> loss. Mathematically, the optimal solution that minimizes MSE for a given input 
+        is the <b>conditional expectation</b> (the mean) of the possible targets. So the image the model produces is effectively the average of all digits in the dataset.
+      </p>
+    </div>
   
     <section id="B2" class="card">
         <h3>Part 2. Training a Flow Matching Model</h3>
