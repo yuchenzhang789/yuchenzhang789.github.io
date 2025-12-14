@@ -137,9 +137,9 @@
     <li>
       <b>Selected Prompts:</b> I chose three distinct prompts to test the model's ability to handle different subjects and styles:
       <ol>
-        <li><i>"a UC Berkeley oski"</i> (Artistic/Landscape)</li>
-        <li><i>"a man fighting with a tree"</i> (Portrait/Realistic)</li>
-        <li><i>"a frozen university campus"</i> (Lighting/Texture)</li>
+        <li><i>"a UC Berkeley oski"</i></li>
+        <li><i>"a man fighting with a tree"</i></li>
+        <li><i>"a frozen university campus"</i></li>
       </ol>
     </li>
     <li>
@@ -307,7 +307,7 @@
       Earlier timesteps have ᾱ<sub>t</sub> close to 1, so the result is similar to the original image; later timesteps have
       ᾱ<sub>t</sub> near 0, so the result becomes nearly pure noise. I applied the
       forward process to the provided Campanile image at 3 timesteps
-      (t = 250, 500, 750), where the result become more and more like pur noise.
+      (t = 250, 500, 750), where the result become more and more like pure noise.
     </p>
       <div class="grid">
         <figure>
@@ -381,11 +381,11 @@
   </p>
 
   <p>
-    However, running the full diffusion process (e.g., 1000 steps) is computationally expensive. To speed this up, I implemented <b>Strided Sampling</b>. I created a schedule of timesteps starting at <code>t=990</code> and stepping down by 30 until reaching 0. This allows us to skip steps while still adhering to the diffusion dynamics.
+    However, running the full diffusion process (e.g., 1000 steps) is computationally expensive. To speed this up, I implemented <b>Strided Sampling</b> and <b>iterative_denoise</b>. I created a schedule of timesteps starting at <code>t=990</code> and stepping down by 30 until reaching 0. This allows me to skip steps while still adhering to the diffusion dynamics.
   </p>
 
   <p>
-    At each step, we move from a noisier timestep <i>t</i> to a less noisy timestep <i>t'</i>. The update rule involves estimating the clean image, then re-noising it slightly to match the target noise variance of <i>t'</i>. This can be thought of as a weighted interpolation:
+    At each step, it move from a noisier timestep <i>t</i> to a less noisy timestep <i>t'</i>. The update rule involves estimating the clean image, then re-noising it slightly to match the target noise variance of <i>t'</i>. This can be thought of as a weighted interpolation:
   </p>
 
   <div class="math-block" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
@@ -487,9 +487,9 @@
     The final noise estimate is computed by extrapolating the difference between these two vectors:
   </p>
 
-  <div class="math-block" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 25px; font-family: 'Times New Roman', serif; font-size: 1.2rem;">
-    $\epsilon = \epsilon_u + \gamma (\epsilon_c - \epsilon_u)$
-  </div>
+  <div class="math-block">
+      $$ \epsilon = \epsilon_u + \gamma (\epsilon_c - \epsilon_u) $$
+    </div>
 
   <p>
     Here, <b>$\gamma$</b> is the guidance scale. When $\gamma > 1$, the model pushes the generation <i>away</i> from the generic/average image 
@@ -497,7 +497,7 @@
   </p>
 
   <p>
-    I updated the iterative sampling loop to include CFG (using a scale of $\gamma = 7$). Below are 5 samples generated 
+    I updated the iterative_denoise_cfg and the iterative sampling loop to include CFG (using a scale of $\gamma = 7$). Below are 5 samples generated 
     using the prompt <i>"a high quality photo"</i>. Compared to the non-guided samples in section 1.5, these are significantly 
     sharper, more coherent, and realistic.
   </p>
@@ -620,10 +620,10 @@
 
   <h4 style="margin-top: 30px; border-bottom: 1px solid #333; padding-bottom: 5px;">1.7.2 Inpainting</h4>
   <p>
-    I implemented the <b>RePaint</b> algorithm to perform inpainting. By using a binary mask, we can force the model to keep the original pixels in the unmasked areas (<i>mask=0</i>) while generating new content in the masked areas (<i>mask=1</i>).
+    I implemented the <b>InPaint</b> algorithm to perform inpainting. By using a binary mask, I can force the model to keep the original pixels in the unmasked areas (<i>mask=0</i>) while generating new content in the masked areas (<i>mask=1</i>).
   </p>
   <p>
-    This is achieved by modifying the sampling loop: at every step, after the model predicts $x_{t-1}$, we replace the unmasked pixels with the noisy original image at that same timestep.
+    This is achieved by modifying the sampling loop: at every step, after the model predicts $x_{t-1}$, I replace the unmasked pixels with the noisy original image at that same timestep.
   </p>
   <p>
     I experimented with inpainting on the Campanile image as well as two custom images of my own. The results below show the original image, the mask used for inpainting, and the final inpainted result. For my own images, I'm showing the mask using a red box for clarity, and inpainting the image by generate a new image where the mask is at the center of the patch. This is because the model will only generate contents at the center of an image, so cropping the mask to the center allows for better inpainting results.
@@ -637,7 +637,7 @@
     <figure><img src="media/partA/1_7_2/toy.jpg"><figcaption>toy</figcaption></figure>
   </div>
 
-  <h4 style="margin-top: 30px; border-bottom: 1px solid #333; padding-bottom: 5px;">1.7.4 Text-Conditional Image-to-Image Translation</h4>
+  <h4 style="margin-top: 30px; border-bottom: 1px solid #333; padding-bottom: 5px;">1.7.3 Text-Conditional Image-to-Image Translation</h4>
   <p>
     Finally, I extended SDEdit to use specific text prompts rather than just "a high quality photo". This allows me to guide the generation process. For example, I first take the Campanile and guide it toward a "pencil". Then I used two of my own images and guided them toward different prompts as shown here.
   </p>
@@ -681,7 +681,7 @@
   <h3>1.8 Visual Anagrams</h3>
 
   <p>
-    In this section, I implemented <b>Visual Anagrams</b> to create optical illusions: images that look like one thing when upright, 
+    In this section, I implemented <b>visual_anagrams</b> to create optical illusions: images that look like one thing when upright, 
     but transform into something completely different when flipped upside down.
   </p>
 
@@ -741,7 +741,7 @@
   <h3>1.9 Hybrid Images</h3>
 
   <p>
-    In this final section of Part A, I implemented <b>Factorized Diffusion</b> to create Hybrid Images. 
+    In this final section of Part A, I implemented <b>make_hybrids</b> to create Hybrid Images. 
     Hybrid images are optical illusions that change based on viewing distance: one image dominates the low spatial frequencies 
     (seen from afar), while another dominates the high spatial frequencies (seen from up close).
   </p>
@@ -1123,13 +1123,13 @@ class DownConv(nn.Module):
     <h2>Part 2: Training a Flow Matching Model</h2>
     <p>
       As seen in section 1.2.3, single-step denoising fails to generate coherent images from pure noise because the problem is ill-posed. 
-      To fix this, I implemented <b>Flow Matching</b>. Instead of predicting the clean image in one jump, we train the model to 
-      predict the <i>velocity</i> (or flow) that moves the probability distribution of pure noise ($t=0$) toward the distribution of clean images ($t=1$).
+      To fix this, I implemented <b>Flow Matching</b>. Instead of predicting the clean image in one jump, I train the model to 
+      predict the <i>velocity</i> that moves the probability distribution of pure noise ($t=0$) toward the distribution of clean images ($t=1$).
     </p>
 
     <h3>2.0 The Math of Flow Matching</h3>
     <p>
-      We define a linear interpolation between a sample of pure noise ($x_0$) and a clean image ($x_1$):
+      I define a linear interpolation between a sample of pure noise ($x_0$) and a clean image ($x_1$):
     </p>
     <div class="math-block">
       $$ x_t = (1 - t)x_0 + t x_1 $$
@@ -1141,7 +1141,7 @@ class DownConv(nn.Module):
       $$ u_t(x) = x_1 - x_0 $$
     </div>
     <p>
-      Our goal is to train a neural network $v_\theta(x_t, t)$ to regress this target velocity. The loss function is:
+      And a neural network $v_\theta(x_t, t)$ is trained to regress this target velocity. The loss function is:
     </p>
     <div class="math-block">
       $$ \mathcal{L}_{FM} = \mathbb{E}_{t, x_0, x_1} [ \| v_\theta(x_t, t) - (x_1 - x_0) \|^2 ] $$
@@ -1150,7 +1150,7 @@ class DownConv(nn.Module):
     <div class="content-block">
       <h3>2.1 Adding Time Conditioning to UNet</h3>
       <p>
-        Since the flow changes over time (the direction we need to move changes as we get closer to the image), the UNet must be 
+        Since the flow changes over time , the UNet must be 
         conditioned on the timestep $t$. I modified the UNet to inject $t$ into the architecture using <b>FCBlocks</b> (Fully Connected Blocks).
       </p>
 
@@ -1167,19 +1167,18 @@ class DownConv(nn.Module):
 
       <p>
         The time signal $t \in [0, 1]$ is passed through two linear layers (FCBlock) to generate a scaling factor that modulates the feature maps 
-        in the UNet (similar to AdaGN or Stylization).
+        in the UNet.
       </p>
 
       <div style="background: #2d2d2d; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #444; margin-bottom: 20px;">
 <pre><code style="color: #f8f8f2; font-family: Consolas, monospace;"># Implementation Logic for Time Embedding
 # 1. Normalize t to [0, 1]
 # 2. Pass through FCBlocks
-scale1 = self.fc1(t)  # Learnable scaling for block 1
-scale2 = self.fc2(t)  # Learnable scaling for block 2
+scale1 = self.fc1(t)  
+scale2 = self.fc2(t)  
 
-# 3. Modulate features (Spatial Broadcasting)
-# x has shape (B, C, H, W), scale has shape (B, 1)
-# We reshape scale to (B, 1, 1, 1) for broadcasting
+# 3. Modulate features 
+# x has shape (B, C, H, W), scale has shape (B, 1), reshape scale to (B, 1, 1, 1) for broadcasting
 out_block1 = out_block1 * scale1.view(-1, 1, 1, 1)
 out_block2 = out_block2 * scale2.view(-1, 1, 1, 1)</code></pre>
       </div>
@@ -1206,7 +1205,7 @@ out_block2 = out_block2 * scale2.view(-1, 1, 1, 1)</code></pre>
     <div class="content-block">
       <h3>2.3 Sampling from the UNet</h3>
       <p>
-        To generate images, we solve the Ordinary Differential Equation (ODE) defined by our learned vector field. 
+        To generate images, the Ordinary Differential Equation (ODE) defined by the learned vector field is used to determine the actualy image value. 
         I used an Euler integrator: starting from random noise at $t=0$, I took small steps $dt$ following the predicted velocity $v_\theta(x_t, t)$ until $t=1$.
       </p>
       
@@ -1231,7 +1230,7 @@ out_block2 = out_block2 * scale2.view(-1, 1, 1, 1)</code></pre>
       
       <p class="muted">
         <b>Observation:</b> Unlike the single-step denoiser which produced a blurry average, the Flow Matching model generates 
-        sharp, diverse digits. This confirms that the iterative process successfully models the complex data distribution.
+       digits that could be clearly recognized, although some artifacts remain. This confirms that the iterative process successfully models the complex data distribution.
       </p>
     </div>
   </section>
@@ -1239,7 +1238,7 @@ out_block2 = out_block2 * scale2.view(-1, 1, 1, 1)</code></pre>
       <h3>2.4 Adding Class-Conditioning to UNet</h3>
       <p>
         To give the model more control, I injected class information (digit labels 0-9) into the UNet. 
-        This allows me to specifically request a "5" or a "7" during generation.
+        This allows me to specifically request a digit like "5" or a "7" during generation.
       </p>
       
       <h4>Implementation Details</h4>
@@ -1257,9 +1256,8 @@ c = F.one_hot(c, num_classes=10).float()
 t_embed = self.fc_t(t)
 c_embed = self.fc_c(c)
 
-# Modulate the UNet features (Additive Conditioning)
+# Modulate the UNet features 
 # unflatten = c_embed * unflatten + t_embed
-# This allows the network to use both time and class info
 out = out + c_embed.view(...) + t_embed.view(...)</code></pre>
       </div>
     </div>
@@ -1304,12 +1302,12 @@ out = out + c_embed.view(...) + t_embed.view(...)</code></pre>
       <h3>Experiment: Removing the Learning Rate Scheduler</h3>
       <p>
         I attempted to train the model without the exponential learning rate decay scheduler to see if I could achieve 
-        similar performance with a simpler setup.
+        similar performance with a simpler setup. And it turned out to work surprisingly well. 
       </p>
       
       <p>
         <b>Strategy:</b> Instead of starting at 1e-2 and decaying, I found that using a constant, lower learning rate (e.g., 1e-3 or 1e-4) 
-        prevented the loss from oscillating and allowed the model to converge stably, albeit perhaps slightly slower.
+        prevented the loss from oscillating and allowed the model to converge stably.
       </p>
 
       <div class="gallery" style="grid-template-columns: repeat(1, 1fr); gap: 30px;">
@@ -1325,28 +1323,13 @@ out = out + c_embed.view(...) + t_embed.view(...)</code></pre>
           <img src="media/partB/2_6_epoch_10.jpg" alt="Epoch 10 Results">
           <figcaption>Epoch 10 Results (Without LR Scheduler)</figcaption>
         </figure>
+        <figure>
+          <img src="media/partB/2_6_loss.jpg" alt="Epoch 10 Results">
+          <figcaption>Loss (Without LR Scheduler)</figcaption>
+        </figure>
       </div>
     </div>
 
-  </section>
-
-  <section id="learned" class="card">
-    <h2>What I Learned</h2>
-    <ul>
-      <li>
-        <b>Single-step denoising is not a generator:</b> When the input contains no information (pure noise), 
-        MSE training encourages regression toward an average digit, motivating the need for iterative generative dynamics.
-      </li>
-      <li>
-        <b>Flow matching simplifies generation:</b> By training a time-conditioned UNet to predict the <i>velocity</i> 
-        along a linear interpolation path, we can transform simple noise into complex data by integrating an ODE.
-      </li>
-      <li>
-        <b>Conditioning is flexible:</b> We can inject multiple control signals (time, class label) into the network 
-        using simple fully-connected blocks and broadcasting. Classifier-Free Guidance then allows us to amplify these 
-        signals during sampling for high-quality results.
-      </li>
-    </ul>
   </section>
   
       <!-- ========================= B4 ========================= -->
