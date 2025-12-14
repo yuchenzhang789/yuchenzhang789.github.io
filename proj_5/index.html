@@ -432,75 +432,99 @@
     </figure>
   </div>
 
+  <section id="A1-5" class="card">
+  <h3>1.5 Diffusion Model Sampling</h3>
+  
+  <p>
+    The <code>iterative_denoise</code> function is not limited to restoring noisy images; it can also act as a generative tool. 
+    By setting <code>i_start = 0</code> and passing pure Gaussian noise as the input, the model hallucinates a completely new image from scratch.
+  </p>
 
-      <h3>A1.5 Diffusion Model Sampling (From Pure Noise)</h3>
-      <p>
-        After validating the loop on a corrupted real image, I reuse the same iterative denoising procedure to
-        <b>sample from scratch</b> by initializing x<sub>T</sub> as pure Gaussian noise. The model progressively
-        “sculpts” this noise into a coherent image as t decreases. Following the instructions, I generate 5 samples
-        using the (weak) generic prompt <i>“a high quality photo”</i>, which produces reasonable but sometimes
-        ambiguous outputs—motivating the need for CFG in the next section.
-      </p>
-      <div class="grid">
-        <figure>
-          <img src="media/PartA/part1/sample_image1.png" alt="Sample image 1">
-          <figcaption>Sample image 1</figcaption>
-        </figure>
-        <figure>
-          <img src="media/PartA/part1/sample_image2.png" alt="Sample image 2">
-          <figcaption>Sample image 2</figcaption>
-        </figure>
-        <figure>
-            <img src="media/PartA/part1/sample_image3.png" alt="Sample image 3">
-            <figcaption>Sample image 3</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartA/part1/sample_image4.png" alt="Sample image 4">
-            <figcaption>Sample image 4</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartA/part1/sample_image5.png" alt="Sample image 5">
-            <figcaption>Sample image 5</figcaption>
-          </figure>
-      </div>
+  <p>
+    I used this method to generate 5 random samples based on the prompt <i>"a high quality photo"</i>. 
+    The results below demonstrate the model's ability to form coherent structures (objects, landscapes, etc.) from pure randomness, 
+    although the quality is limited without the use of Classifier-Free Guidance (which is explored in the next section).
+  </p>
 
-      <h3>A1.6 Classifier-Free Guidance (CFG)</h3>
-      <p>
-        CFG improves prompt adherence by mixing an <b>unconditional</b> and <b>conditional</b> noise prediction.
-        At each timestep, I run the UNet twice: once with the true prompt embedding (conditional) and once with the
-        <b>empty string prompt</b> "" (unconditional). These produce ε̂<sub>cond</sub> and ε̂<sub>uncond</sub>,
-        and the guided noise estimate is:
-        <span class="muted">
-          ε̂ = ε̂<sub>uncond</sub> + s · (ε̂<sub>cond</sub> − ε̂<sub>uncond</sub>),
-        </span>
-        where <b>s</b> is the guidance scale. Intuitively, ε̂<sub>uncond</sub> captures generic natural-image
-        structure, while the difference term points in the “direction” that makes the image more consistent with the
-        text. Larger s usually increases sharpness and semantic alignment, but can reduce diversity and sometimes
-        introduce oversaturated / overly stylized artifacts if pushed too high.
-      </p>
+  <div class="grid">
+    <figure>
+      <img src="media/partA/1_5/sample_1.png" alt="Generated Sample 1">
+      <figcaption>Sample 1</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_5/sample_2.png" alt="Generated Sample 2">
+      <figcaption>Sample 2</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_5/sample_3.png" alt="Generated Sample 3">
+      <figcaption>Sample 3</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_5/sample_4.png" alt="Generated Sample 4">
+      <figcaption>Sample 4</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_5/sample_5.png" alt="Generated Sample 5">
+      <figcaption>Sample 5</figcaption>
+    </figure>
+  </div>
+</section>
 
-      <div class="grid">
-        <figure>
-          <img src="media/PartA/part1/cfg_sample1.png" alt="CFG sample 1">
-          <figcaption>CFG sample 1</figcaption>
-        </figure>
-        <figure>
-          <img src="media/PartA/part1/cfg_sample2.png" alt="CFG sample 2">
-          <figcaption>CFG sample 2</figcaption>
-        </figure>
-        <figure>
-            <img src="media/PartA/part1/cfg_sample3.png" alt="CFG sample 3">
-            <figcaption>CFG sample 3</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartA/part1/cfg_sample4.png" alt="CFG sample 4">
-            <figcaption>CFG sample 4</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartA/part1/cfg_sample5.png" alt="CFG sample 5">
-            <figcaption>CFG sample 5</figcaption>
-          </figure>
-      </div>
+<section id="A1-6" class="card">
+  <h3>1.6 Classifier-Free Guidance (CFG)</h3>
+
+  <p>
+    As observed in the previous section, generating images purely from the prior often results in incoherent or "nonsensical" outputs. 
+    To significantly improve image quality, I implemented <b>Classifier-Free Guidance (CFG)</b>.
+  </p>
+
+  <p>
+    CFG works by computing two noise estimates at every timestep:
+    <ul>
+      <li><b>Conditional noise estimate ($\epsilon_c$):</b> Conditioned on the text prompt (e.g., "a high quality photo").</li>
+      <li><b>Unconditional noise estimate ($\epsilon_u$):</b> Conditioned on a null prompt (an empty string <code>""</code>).</li>
+    </ul>
+    The final noise estimate is computed by extrapolating the difference between these two vectors:
+  </p>
+
+  <div class="math-block" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 25px; font-family: 'Times New Roman', serif; font-size: 1.2rem;">
+    $\epsilon = \epsilon_u + \gamma (\epsilon_c - \epsilon_u)$
+  </div>
+
+  <p>
+    Here, <b>$\gamma$</b> is the guidance scale. When $\gamma > 1$, the model pushes the generation <i>away</i> from the generic/average image 
+    and <i>towards</i> the specific text prompt.
+  </p>
+
+  <p>
+    I updated the iterative sampling loop to include CFG (using a scale of $\gamma = 7$). Below are 5 samples generated 
+    using the prompt <i>"a high quality photo"</i>. Compared to the non-guided samples in section 1.5, these are significantly 
+    sharper, more coherent, and realistic.
+  </p>
+
+  <div class="gallery" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+    <figure>
+      <img src="media/partA/1_6/cfg_sample_1.png" alt="CFG Sample 1">
+      <figcaption>CFG Sample 1</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_6/cfg_sample_2.png" alt="CFG Sample 2">
+      <figcaption>CFG Sample 2</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_6/cfg_sample_3.png" alt="CFG Sample 3">
+      <figcaption>CFG Sample 3</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_6/cfg_sample_4.png" alt="CFG Sample 4">
+      <figcaption>CFG Sample 4</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_6/cfg_sample_5.png" alt="CFG Sample 5">
+      <figcaption>CFG Sample 5</figcaption>
+    </figure>
+  </div>
+</section>
 
       <h3>A1.7 Image-to-Image Translation</h3>
       <p>
