@@ -1350,41 +1350,60 @@ out = out + c_embed.view(...) + t_embed.view(...)</code></pre>
   </section>
   
       <!-- ========================= B4 ========================= -->
-      <section id="B4" class="card">
-        <h3>Bells &amp; Whistles (Part B / CS280A)</h3>
-  
-        <h4>B4.1 Training a Class-Conditioned Model without LR Scheduler</h4>
-        <p>
-          As an ablation, I retrain the class-conditioned model using a <b>constant</b> learning rate
-          (<code class="inline">1e−3</code>) and remove the exponential scheduler. This tests whether the scheduler is important
-          for stability and final sample quality. In my notebook, I compare the loss curve and sample grids at epochs
-          1, 5, and 10.
-        </p>
-  
-        <h4>B4.2 “Better” Time-Only UNet (More Capacity + Longer Training)</h4>
-        <p>
-          I also improved the time-conditioned model by (1) increasing capacity
-          <code class="inline">D: 64 → 128</code> and (2) training longer (<code class="inline">10 → 20</code> epochs) with a smaller
-          learning rate (<code class="inline">1e−3</code>) for stability. I then generate a larger grid of samples (4×10)
-          to qualitatively evaluate diversity and sharpness.
-        </p>
-  
-        <div class="grid">
-          <figure>
-            <img src="media/PartB/bells_epoch1.png" alt="results after the first epoch">
-            <figcaption>Results after the first epoch.</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartB/bells_epoch5.png" alt="results after the 5th epoch">
-            <figcaption>Results after the 5th epoch.</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartB/bells_epoch10.png" alt="results after the 10th epoch">
-            <figcaption>Results after the 10th epoch.</figcaption>
-          </figure>
-        </div>
-      </section>
-    </section>
+  <section id="part3" class="card">
+    <h2>Part 3: Bells & Whistles (Better Time-Only UNet)</h2>
+    <p>
+      The standard Time-Conditioned UNet (Part 2.3) often produced blurry or ambiguous results because modeling the 
+      entire distribution of all digits (0-9) with a small network is difficult. The Class-Conditioned model (Part 2.6) 
+      performed better because the class label simplified the task.
+    </p>
+    <p>
+      For this section, I aimed to improve the <b>Time-Only (Unconditional)</b> model to match the quality 
+      of the Class-Conditioned model, without using class labels.
+    </p>
+
+    <h3>Improvements Implemented</h3>
+    <ul>
+      <li><b>Doubled Model Capacity:</b> Increased <code>num_hiddens</code> from 64 to <b>128</b>. This gives the network more parameters to capture the complex, multi-modal distribution of digits.</li>
+      <li><b>Extended Training:</b> Increased training duration from 10 to <b>20 Epochs</b> to allow for full convergence.</li>
+      <li><b>Refined Optimization:</b> Adjusted the initial learning rate to <code>1e-3</code> for stability with the larger model.</li>
+    </ul>
+
+    <h3>Results</h3>
+    <p>
+      The improved model generates significantly sharper digits with distinct strokes, effectively closing the gap with the class-conditioned model.
+    </p>
+
+    <figure>
+      <img src="media/partB/bw_loss.jpg" alt="Improved Training Loss">
+      <figcaption>Training Loss (20 Epochs, 128 Channels)</figcaption>
+    </figure>
+
+    <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+      <figure>
+        <img src="media/partB/bw_epoch_1.jpg" alt="Improved Model Epoch 1">
+        <figcaption>Epoch 1</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partB/bw_epoch_5.jpg" alt="Improved Model Epoch 5">
+        <figcaption>Epoch 5 (Already distinct)</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partB/bw_epoch_10.jpg" alt="Improved Model Epoch 10">
+        <figcaption>Epoch 10</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partB/bw_epoch_20.jpg" alt="Improved Model Epoch 20">
+        <figcaption>Epoch 20 (Final High-Quality Samples)</figcaption>
+      </figure>
+    </div>
+
+    <p class="muted">
+      <b>Analysis:</b> By increasing the channel width, the UNet can learn more complex features at the bottleneck layers. 
+      The resulting images are no longer "averages" of multiple digits but distinct, crisp numbers, proving that unconditional 
+      generation can be high-quality given enough compute and capacity.
+    </p>
+  </section>
     <!-- ========================= /PART B ========================= -->
   
     <!-- ========================= WHAT I LEARNED ========================= -->
