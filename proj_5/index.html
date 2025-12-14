@@ -289,98 +289,152 @@
   
 </section>
 
+
     <!-- A1 -->
     <section id="A1" class="card">
       <h3>A1. Sampling Loops</h3>
 
       <h3 style="margin-top:10px;">A1.1 Implementing the Forward Process</h3>
     <p>
-      The forward diffusion process produces a noisy image <b>x<sub>t</sub></b> from a clean image
-      <b>x<sub>0</sub></b> by mixing the original signal with Gaussian noise according to the noise schedule.
-      Importantly, it is not “add noise and keep the image the same”—the clean image is also <b>scaled down</b>
-      over time. Concretely, at timestep <b>t</b>:
+      The forward process produces a noisy image <b>x<sub>t</sub></b> from a clean image
+      <b>x<sub>0</sub></b> by adding a Gaussian noise according to the noise schedule.
+      
+      Concretely, the equation at timestep <b>t</b>:
       <span class="muted">
         x<sub>t</sub> = √ᾱ<sub>t</sub> · x<sub>0</sub> + √(1 − ᾱ<sub>t</sub>) · ε,  where ε ~ N(0, I).
       </span>
-      Early timesteps have ᾱ<sub>t</sub> close to 1, so the image is mostly intact; late timesteps have
-      ᾱ<sub>t</sub> near 0, so the result becomes nearly pure noise. To verify my implementation, I apply the
-      forward process to the provided Campanile test image and visualize three increasing noise levels
-      (t = 250, 500, 750), where structure gradually disappears as the noise term dominates.
+  
+      Earlier timesteps have ᾱ<sub>t</sub> close to 1, so the result is similar to the original image; later timesteps have
+      ᾱ<sub>t</sub> near 0, so the result becomes nearly pure noise. I applied the
+      forward process to the provided Campanile image at 3 timesteps
+      (t = 250, 500, 750), where the result become more and more like pur noise.
     </p>
       <div class="grid">
         <figure>
-          <img src="media/PartA/part1/campanile.jpg" alt="Campanile clean">
+          <img src="media/partA/1_1/campanile.jpg" alt="Campanile clean">
           <figcaption>Clean Campanile (t=0).</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part1/noise_t250.png" alt="Campanile t=250">
+          <img src="media/partA/1_1/noise_t_250.png" alt="Campanile t=250">
           <figcaption>Noisy Campanile at t=250.</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part1/noise_t500.png" alt="Campanile t=500">
+          <img src="media/partA/1_1/noise_t_500.png" alt="Campanile t=500">
           <figcaption>Noisy Campanile at t=500.</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part1/noise_t750.png" alt="Campanile t=750">
-          <figcaption>Noisy Campanile at t=750 (image content mostly overwhelmed by noise).</figcaption>
+          <img src="media/partA/1_1/noise_t_750.png" alt="Campanile t=750">
+          <figcaption>Noisy Campanile at t=750.</figcaption>
         </figure>
       </div>
 
       <h3>A1.2 Classical Denoising (Gaussian Blur)</h3>
       <p>
-        As a baseline, I try to denoise the corrupted images using a classical Gaussian blur filter. Gaussian blur
-        suppresses high-frequency components, which reduces some “speckle-like” noise, but it cannot distinguish
-        noise from fine image details (edges, brick texture, thin lines). As the noise level increases, blur
-        increasingly trades away real structure while still leaving behind low-frequency noise, so performance
-        degrades rapidly—especially at high t where little recoverable signal remains.
+        I used a classical Gaussian blur filter as a baseline denoising method for comparison. Gaussian blur works well for
+        low levels of noise but it cannot distinguish noise from fine image details. As the noise level increases, gaussian blur
+        degrades rapidly as shown below.
       </p>
       <div>
         <figure>
-          <img src="media/PartA/part1/denoised250.png" alt="Gaussian denoise t=250">
-          <figcaption>Best blur-based attempt at t=250 (still loses detail).</figcaption>
+          <img src="media/partA/1_2/gaussian_denoise_t_250.png" alt="Gaussian denoise t=250">
+          <figcaption>Gaussian blur at t=250. </figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part1/denoised500.png" alt="Gaussian denoise t=500">
-          <figcaption>At t=500, blur increasingly washes out structure while noise remains.</figcaption>
+          <img src="media/partA/1_2/gaussian_denoise_t_500.png" alt="Gaussian denoise t=500">
+          <figcaption>Gaussian blur at t=500.</figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part1/denoised750.png" alt="Gaussian denoise t=750">
-          <figcaption>At t=750, classical filtering fails: too little recoverable structure remains.</figcaption>
+          <img src="media/partA/1_2/gaussian_denoise_t_750.png" alt="Gaussian denoise t=750">
+          <figcaption>Gaussian blur at t=750.</figcaption>
         </figure>
       </div>
 
       <h3>A1.3 One-Step Denoising (Pretrained Diffusion Denoiser)</h3>
       <p>
-        Next, I use the pretrained DeepFloyd Stage-I UNet to perform a <b>single</b> denoising step. Given the noisy
-        image x<sub>t</sub>, timestep t, and a text condition (here the provided embedding for
-        <i>“a high quality photo”</i>), the UNet predicts the noise component ε̂(x<sub>t</sub>, t). I then form a
-        one-step estimate of the clean image by “undoing” the forward mixing:
+        Next, I use the pretrained DeepFloyd Stage-I UNet to perform a single denoising step. First I used the forward function to add noise to the original image, then I passed the noisy image and the corresponding timestep t to the UNet to predict the noise ε̂. Finally, I computed the denoised image x̂<sub>0</sub> using the predicted noise:
         <span class="muted">
-          x̂<sub>0</sub> = (x<sub>t</sub> − √(1 − ᾱ<sub>t</sub>) · ε̂) / √ᾱ<sub>t</sub>.
-        </span>
-        Even one step outperforms Gaussian blur because the model has learned a strong natural-image prior and can
-        preserve edges while removing noise. However, one-step denoising is still imperfect at larger t because the
-        model is intended to be applied <b>iteratively</b>, making many small corrections across the schedule.
+          x̂<sub>0</sub> = (x<sub>t</sub> − √(1 − ᾱ<sub>t</sub>) · ε̂) / √ᾱ<sub>t</sub>
+        </span>.
+        This effectively “subtracts” the predicted noise from x<sub>t</sub> to recover an estimate of the clean image.
       </p>
 
       <div>
         <figure>
-          <img src="media/PartA/part1/reconstructed250.png" alt="One-step t=250">
-          <figcaption>One-step denoise at t=250 — cleaner edges than blur, but some noise remains.</figcaption>
+          <img src="media/partA/1_3/reconstructed_t_250.png" alt="One-step t=250">
+          <figcaption>One-step denoise at t=250 </figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part1/reconstructed500.png" alt="One-step t=500">
-          <figcaption>One-step denoise at t=500 — improves structure but still not fully restored.</figcaption>
+          <img src="media/partA/1_3/reconstructed_t_500.png" alt="One-step t=500">
+          <figcaption>One-step denoise at t=500 </figcaption>
         </figure>
         <figure>
-          <img src="media/PartA/part1/reconstructed750.png" alt="One-step t=750">
-          <figcaption>One-step denoise at t=750 — difficult regime; iterative refinement is needed.</figcaption>
+          <img src="media/partA/1_3/reconstructed_t_750.png" alt="One-step t=750">
+          <figcaption>One-step denoise at t=750 </figcaption>
         </figure>
       </div>
+      
+      <section id="A1-4" class="card">
+  <h3>1.4 Iterative Denoising</h3>
+  
+  <p>
+    As demonstrated in the previous section, attempting to recover a clean image from high noise levels in a single step is an ill-posed problem, resulting in blurry, averaged outputs. Diffusion models overcome this by removing noise <b>iteratively</b>.
+  </p>
 
+  <p>
+    However, running the full diffusion process (e.g., 1000 steps) is computationally expensive. To speed this up, I implemented <b>Strided Sampling</b>. I created a schedule of timesteps starting at <code>t=990</code> and stepping down by 30 until reaching 0. This allows us to skip steps while still adhering to the diffusion dynamics.
+  </p>
+
+  <p>
+    At each step, we move from a noisier timestep <i>t</i> to a less noisy timestep <i>t'</i>. The update rule involves estimating the clean image, then re-noising it slightly to match the target noise variance of <i>t'</i>. This can be thought of as a weighted interpolation:
+  </p>
+
+  <div class="math-block" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 25px;">
+    <i>x<sub>t'</sub></i> = (Interpolation of <i>x<sub>0</sub></i>) + (Interpolation of <i>x<sub>t</sub></i>) + (Random Variance)
+  </div>
+
+  <h4>The Denoising Process</h4>
+  <p>
+    I started with the Campanile image noised to index 10 (approx t=690) and ran the iterative denoiser. Below, I visualize the process by displaying the image at every 5th step of the loop. Notice how the structure gradually emerges from the chaos.
+  </p>
+
+  <div class="gallery" style="grid-template-columns: repeat(5, 1fr);">
+    <figure>
+      <img src="media/partA/1_4/iter_step_10_t_690.png" alt="t = 690">
+      <figcaption>t = 690</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_4/iter_step_15_t_540.png" alt="t = 540">
+      <figcaption>t = 540</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_4/iter_step_20_t_390.png" alt="t = 390">
+      <figcaption>t = 390</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_4/iter_step_25_t_240.png" alt="t = 240">
+      <figcaption>t = 240</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_4/iter_step_30_t_90.png" alt="t = 90">
+      <figcaption>t = 90</figcaption>
+    </figure>
+  </div>
+
+  <h4>Final Comparison</h4>
+  <p>
+    Here is the final result of the iterative method compared against the baseline methods. The iterative approach recovers fine details (like the brick texture and scaffolding) that the One-Step method blurs out and Gaussian Blur destroys completely.
+  </p>
+
+  <div class="gallery">
+    <figure>
+      <img src="media/partA/1_4/comparison.png" alt="Iterative Result">
+      <figcaption>Final Iterative Result Comparison</figcaption>
+    </figure>
+  </div>
+</section>
       <h3>A1.4 Iterative Denoising</h3>
       <p>
-      I then implement the full iterative reverse diffusion loop, which repeatedly predicts noise at the current
+      I implemented the full iterative reverse diffusion loop, which repeatedly predicts noise at the current
       timestep and updates the sample toward lower-noise states. Compared to one-step denoising, the key advantage
       is that each update operates in a regime the denoiser is trained for, gradually improving the sample rather
       than attempting to “jump” directly to x<sub>0</sub>. Qualitatively, early iterations recover coarse layout
