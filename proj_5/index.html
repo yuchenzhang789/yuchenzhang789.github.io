@@ -715,7 +715,7 @@
     Below are two generated illusions. For each, I display the image in its original orientation and then flipped 180 degrees to reveal the hidden subject.
   </p>
 
-  <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+  <div class="grid">
     <figure>
       <img src="media/partA/1_8/illusion1.png" alt="Illusion 1 Upright">
       <figcaption><b>Upright:</b> "a photo of a rabbit"</figcaption>
@@ -769,7 +769,7 @@
   </p>
 
   <h4 style="margin-top:20px;">Results</h4>
-  <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 30px;">
+  <div class="grid">
     
     <figure>
       <img src="media/partA/1_9/1_9_hybird_3.png" alt="Hybrid Image 1">
@@ -827,7 +827,7 @@
       <b>Implementation:</b> I used <code>torch.rot90</code> (k=-1) to transform the image during the diffusion step.
     </p>
 
-    <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+    <div class="grid">
       <figure>
         <img src="media/partA/bw/2_1_rotate_1.png" alt="Rotation View 1">
         <figcaption><b>View 1 (Upright)</b><br>"an oil painting of a village"</figcaption>
@@ -852,7 +852,7 @@
       Prompt A in its ordered form, but rearranges into Prompt B when the patches are shuffled according to a fixed permutation.
     </p>
     
-    <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+    <div class="grid">
       <figure>
         <img src="media/partA/bw/2_2_rotate_1.png" alt="Jigsaw View 1">
         <figcaption><b>View 1 (Ordered)</b><br>"an oil painting of a kitchen"</figcaption>
@@ -879,7 +879,7 @@
       but adopts the artistic style of the prompt.
     </p>
 
-    <div class="gallery" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+    <div class="grid">
       <figure>
         <img src="media/partA/bw/2_logo_original.png" alt="Original Logo">
         <figcaption>Original Logo</figcaption>
