@@ -569,7 +569,7 @@
     <figure><img src="media/partA/1_7/myimg1_i_start_20.png"><figcaption>i=20</figcaption></figure>
   </div>
 
-  <h5>Test Image 3: [Your Image Name]</h5>
+  <h5>Test Image 3: Toy</h5>
   <div class="grid">
     <figure><img src="media/partA/1_7/toy.jpg"><figcaption>Original</figcaption></figure>
     <figure><img src="media/partA/1_7/myimg2_i_start_1.png"><figcaption>i=1</figcaption></figure>
@@ -629,7 +629,7 @@
     I experimented with inpainting on the Campanile image as well as two custom images of my own. The results below show the original image, the mask used for inpainting, and the final inpainted result. For my own images, I'm showing the mask using a red box for clarity, and inpainting the image by generate a new image where the mask is at the center of the patch. This is because the model will only generate contents at the center of an image, so cropping the mask to the center allows for better inpainting results.
   </p>
 
-  <div class="grid">
+  <div class="gallery", style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
     <figure><img src="media/partA/1_7_2/campanile.jpg"><figcaption>campanile</figcaption></figure>
 
     <figure><img src="media/partA/1_7_2/laptop.jpg"><figcaption>laptop</figcaption></figure>
@@ -677,258 +677,224 @@
 
 </section>
 
-    <h3>A1.8 Visual Anagrams</h3>
-<p>
-  In this section, I generate a <b>visual anagram</b>: a single image that matches one prompt when viewed normally,
-  but becomes a different, coherent image when rotated 180° (flipped upside down). The key trick is that during
-  <b>every</b> reverse-diffusion step, I enforce consistency with <b>two</b> prompts under <b>two</b> views of the
-  same latent image. Concretely, the “upright” view is guided by Prompt A, while the “flipped” view is guided by
-  Prompt B. By combining the two guidance signals at each timestep, the final sample is forced to contain features
-  that can be explained by Prompt A in the upright orientation and by Prompt B in the flipped orientation.
-</p>
+<section id="A1-8" class="card">
+  <h3>1.8 Visual Anagrams</h3>
 
-<div class="card note">
-  <b>High-level idea:</b> compute two noise predictions (upright + flipped), align them into the same coordinate
-  system, then average them to produce one update that satisfies both prompts.
-</div>
-
-<p>
-  <b>Denoising with classifier-free guidance (CFG).</b> For a given timestep <code class="inline">t</code> and latent
-  image <code class="inline">x_t</code>, the diffusion UNet predicts noise. CFG improves prompt adherence by mixing
-  an unconditional and conditional prediction:
-</p>
-
-<p class="muted">
-  ε̂ = ε̂<sub>uncond</sub> + s · (ε̂<sub>cond</sub> − ε̂<sub>uncond</sub>),
-  where <b>s</b> is the guidance scale.
-</p>
-
-<p>
-  <b>Visual-anagram update rule.</b> At each timestep, I compute two CFG noise estimates:
-</p>
-<ul>
-  <li>
-    <b>Upright branch (Prompt A):</b>
-    ε̂<sub>A</sub> = CFG(UNet(x<sub>t</sub>, t, Prompt A)).
-  </li>
-  <li>
-    <b>Flipped branch (Prompt B):</b>
-    first rotate the current latent by 180°,
-    x̃<sub>t</sub> = flip(x<sub>t</sub>),
-    then compute noise under Prompt B,
-    ε̃̂<sub>B</sub> = CFG(UNet(x̃<sub>t</sub>, t, Prompt B)),
-    and rotate the noise prediction back,
-    ε̂<sub>B</sub> = flip(ε̃̂<sub>B</sub>).
-  </li>
-</ul>
-
-<p>
-  Since ε̂<sub>A</sub> and ε̂<sub>B</sub> are now expressed in the <b>same</b> (upright) coordinates, I combine them
-  by simple averaging:
-</p>
-
-<p class="muted">
-  ε̂<sub>final</sub> = (ε̂<sub>A</sub> + ε̂<sub>B</sub>) / 2
-</p>
-
-<p>
-  Finally, I use ε̂<sub>final</sub> in the standard DDPM reverse update to obtain x<sub>t−1</sub>. Intuitively, the
-  model is “pulled” toward satisfying Prompt A in the normal view while simultaneously being “pulled” toward
-  satisfying Prompt B when the image is flipped. Because this constraint is applied at <b>every</b> timestep, the
-  illusion is not a post-processing trick; it is baked into the sampling trajectory.
-</p>
-
-<p class="muted">
-  <b>Qualitative observation:</b> When the prompts are too semantically different, the averaged guidance can create
-  compromise artifacts (e.g., muddier textures or ambiguous shapes). Prompts with compatible global composition
-  (similar scene layout) typically produce stronger, cleaner anagrams.
-</p>
-
-<div class="grid">
-  <figure>
-    <img src="media/PartA/part1/8/dragon.png" alt="Anagram upright view (Prompt A)">
-    <figcaption>Upright view (Dragon).</figcaption>
-  </figure>
-  <figure>
-    <img src="media/PartA/part1/8/island.png" alt="Anagram flipped view (Prompt B)">
-    <figcaption>Flipped view (Island).</figcaption>
-  </figure>
-</div>
-
-<div class="grid">
-    <figure>
-      <img src="media/PartA/part1/8/cherry_blossom.png" alt="Anagram upright view (Prompt A)">
-      <figcaption>Upright view (Cherry Blossom).</figcaption>
-    </figure>
-    <figure>
-      <img src="media/PartA/part1/8/village.png" alt="Anagram flipped view (Prompt B)">
-      <figcaption>Flipped view (Village).</figcaption>
-    </figure>
-  </div>
-
-
-<h3>A1.9 Hybrid Images (Diffusion Edition)</h3>
-<p>
-  In this section, I create <b>hybrid images</b>, where the output appears like one concept when viewed from far
-  away (or blurred), but reveals a different concept when viewed up close. This mirrors the classic hybrid-image
-  construction (low-pass one image + high-pass another), except here I perform the “frequency split” in
-  <b>diffusion guidance space</b> rather than directly combining two RGB images.
-</p>
-
-<div class="card note">
-  <b>Core idea:</b> at each timestep, compute two guided noise estimates (Prompt A and Prompt B), then take
-  <b>low-frequency</b> components from one and <b>high-frequency</b> components from the other, and recombine them
-  into a single ε̂ used for the reverse update.
-</div>
-
-<p>
-  <b>Step 1 — compute guided noise for both prompts.</b> For the same latent x<sub>t</sub> and timestep t:
-</p>
-<ul>
-  <li>ε̂<sub>A</sub> = CFG(UNet(x<sub>t</sub>, t, Prompt A))</li>
-  <li>ε̂<sub>B</sub> = CFG(UNet(x<sub>t</sub>, t, Prompt B))</li>
-</ul>
-
-<p>
-  <b>Step 2 — separate frequencies using a Gaussian low-pass filter.</b> Let LP(·) be a Gaussian blur operator
-  (implemented with the project-recommended parameters, e.g., kernel size 33 and sigma 2). Then:
-</p>
-<ul>
-  <li><b>Low-frequency component:</b> ε̂<sub>low</sub> = LP(ε̂<sub>A</sub>)</li>
-  <li><b>High-frequency component:</b> ε̂<sub>high</sub> = ε̂<sub>B</sub> − LP(ε̂<sub>B</sub>)</li>
-</ul>
-
-<p>
-  <b>Step 3 — recombine into a hybrid guidance signal.</b> The final noise estimate used for the DDPM reverse step is:
-</p>
-
-<p class="muted">
-  ε̂<sub>hybrid</sub> = ε̂<sub>low</sub> + ε̂<sub>high</sub>
-</p>
-
-<p>
-  This construction gives Prompt A control over the <b>global structure</b> (overall shapes, layout, large-scale
-  shading), while Prompt B injects <b>fine details</b> (textures, edges, small semantic features). Because the
-  combination happens inside the sampling loop, the diffusion process learns to satisfy both constraints over time:
-  the sample stabilizes its coarse composition according to Prompt A while progressively sharpening with Prompt B’s
-  high-frequency details.
-</p>
-
-<p class="muted">
-  <b>How I evaluate the illusion:</b> To verify the hybrid effect, I visualize the result at multiple scales:
-  (1) zoomed out / downsampled (emphasizes low frequencies) and (2) zoomed in (reveals high-frequency details).
-  A strong hybrid should clearly shift “interpretation” depending on viewing distance.
-</p>
-
-<div class="grid">
-  <figure>
-    <img src="media/PartA/part1/9/wolf_knight.png" alt="Hybrid, wolf and knight">
-    <figcaption>Hybrid, wolf and knight</figcaption>
-  </figure>
-</div>
-<p>Low-frequency prompt: a realistic portrait of a knight wearing polished silver armor</p>
-<p>High-frequency prompt: a realistic image of a wolf standing on a cliff under a full moon</p>
-
-<div class="grid">
-    <figure>
-      <img src="media/PartA/part1/9/hybrid.png" alt="Hybrid, man and village">
-      <figcaption>Hybrid, wolf and knight</figcaption>
-    </figure>
-  </div>
-  <p>Low-frequency prompt: an oil painting of a snowy mountain village</p>
-  <p>High-frequency prompt: a man wearing a hat</p>
-
-  <h2>Bells & Whistles</h2>
   <p>
-    For Part A bells & whistles, I explored two additional transformation-based visual anagrams beyond the standard 180°
-    flip, and I also experimented with text-conditioned image-to-image translation (SDEdit) on a custom course logo.
+    In this section, I implemented <b>Visual Anagrams</b> to create optical illusions: images that look like one thing when upright, 
+    but transform into something completely different when flipped upside down.
   </p>
-  
-  <h3>More Visual Anagrams: 90° Rotation</h3>
+
   <p>
-    In the required visual anagram (Part 1.8), the “second view” is created by flipping the latent image 180°. Here, I
-    extend the same idea to a different transformation: a <b>90° rotation</b>. The denoising loop stays identical in
-    spirit: at each timestep, I compute the CFG noise prediction for Prompt A on the original latent, then compute the
-    CFG noise prediction for Prompt B on a <b>rotated</b> version of the latent, rotate that predicted noise back to the
-    original coordinate system, and average the two noise estimates to produce a single update.
+    The implementation relies on modifying the diffusion process to satisfy two different prompts simultaneously (e.g., "an oil painting of an old man" vs. "an oil painting of people around a campfire"). 
+    To achieve this, I implemented the following algorithm at each timestep $t$ of the denoising loop:
   </p>
-  <p class="muted">
-    Intuition: Prompt A controls the upright interpretation, while Prompt B controls the interpretation after rotating
-    the image by 90°. Enforcing both constraints at every timestep produces a single image that can be read in two ways
-    depending on the rotation.
+
+  <ol>
+    <li>
+      <b>Estimate Noise 1 ($\epsilon_1$):</b> I first passed the current noisy image $x_t$ through the UNet using the first prompt (upright).
+    </li>
+    <li>
+      <b>Estimate Noise 2 ($\epsilon_2$):</b> I <i>flipped</i> the image $x_t$ upside down and passed it through the UNet using the second prompt.
+    </li>
+    <li>
+      <b>Average the Estimates:</b> To combine these conflicting goals, I flipped $\epsilon_2$ back to the original orientation and averaged it with $\epsilon_1$.
+    </li>
+  </ol>
+
+  <div class="math-block" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 25px; font-family: 'Times New Roman', serif; font-size: 1.1rem;">
+    $\epsilon_{final} = \frac{1}{2} (\epsilon_1 + \text{flip}(\epsilon_2))$
+  </div>
+
+  <p>
+    By performing the diffusion step using this averaged noise estimate $\epsilon_{final}$, the image converges into a state that is visually coherent in both orientations.
   </p>
-  
-  <div class="grid">
+
+  <h4 style="margin-top:20px;">Results</h4>
+  <p>
+    Below are two generated illusions. For each, I display the image in its original orientation and then flipped 180 degrees to reveal the hidden subject.
+  </p>
+
+  <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
     <figure>
-      <img src="media/PartA/part1/bells/rotate.png" alt="Rotation anagram: view 1 (Prompt A)">
-      <figcaption><b>View 1 (normal):</b> aligns with Prompt A.</figcaption>
+      <img src="media/partA/1_8/illusion1.png" alt="Illusion 1 Upright">
+      <figcaption><b>Upright:</b> "a photo of a rabbit"</figcaption>
     </figure>
     <figure>
-      <img src="media/PartA/part1/bells/rotated.png" alt="Rotation anagram: view 2 (Prompt B, rotated 90 degrees)">
-      <figcaption><b>View 2 (rotated 90°):</b> aligns with Prompt B.</figcaption>
+      <img src="media/partA/1_8/illusion1_flip.png" alt="Illusion 1 Flipped">
+      <figcaption><b>Flipped:</b> "a photo of a duck"</figcaption>
+    </figure>
+
+    <figure>
+      <img src="media/partA/1_8/illusion2.png" alt="Illusion 2 Upright">
+      <figcaption><b>Upright:</b> "an oil painting of an old man"</figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_8/illusion2_flip.png" alt="Illusion 2 Flipped">
+      <figcaption><b>Flipped:</b> "an oil painting of a snowy mountain village"</figcaption>
     </figure>
   </div>
-  <p>Prompt A: an artistic painting of a dragon flying over ancient mountains</p>
-  <p>Prompt B: a watercolor painting of cherry blossom trees in spring</p>
-  
-  <hr/>
-  
-  <h3>More Visual Anagrams: Jigsaw (Patch Permutation)</h3>
+</section>
+
+
+<section id="A1-9" class="card">
+  <h3>1.9 Hybrid Images</h3>
+
   <p>
-    I also implemented a more aggressive transformation: a <b>jigsaw rearrangement</b>. Instead of rotating or flipping,
-    the transformation divides the image into a grid of patches and permutes them using a fixed permutation. During
-    sampling, Prompt A is applied to the normal latent. Prompt B is applied to a <b>jigsaw-transformed</b> latent; its
-    predicted noise is then mapped back through the inverse permutation before averaging with Prompt A’s noise.
+    In this final section of Part A, I implemented <b>Factorized Diffusion</b> to create Hybrid Images. 
+    Hybrid images are optical illusions that change based on viewing distance: one image dominates the low spatial frequencies 
+    (seen from afar), while another dominates the high spatial frequencies (seen from up close).
   </p>
-  <p class="muted">
-    This produces an illusion where the image looks like Prompt A in the original layout, but when rearranged into the
-    same patch ordering (the jigsaw view), it reveals Prompt B.
-  </p>
-  
-  <div class="grid">
-    <figure>
-      <img src="media/PartA/part1/bells/jigsaw.png" alt="Jigsaw anagram: view 1 (normal)">
-      <figcaption><b>View 1 (normal layout):</b> aligns with Prompt A.</figcaption>
-    </figure>
-    <figure>
-      <img src="media/PartA/part1/bells/jigsaw_rearranged.png" alt="Jigsaw anagram: view 2 (rearranged)">
-      <figcaption><b>View 2 (jigsaw rearranged):</b> reveals Prompt B.</figcaption>
-    </figure>
-  </div>
-  <p>Prompt A: a peaceful landscape of rolling green hills at sunrise</p>
-  <p>Prompt B: a vibrant image of a bustling street market in the rain</p>
-  
-  <hr/>
-  
-  <h3>Design a Course Logo + SDEdit Image-to-Image Translation</h3>
+
   <p>
-    For the “design a course logo” bells & whistles option, I created a simple custom logo image and then applied
-    <b>SDEdit-style image-to-image translation</b>. Concretely, I start from the logo image, add noise corresponding to
-    a chosen start timestep (controlled by a <code class="inline">start_index</code>), and then run the reverse diffusion
-    process conditioned on a target text prompt. A smaller start index preserves more of the original logo structure,
-    while a larger start index gives the model more freedom to change the image.
+    To generate these using a diffusion model, I modified the iterative noise estimate step. For every timestep $t$, 
+    I computed two separate noise estimates: $\epsilon_1$ (for Prompt 1) and $\epsilon_2$ (for Prompt 2). 
+    I then combined them using a frequency filter:
   </p>
-  <p class="muted">
-    In my experiment, I used a moderate start index (e.g., 10) to keep the logo’s overall structure while translating it
-    into the style described by the text prompt. After generating the 64×64 result from Stage 1, I used Stage 2 to
-    upsample to 256×256 for cleaner visualization.
-  </p>
-  
-  <div class="grid">
-    <figure>
-      <img src="media/PartA/part1/bells/logo.png" alt="Original custom course logo">
-      <figcaption><b>Original logo</b> (input image).</figcaption>
-    </figure>
-    <figure>
-      <img src="media/PartA/part1/bells/low_res_logo.png" alt="Edited logo low resolution (Stage 1)">
-      <figcaption><b>Edited (Stage 1, 64×64)</b> using SDEdit.</figcaption>
-    </figure>
-    <figure>
-      <img src="media/PartA/part1/bells/high_res_logo.png" alt="Edited logo high resolution (Stage 2)">
-      <figcaption><b>Edited (Stage 2, 256×256)</b> upsampled result.</figcaption>
-    </figure>
+
+  <div class="math-block" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 25px; font-family: 'Times New Roman', serif; font-size: 1.1rem;">
+    $\epsilon_{hybrid} = \underbrace{f_{low}(\epsilon_1)}_{\text{Structure}} + \underbrace{( \epsilon_2 - f_{low}(\epsilon_2) )}_{\text{Details}}$
   </div>
-  <p>Prompt: "a watercolor painting of cherry blossom trees in spring"</p>
+
+  <h4 style="margin-top:20px;">Implementation Logic</h4>
+  <p>
+    I implemented the low-pass filter $f_{low}$ using a <b>Gaussian Blur</b> with a kernel size of <b>33</b> and a sigma of <b>2</b>.
+  </p>
+  <ul>
+    <li><b>Low Frequencies:</b> Extracted from Prompt 1 by applying the Gaussian blur.</li>
+    <li><b>High Frequencies:</b> Extracted from Prompt 2 by taking the original noise estimate and subtracting the blurred version.</li>
+  </ul>
+  <p>
+    By summing these components, the resulting noise estimate $\epsilon_{hybrid}$ guides the diffusion process to create an image containing both subjects simultaneously.
+  </p>
+
+  <h4 style="margin-top:20px;">Results</h4>
+  <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 30px;">
+    
+    <figure>
+      <img src="media/partA/1_9/1_9_hybird_3.png" alt="Hybrid Image 1">
+      <figcaption>
+        <b>Hybrid 1</b><br>
+        Low Freq: "a lithograph of a skull"<br>
+        High Freq: "a lithograph of waterfalls"
+      </figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_9/1_9_hybird_4.png" alt="Hybrid Image 1">
+      <figcaption>
+        <b>Hybrid 1</b><br>
+        Low Freq: "a lithograph of a skull"<br>
+        High Freq: "a lithograph of waterfalls"
+      </figcaption>
+    </figure>
+
+    <figure>
+      <img src="media/partA/1_9/1_9_hybird_1.png" alt="Hybrid Image 2">
+      <figcaption>
+        <b>Hybrid 2</b><br>
+        Low Freq: "a painting of a rabbit"<br>
+        High Freq: "a painting of a volcano"
+      </figcaption>
+    </figure>
+    <figure>
+      <img src="media/partA/1_9/1_9_hybird_2.png" alt="Hybrid Image 2">
+      <figcaption>
+        <b>Hybrid 2</b><br>
+        Low Freq: "a painting of a rabbit"<br>
+        High Freq: "a painting of a volcano"
+      </figcaption>
+    </figure>
+
+  </div>
+</section>
+
+  <section id="part2" class="card">
+    <h2>Part 2: Bells & Whistles</h2>
+    <p>
+      For this portion, I extended the capabilities of the diffusion model to support complex geometric transformations and performed style transfer on a logo.
+    </p>
+
+    <h3 style="margin-top: 30px;">2.1 More Visual Anagrams</h3>
+    <p>
+      The logic of visual anagrams (averaging noise estimates) generalizes to any orthogonal transformation. 
+      I implemented two new transformations: <b>90° Rotation</b> and <b>Jigsaw Patch Shuffling</b>.
+    </p>
+
+    <h4>Transformation 1: 90° Rotation</h4>
+    <p>
+      I modified the denoising loop to enforce that the image looks like Prompt A when upright, and Prompt B when rotated 90 degrees.
+      <br>
+      <b>Implementation:</b> I used <code>torch.rot90</code> (k=-1) to transform the image during the diffusion step.
+    </p>
+
+    <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+      <figure>
+        <img src="media/partA/bw/2_1_rotate_1.png" alt="Rotation View 1">
+        <figcaption><b>View 1 (Upright)</b><br>"an oil painting of a village"</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partA/bw/2_1_rotate_2.png" alt="Rotation View 2">
+        <figcaption><b>View 2 (Rotated 90°)</b><br>"a pencil sketch of a skull"</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partA/bw/2_1_rotate_3.png" alt="Rotation View 1">
+        <figcaption><b>View 1 (Upright)</b><br>"an photo of a rabbit"</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partA/bw/2_1_rotate_4.png" alt="Rotation View 2">
+        <figcaption><b>View 2 (Rotated 90°)</b><br>"a man wearing a hat"</figcaption>
+      </figure>
+    </div>
+
+    <h4>Transformation 2: Jigsaw Puzzles</h4>
+    <p>
+      I implemented a transformation that shuffles the image into random 16x16 patches. The model generates an image that looks like 
+      Prompt A in its ordered form, but rearranges into Prompt B when the patches are shuffled according to a fixed permutation.
+    </p>
+    
+    <div class="gallery" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+      <figure>
+        <img src="media/partA/bw/2_2_rotate_1.png" alt="Jigsaw View 1">
+        <figcaption><b>View 1 (Ordered)</b><br>"an oil painting of a kitchen"</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partA/bw/2_2_rotate_2.png" alt="Jigsaw View 2">
+        <figcaption><b>View 2 (Rearranged)</b><br>"a photo of a waterfall"</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partA/bw/2_2_rotate_3.png" alt="Jigsaw View 1">
+        <figcaption><b>View 1 (Ordered)</b><br>"an oil painting of a snowy mountain village"</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partA/bw/2_2_rotate_4.png" alt="Jigsaw View 2">
+        <figcaption><b>View 2 (Rearranged)</b><br>"an oil painting of a skull"</figcaption>
+      </figure>
+    </div>
+
+    <h3 style="margin-top: 40px; border-top: 1px solid #333; padding-top: 20px;">2.2 Course Logo Design</h3>
+    <p>
+      I used SDEdit (Text-Conditioned Image-to-Image Translation) to redesign a logo. 
+      By adding noise to the original UCB logo and guiding the denoising process with the prompt 
+      <i>"an oil painting of a bear"</i>, I created a stylized version of the logo that retains the original structure 
+      but adopts the artistic style of the prompt.
+    </p>
+
+    <div class="gallery" style="grid-template-columns: repeat(3, 1fr); gap: 10px;">
+      <figure>
+        <img src="media/partA/bw/2_logo_original.png" alt="Original Logo">
+        <figcaption>Original Logo</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partA/bw/2_logo_low.png" alt="Generated 64x64">
+        <figcaption>Generated (64x64)</figcaption>
+      </figure>
+      <figure>
+        <img src="media/partA/bw/2_logo_high.png" alt="Upsampled Result">
+        <figcaption>Upsampled Result<br></figcaption>
+      </figure>
+    </div>
+
+  </section>
   
     <!-- ========================= PART B ========================= -->
 <section id="partB">
