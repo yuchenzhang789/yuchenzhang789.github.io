@@ -397,7 +397,7 @@
     I started with the Campanile image noised to index 10 (approx t=690) and ran the iterative denoiser. Below, I visualize the process by displaying the image at every 5th step of the loop. Notice how the structure gradually emerges from the chaos.
   </p>
 
-  <div class="gallery" style="grid-template-columns: repeat(5, 1fr);">
+  <div class="grid">
     <figure>
       <img src="media/partA/1_4/iter_step_10_t_690.png" alt="t = 690">
       <figcaption>t = 690</figcaption>
@@ -425,65 +425,13 @@
     Here is the final result of the iterative method compared against the baseline methods. The iterative approach recovers fine details (like the brick texture and scaffolding) that the One-Step method blurs out and Gaussian Blur destroys completely.
   </p>
 
-  <div class="gallery">
+  <div class="grid">
     <figure>
       <img src="media/partA/1_4/comparison.png" alt="Iterative Result">
       <figcaption>Final Iterative Result Comparison</figcaption>
     </figure>
   </div>
-</section>
-      <h3>A1.4 Iterative Denoising</h3>
-      <p>
-      I implemented the full iterative reverse diffusion loop, which repeatedly predicts noise at the current
-      timestep and updates the sample toward lower-noise states. Compared to one-step denoising, the key advantage
-      is that each update operates in a regime the denoiser is trained for, gradually improving the sample rather
-      than attempting to “jump” directly to x<sub>0</sub>. Qualitatively, early iterations recover coarse layout
-      (large shapes / global contrast), while later iterations refine edges and textures.
-      <br><br>
-      Implementation detail: DeepFloyd’s UNet outputs a tensor with 6 channels (noise + variance). I use the first
-      3 channels as the noise estimate and pass the predicted variance through the provided helper to inject the
-      correct stochasticity for each reverse step (DDPM-style update).
-    </p>
-      <div class="grid">
-        <figure>
-            <img src="media/PartA/part1/iterative690.png" alt="Iterative progress. Step 00, t = 690">
-            <figcaption>Step 00, t = 690</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartA/part1/iterative540.png" alt="Iterative progress. Step 05, t = 540">
-            <figcaption>Step 05, t = 540</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartA/part1/iterative390.png" alt="Iterative progress. Step 10, t = 390">
-            <figcaption>Step 10, t = 390</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartA/part1/iterative240.png" alt="Iterative progress. Step 15, t = 240">
-            <figcaption>Step 15, t = 240</figcaption>
-          </figure>
-        <figure>
-          <img src="media/PartA/part1/iterative90.png" alt="Iterative progress. Step 15, t = 240">
-          <figcaption>Step 20, t = 90</figcaption>
-        </figure>
-      </div>
-      <div class="grid">
-        <figure>
-            <img src="media/PartA/part1/original.png" alt="Original image">
-            <figcaption>Original image</figcaption>
-          </figure>
-          <figure>
-            <img src="media/PartA/part1/one_step_final.png" alt="One-step final result">
-            <figcaption>One-step final result</figcaption>
-          </figure>
-        <figure>
-          <img src="media/PartA/part1/iterative_final.png" alt="Final iterative result">
-          <figcaption>Iterative final result</figcaption>
-        </figure>
-        <figure>
-            <img src="media/PartA/part1/gaussian_blur.png" alt="Gaussian blur final result">
-            <figcaption>Gaussian blur</figcaption>
-          </figure>
-      </div>
+
 
       <h3>A1.5 Diffusion Model Sampling (From Pure Noise)</h3>
       <p>
