@@ -1235,54 +1235,119 @@ out_block2 = out_block2 * scale2.view(-1, 1, 1, 1)</code></pre>
       </p>
     </div>
   </section>
-  
-        <h4>2.4 Adding Class-Conditioning to UNet</h4>
-        <p>
-          Next, I add label information so the model can generate a <b>specific digit class</b>.
-          In the notebook, I implement <code class="inline">ClassConditionalUNet</code> by embedding the digit label
-          <code class="inline">y ∈ {0,…,9}</code> and injecting it (along with the time embedding) into the UNet.
-          This changes the learned vector field to <code class="inline">v<sub>θ</sub>(x<sub>t</sub>, t, y)</code>.
-        </p>
-  
-        <h4>2.5 Training the UNet (Class Conditioning)</h4>
-        <p>
-          Training mirrors the time-only setup, except the UNet also receives the class label.
-          I keep the same core hyperparameters (batch size 64, <code class="inline">D = 64</code>, Adam) and train for 10 epochs
-          with exponential LR decay from <code class="inline">1e−2</code>.
-          During training I periodically sample a grid of digits by fixing labels and sampling different noise seeds.
-        </p>
-        <div class="grid">
-            <figure>
-                <img src="media/PartB/2_6_loss_curve.png" alt="2.5 class-conditioned training loss curve">
-                <figcaption>Training loss curve for the class-conditioned flow-matching model.</figcaption>
-              </figure>
-        </div>
-  
-        <h4>2.6 Sampling from the Class-Conditioned UNet + CFG</h4>
-        <p>
-          To strengthen class fidelity at sampling time, I use <b>classifier-free guidance</b>.
-          The idea is to compute both an unconditional velocity and a conditional velocity, then interpolate:
-          <code class="inline">v<sub>guided</sub> = v<sub>uncond</sub> + s · (v<sub>cond</sub> − v<sub>uncond</sub>)</code>.
-          In practice, this requires the model to support unconditional behavior, which I implement via
-          <b>label dropout</b> during training: with some probability I replace <code class="inline">y</code> with a special “null”
-          label so the same network learns both modes.
-        </p>
-  
-        <div class="grid">
-            <figure>
-              <img src="media/PartB/2_6_results_epoch1.png" alt="2.6 samples epoch 1">
-              <figcaption>Class-conditioned samples after epoch 1 (labels start to control coarse shape).</figcaption>
-            </figure>
-            <figure>
-              <img src="media/PartB/2_6_results_epoch5.png" alt="2.6 samples epoch 5">
-              <figcaption>Class-conditioned samples after epoch 5 (labels start to control coarse shape).</figcaption>
-            </figure>
-              <figure>
-                  <img src="media/PartB/2_6_results_epoch10.png" alt="2.6 samples epoch 10">
-                  <figcaption>Class-conditioned samples after epoch 10 (stronger class fidelity + sharper strokes).</figcaption>
-              </figure>
-          </div>
-      </section>
+  <div class="content-block">
+      <h3>2.4 Adding Class-Conditioning to UNet</h3>
+      <p>
+        To give the model more control, I injected class information (digit labels 0-9) into the UNet. 
+        This allows me to specifically request a "5" or a "7" during generation.
+      </p>
+      
+      <h4>Implementation Details</h4>
+      <p>
+        I used <b>one-hot encoding</b> for the class labels and passed them through two additional FCBlocks. 
+        To enable <b>Classifier-Free Guidance (CFG)</b>, I implemented dropout: 10% of the time during training, 
+        I drop the class label (set it to a null vector) so the model learns unconditional generation as well.
+      </p>
+
+      <div style="background: #2d2d2d; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #444; margin-bottom: 20px;">
+<pre><code style="color: #f8f8f2; font-family: Consolas, monospace;"># Class Conditioning Logic
+c = F.one_hot(c, num_classes=10).float()
+
+# Get embeddings
+t_embed = self.fc_t(t)
+c_embed = self.fc_c(c)
+
+# Modulate the UNet features (Additive Conditioning)
+# unflatten = c_embed * unflatten + t_embed
+# This allows the network to use both time and class info
+out = out + c_embed.view(...) + t_embed.view(...)</code></pre>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h3>2.5 Training the Class-Conditioned UNet</h3>
+      <p>
+        I trained the model with the same Flow Matching objective, but now feeding in the class labels. 
+        The loss curve shows convergence similar to the unconditional model, though slightly slower due to the added complexity.
+      </p>
+
+      <figure>
+        <img src="media/partB/2_5_loss.jpg" alt="Class Conditioned Training Loss">
+        <figcaption>Training Loss (Class Conditioned)</figcaption>
+      </figure>
+    </div>
+
+    <div class="content-block">
+      <h3>2.6 Sampling with Classifier-Free Guidance</h3>
+      <p>
+        For sampling, I used <b>Classifier-Free Guidance</b> with a scale of $\gamma = 5.0$. 
+        The results below show 4 generated instances for each digit (0-9) across different training epochs.
+      </p>
+
+      <div class="gallery" style="grid-template-columns: repeat(1, 1fr); gap: 30px;">
+        <figure>
+          <img src="media/partB/2_5_epoch_1.jpg" alt="Epoch 1 Results">
+          <figcaption>Epoch 1 Results (CFG Scale = 5.0)</figcaption>
+        </figure>
+        <figure>
+          <img src="media/partB/2_5_epoch_5.jpg" alt="Epoch 5 Results">
+          <figcaption>Epoch 5 Results (CFG Scale = 5.0)</figcaption>
+        </figure>
+        <figure>
+          <img src="media/partB/2_5_epoch_10.jpg" alt="Epoch 10 Results">
+          <figcaption>Epoch 10 Results (CFG Scale = 5.0)</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="content-block" style="border: 1px solid var(--accent);">
+      <h3>Experiment: Removing the Learning Rate Scheduler</h3>
+      <p>
+        I attempted to train the model without the exponential learning rate decay scheduler to see if I could achieve 
+        similar performance with a simpler setup.
+      </p>
+      
+      <p>
+        <b>Strategy:</b> Instead of starting at 1e-2 and decaying, I found that using a constant, lower learning rate (e.g., 1e-3 or 1e-4) 
+        prevented the loss from oscillating and allowed the model to converge stably, albeit perhaps slightly slower.
+      </p>
+
+      <div class="gallery" style="grid-template-columns: repeat(1, 1fr); gap: 30px;">
+        <figure>
+          <img src="media/partB/2_6_epoch_1.jpg" alt="Epoch 1 Results">
+          <figcaption>Epoch 1 Results (Without LR Scheduler)</figcaption>
+        </figure>
+        <figure>
+          <img src="media/partB/2_6_epoch_5.jpg" alt="Epoch 5 Results">
+          <figcaption>Epoch 5 Results (Without LR Scheduler)</figcaption>
+        </figure>
+        <figure>
+          <img src="media/partB/2_6_epoch_10.jpg" alt="Epoch 10 Results">
+          <figcaption>Epoch 10 Results (Without LR Scheduler)</figcaption>
+        </figure>
+      </div>
+    </div>
+
+  </section>
+
+  <section id="learned" class="card">
+    <h2>What I Learned</h2>
+    <ul>
+      <li>
+        <b>Single-step denoising is not a generator:</b> When the input contains no information (pure noise), 
+        MSE training encourages regression toward an average digit, motivating the need for iterative generative dynamics.
+      </li>
+      <li>
+        <b>Flow matching simplifies generation:</b> By training a time-conditioned UNet to predict the <i>velocity</i> 
+        along a linear interpolation path, we can transform simple noise into complex data by integrating an ODE.
+      </li>
+      <li>
+        <b>Conditioning is flexible:</b> We can inject multiple control signals (time, class label) into the network 
+        using simple fully-connected blocks and broadcasting. Classifier-Free Guidance then allows us to amplify these 
+        signals during sampling for high-quality results.
+      </li>
+    </ul>
+  </section>
   
       <!-- ========================= B4 ========================= -->
       <section id="B4" class="card">
