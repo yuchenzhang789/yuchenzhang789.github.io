@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CS280A Archive | Jeffrey Zhang</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #131c34;
+        --panel-soft: #1a2644;
+        --text: #eef4ff;
+        --muted: #9bb0d3;
+        --accent: #8fd3ff;
+        --line: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        font-family: "IBM Plex Sans", system-ui, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(143, 211, 255, 0.18), transparent 25%),
+          linear-gradient(180deg, #0a1020 0%, #09101c 100%);
+      }
+
+      .container {
+        width: min(calc(100% - 2rem), 1040px);
+        margin: 0 auto;
+      }
+
+      .hero {
+        padding: 72px 0 32px;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        font-size: 0.8rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(2.8rem, 8vw, 5.4rem);
+        line-height: 0.95;
+      }
+
+      .subtitle {
+        margin-top: 16px;
+        max-width: 700px;
+        color: var(--muted);
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+
+      .top-links {
+        margin-top: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .top-links a,
+      .project-card a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 12px 18px;
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        padding: 12px 0 56px;
+      }
+
+      .project-card {
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: linear-gradient(180deg, var(--panel), var(--panel-soft));
+        padding: 24px;
+      }
+
+      .project-card p {
+        margin-top: 10px;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .project-card a {
+        margin-top: 18px;
+      }
+
+      @media (max-width: 760px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section class="hero">
+        <p class="eyebrow">Course archive</p>
+        <h1>CS280A Projects</h1>
+        <p class="subtitle">
+          This archive preserves my older Berkeley CS280A computer vision course
+          pages while the main GitHub Pages homepage is now used for my machine
+          learning engineering portfolio.
+        </p>
+        <div class="top-links">
+          <a href="../">Back to main site</a>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="project-card">
+          <p class="eyebrow">Project 0</p>
+          <h3>Becoming Friends with Your Camera</h3>
+          <p>Perspective, focal length, selfie distortion, and dolly zoom experiments.</p>
+          <a href="./proj_0/">Open project</a>
+        </article>
+        <article class="project-card">
+          <p class="eyebrow">Project 1</p>
+          <h3>Images of the Russian Empire</h3>
+          <p>Channel alignment and color reconstruction for the Prokudin-Gorskii collection.</p>
+          <a href="./proj_1/">Open project</a>
+        </article>
+        <article class="project-card">
+          <p class="eyebrow">Project 2</p>
+          <h3>Fun with Filters and Frequencies</h3>
+          <p>Image filtering, edges, hybrid images, blending, and frequency-space effects.</p>
+          <a href="./proj_2/">Open project</a>
+        </article>
+        <article class="project-card">
+          <p class="eyebrow">Project 3</p>
+          <h3>Face Morphing</h3>
+          <p>Geometric warping, mean faces, caricatures, and sequence interpolation.</p>
+          <a href="./proj_3/">Open project</a>
+        </article>
+        <article class="project-card">
+          <p class="eyebrow">Project 4</p>
+          <h3>Neural Radiance Fields</h3>
+          <p>View synthesis, calibration, and NeRF-based scene reconstruction.</p>
+          <a href="./proj_4/">Open project</a>
+        </article>
+        <article class="project-card">
+          <p class="eyebrow">Project 5</p>
+          <h3>Diffusion and Flow Matching</h3>
+          <p>Denoising, image generation, conditioning, and modern generative modeling experiments.</p>
+          <a href="./proj_5/">Open project</a>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
